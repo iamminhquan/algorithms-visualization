@@ -58,19 +58,13 @@ export function createAlgorithmRegistry<
   return {
     get<TId extends AlgorithmId<TDefinition>>(id: TId) {
       const definition = byId.get(id);
-      if (!definition || !hasId(definition, id)) {
+      if (!definition) {
         throw new UnknownAlgorithmError(id);
       }
-      return definition;
+      // Map được đánh khoá bằng metadata.id nên definition chắc chắn có đúng id này
+      return definition as DefinitionById<TDefinition, TId>;
     },
     find: (id) => byId.get(id),
     list: () => metadataList,
   };
-}
-
-function hasId<TDefinition extends AnyAlgorithmDefinition, TId extends string>(
-  definition: TDefinition,
-  id: TId,
-): definition is DefinitionById<TDefinition, TId> {
-  return definition.metadata.id === id;
 }
