@@ -98,12 +98,8 @@
           "name": "algorithms_category_id_categories_id_fk",
           "tableFrom": "algorithms",
           "tableTo": "categories",
-          "columnsFrom": [
-            "category_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["category_id"],
+          "columnsTo": ["id"],
           "onDelete": "restrict",
           "onUpdate": "no action"
         }
@@ -113,16 +109,12 @@
         "algorithms_name_unique": {
           "name": "algorithms_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
+          "columns": ["name"]
         },
         "algorithms_slug_unique": {
           "name": "algorithms_slug_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "slug"
-          ]
+          "columns": ["slug"]
         }
       },
       "policies": {},
@@ -195,16 +187,12 @@
         "categories_name_unique": {
           "name": "categories_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
+          "columns": ["name"]
         },
         "categories_slug_unique": {
           "name": "categories_slug_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "slug"
-          ]
+          "columns": ["slug"]
         }
       },
       "policies": {},
@@ -297,12 +285,8 @@
           "name": "runs_algorithm_id_algorithms_id_fk",
           "tableFrom": "runs",
           "tableTo": "algorithms",
-          "columnsFrom": [
-            "algorithm_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["algorithm_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
