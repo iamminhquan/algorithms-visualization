@@ -19,7 +19,14 @@ export function createRecorder(input: readonly number[]): {
   let swaps = 0;
   let finished = false;
 
+  const assertActive = (): void => {
+    if (finished) {
+      throw new Error("Bản ghi đã kết thúc, không thể thao tác thêm");
+    }
+  };
+
   const assertIndex = (index: number): void => {
+    assertActive();
     if (!Number.isInteger(index) || index < 0 || index >= length) {
       throw new RangeError(`Chỉ số ${index} nằm ngoài phạm vi [0, ${length})`);
     }

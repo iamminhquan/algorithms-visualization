@@ -43,7 +43,9 @@ describe("interchangeSort", () => {
     [[-1.5, 3, 0, -2], [-2, -1.5, 0, 3], 6, 4, 15],
     [[7], [7], 0, 0, 2],
     [[], [], 0, 0, 2],
-  ])("%j -> %j (comparisons %d, swaps %d, steps %d)", (input, sorted, comparisons, swaps, stepCount) => {
+  ] satisfies ReadonlyArray<
+    [number[], number[], number, number, number]
+  >)("%j -> %j (comparisons %d, swaps %d, steps %d)", (input, sorted, comparisons, swaps, stepCount) => {
     const { steps } = run(input);
     const last = steps.at(-1);
     expect(last?.array).toEqual(sorted);

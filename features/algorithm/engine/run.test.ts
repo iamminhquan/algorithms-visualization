@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { getStep, runAlgorithm } from "./run";
+import { getStep, MAX_INPUT_LENGTH, runAlgorithm } from "./run";
 import type { SortingAlgorithm } from "./types";
 
 const fake: SortingAlgorithm = {
@@ -48,6 +48,38 @@ describe("runAlgorithm", () => {
       TypeError,
     );
     expect(calls).toBe(0);
+  });
+
+  test("rejects input longer than MAX_INPUT_LENGTH", () => {
+    let calls = 0;
+    const counting: SortingAlgorithm = {
+      ...fake,
+      sort: () => {
+        calls++;
+      },
+    };
+    const tooLong = Array.from({ length: MAX_INPUT_LENGTH + 1 }, (_, k) => k);
+    expect(() => runAlgorithm(counting, tooLong)).toThrow(RangeError);
+    expect(calls).toBe(0);
+  });
+
+  test("accepts input of exactly MAX_INPUT_LENGTH", () => {
+    const input = Array.from({ length: MAX_INPUT_LENGTH }, (_, k) => k);
+    const history = runAlgorithm({ ...fake, sort: () => {} }, input);
+    expect(history.input).toHaveLength(MAX_INPUT_LENGTH);
+  });
+
+  test("rejects asynchronous sort", () => {
+    const asynchronous: SortingAlgorithm = {
+      ...fake,
+      sort: (async () => {}) as SortingAlgorithm["sort"],
+    };
+    expect(() => runAlgorithm(asynchronous, [2, 1])).toThrow(TypeError);
+  });
+
+  test("history input is a copy of the caller's array", () => {
+    const input = [2, 1];
+    expect(runAlgorithm(fake, input).input).not.toBe(input);
   });
 
   test("propagates algorithm errors", () => {

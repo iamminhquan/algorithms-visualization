@@ -32,6 +32,7 @@ describe("createRecorder", () => {
   test("swap records array after swap", () => {
     const { array, finish } = createRecorder([3, 1, 2]);
     array.swap(0, 1);
+    expect(array.get(0)).toBe(1);
     const step = finish()[1];
     expect(step.action).toBe("swap");
     expect(step.array).toEqual([1, 3, 2]);
@@ -39,7 +40,6 @@ describe("createRecorder", () => {
     expect(step.swaps).toBe(1);
     expect(step.comparisons).toBe(0);
     expect(step.message).toBe("Hoán đổi a[0] và a[1] (3 ↔ 1)");
-    expect(array.get(0)).toBe(1);
   });
 
   test("sorted persists across later steps", () => {
@@ -118,6 +118,37 @@ describe("createRecorder", () => {
     expect(Object.isFrozen(step.array)).toBe(true);
     expect(Object.isFrozen(step.states)).toBe(true);
     expect(Object.isFrozen(step.indices)).toBe(true);
+  });
+
+  test("array is unusable after finish", () => {
+    const { array, finish } = createRecorder([3, 1, 2]);
+    finish();
+    expect(() => array.get(0)).toThrow("đã kết thúc");
+    expect(() => array.compare(0, 1)).toThrow("đã kết thúc");
+    expect(() => array.swap(0, 1)).toThrow("đã kết thúc");
+    expect(() => array.markSorted(0)).toThrow("đã kết thúc");
+    expect(array.length).toBe(3);
+    expect(finish()).toHaveLength(2);
+  });
+
+  test("compare and swap with identical indices are valid and counted", () => {
+    const { array, finish } = createRecorder([3, 1, 2]);
+    expect(array.compare(1, 1)).toBe(0);
+    array.swap(1, 1);
+    const steps = finish();
+    expect(steps[1].indices).toEqual([1, 1]);
+    expect(steps[2].array).toEqual([3, 1, 2]);
+    expect(steps[3].comparisons).toBe(1);
+    expect(steps[3].swaps).toBe(1);
+  });
+
+  test("custom message is used by swap and markSorted", () => {
+    const { array, finish } = createRecorder([3, 1, 2]);
+    array.swap(0, 1, "Đổi chỗ");
+    array.markSorted(0, "Xong");
+    const steps = finish();
+    expect(steps[1].message).toBe("Đổi chỗ");
+    expect(steps[2].message).toBe("Xong");
   });
 
   test("length", () => {
