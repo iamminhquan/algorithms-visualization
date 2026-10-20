@@ -8,6 +8,9 @@ import type {
 
 export const BUBBLE_SORT_ID = "sorting.bubble-sort";
 
+// Mỗi sự kiện chụp lại cả mảng và có tới ~n² sự kiện, nên bộ nhớ tăng ~n³
+export const MAX_INPUT_LENGTH = 100;
+
 const metadata: AlgorithmMetadata<typeof BUBBLE_SORT_ID> = Object.freeze({
   id: BUBBLE_SORT_ID,
   name: "Sắp xếp nổi bọt (Bubble Sort)",
@@ -18,6 +21,11 @@ const metadata: AlgorithmMetadata<typeof BUBBLE_SORT_ID> = Object.freeze({
 });
 
 function executeBubbleSort(input: BubbleSortInput): BubbleSortResult {
+  if (input.length > MAX_INPUT_LENGTH) {
+    throw new RangeError(
+      `Dữ liệu đầu vào có ${input.length} phần tử, vượt quá giới hạn ${MAX_INPUT_LENGTH}`,
+    );
+  }
   for (const [index, value] of input.entries()) {
     // NaN không so sánh được nên sẽ cho ra kết quả sai mà không báo lỗi
     if (Number.isNaN(value)) {

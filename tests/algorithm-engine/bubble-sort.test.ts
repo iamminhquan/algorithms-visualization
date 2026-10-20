@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import {
   type BubbleSortResult,
   bubbleSort,
+  MAX_INPUT_LENGTH,
 } from "@/features/algorithm/algorithms/sorting/bubble-sort";
 
 const sortAscending = (values: readonly number[]) =>
@@ -107,6 +108,12 @@ describe("bubbleSort: kết quả", () => {
 
   test("từ chối NaN vì không so sánh được", () => {
     expect(() => bubbleSort.execute([1, Number.NaN, 2])).toThrow(RangeError);
+  });
+
+  test("từ chối đầu vào dài hơn giới hạn", () => {
+    const atLimit = Array.from({ length: MAX_INPUT_LENGTH }, (_, i) => -i);
+    expect(bubbleSort.execute(atLimit).output).toEqual(sortAscending(atLimit));
+    expect(() => bubbleSort.execute([...atLimit, 0])).toThrow(RangeError);
   });
 
   test("gắn metadata của thuật toán vào kết quả", () => {
