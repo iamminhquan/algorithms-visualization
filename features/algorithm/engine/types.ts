@@ -5,20 +5,15 @@
  */
 
 /**
- * Danh tính của một thuật toán, dùng để tra cứu và hiển thị danh sách.
+ * Danh tính của một thuật toán, dùng để tra cứu trong registry. Tên, mô tả, danh mục
+ * nằm ở bảng `algorithms` trong cơ sở dữ liệu, không lặp lại ở đây.
  *
- * @template TId Kiểu literal của `id`, ví dụ `"sorting.bubble-sort"`; nhờ đó registry biết
- *   chính xác id nào ứng với thuật toán nào. Mặc định là `string` khi không cần phân biệt.
+ * @template TKey Kiểu literal của `key`, ví dụ `"bubble-sort"`; nhờ đó registry biết
+ *   chính xác key nào ứng với thuật toán nào. Mặc định là `string` khi không cần phân biệt.
  */
-export interface IAlgorithmMetadata<TId extends string = string> {
-  /** Định danh ổn định dạng "<nhóm>.<tên>", ví dụ "sorting.bubble-sort". Không đổi giữa các lần chạy. */
-  readonly id: TId;
-  /** Tên hiển thị cho người dùng, ví dụ "Sắp xếp nổi bọt (Bubble Sort)". */
-  readonly name: string;
-  /** Nhóm thuật toán, ví dụ "sorting", "searching", "graph". */
-  readonly category: string;
-  /** Mô tả ngắn cách thuật toán hoạt động, hiển thị trong danh sách hoặc trang chi tiết. */
-  readonly description: string;
+export interface IAlgorithmMetadata<TKey extends string = string> {
+  /** Giá trị cột `key` của dòng tương ứng trong bảng `algorithms`, ví dụ "bubble-sort". */
+  readonly key: TKey;
 }
 
 /**
@@ -76,7 +71,7 @@ export interface IExecutionResult<
  *
  * @template TInput Kiểu dữ liệu đầu vào, ví dụ `readonly number[]`.
  * @template TResult Kiểu kết quả `execute` trả về, ví dụ `BubbleSortResult`.
- * @template TId Kiểu literal của id thuật toán, ví dụ `"sorting.bubble-sort"`.
+ * @template TKey Kiểu literal của key thuật toán, ví dụ `"bubble-sort"`.
  */
 export interface IAlgorithmDefinition<
   TInput,
@@ -85,10 +80,10 @@ export interface IAlgorithmDefinition<
     IExecutionEvent<IEventPayload, unknown>,
     unknown
   >,
-  TId extends string = string,
+  TKey extends string = string,
 > {
   /** Danh tính của thuật toán, dùng để đăng ký và tra cứu trong registry. */
-  readonly metadata: IAlgorithmMetadata<TId>;
+  readonly metadata: IAlgorithmMetadata<TKey>;
   /**
    * Chạy thuật toán trên `input` và trả về kết quả kèm toàn bộ vết thực thi.
    * Khai báo dạng thuộc tính (không phải method) để TypeScript kiểm tra tham số chặt chẽ.

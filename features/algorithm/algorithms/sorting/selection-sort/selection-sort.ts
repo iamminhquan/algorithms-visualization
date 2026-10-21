@@ -6,20 +6,15 @@ import type {
   SelectionSortStep,
 } from "./types";
 
-export const SELECTION_SORT_ID = "sorting.selection-sort";
+export const SELECTION_SORT_KEY = "selection-sort";
 
 /**
  * Mỗi sự kiện chụp lại cả mảng và có tới ~n²/2 sự kiện, nên bộ nhớ tăng ~n³.
  */
 export const MAX_INPUT_LENGTH = 100;
 
-const metadata: IAlgorithmMetadata<typeof SELECTION_SORT_ID> = Object.freeze({
-  id: SELECTION_SORT_ID,
-  name: "Sắp xếp chọn (Selection Sort)",
-  category: "sorting",
-  description:
-    "Ở mỗi lượt, duyệt đoạn chưa sắp xếp để tìm giá trị nhỏ nhất rồi đổi nó về đầu đoạn; " +
-    "đoạn đã sắp xếp ở đầu mảng dài thêm một phần tử sau mỗi lượt.",
+const metadata: IAlgorithmMetadata<typeof SELECTION_SORT_KEY> = Object.freeze({
+  key: SELECTION_SORT_KEY,
 });
 
 function executeSelectionSort(input: SelectionSortInput): SelectionSortResult {
@@ -131,5 +126,5 @@ function range(start: number, end: number): number[] {
 export const selectionSort: IAlgorithmDefinition<
   SelectionSortInput,
   SelectionSortResult,
-  typeof SELECTION_SORT_ID
+  typeof SELECTION_SORT_KEY
 > = Object.freeze({ metadata, execute: executeSelectionSort });

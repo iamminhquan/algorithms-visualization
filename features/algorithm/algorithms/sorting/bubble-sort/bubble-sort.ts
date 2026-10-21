@@ -6,20 +6,15 @@ import type {
   BubbleSortStep,
 } from "./types";
 
-export const BUBBLE_SORT_ID = "sorting.bubble-sort";
+export const BUBBLE_SORT_KEY = "bubble-sort";
 
 /**
  * Mỗi sự kiện chụp lại cả mảng và có tới ~n² sự kiện, nên bộ nhớ tăng ~n³.
  */
 export const MAX_INPUT_LENGTH = 100;
 
-const metadata: IAlgorithmMetadata<typeof BUBBLE_SORT_ID> = Object.freeze({
-  id: BUBBLE_SORT_ID,
-  name: "Sắp xếp nổi bọt (Bubble Sort)",
-  category: "sorting",
-  description:
-    "So sánh từng cặp phần tử kề nhau và đổi chỗ nếu sai thứ tự; sau mỗi lượt, phần tử lớn nhất " +
-    "còn lại nổi về cuối. Dừng sớm khi một lượt không có lần đổi chỗ nào.",
+const metadata: IAlgorithmMetadata<typeof BUBBLE_SORT_KEY> = Object.freeze({
+  key: BUBBLE_SORT_KEY,
 });
 
 function executeBubbleSort(input: BubbleSortInput): BubbleSortResult {
@@ -132,5 +127,5 @@ function range(start: number, end: number): number[] {
 export const bubbleSort: IAlgorithmDefinition<
   BubbleSortInput,
   BubbleSortResult,
-  typeof BUBBLE_SORT_ID
+  typeof BUBBLE_SORT_KEY
 > = Object.freeze({ metadata, execute: executeBubbleSort });
