@@ -1,4 +1,4 @@
-import type { AlgorithmDefinition, AlgorithmMetadata } from "../../../engine";
+import type { IAlgorithmDefinition, IAlgorithmMetadata } from "../../../engine";
 import type {
   BubbleSortEvent,
   BubbleSortInput,
@@ -8,10 +8,12 @@ import type {
 
 export const BUBBLE_SORT_ID = "sorting.bubble-sort";
 
-// Mỗi sự kiện chụp lại cả mảng và có tới ~n² sự kiện, nên bộ nhớ tăng ~n³
+/**
+ * Mỗi sự kiện chụp lại cả mảng và có tới ~n² sự kiện, nên bộ nhớ tăng ~n³.
+ */
 export const MAX_INPUT_LENGTH = 100;
 
-const metadata: AlgorithmMetadata<typeof BUBBLE_SORT_ID> = Object.freeze({
+const metadata: IAlgorithmMetadata<typeof BUBBLE_SORT_ID> = Object.freeze({
   id: BUBBLE_SORT_ID,
   name: "Sắp xếp nổi bọt (Bubble Sort)",
   category: "sorting",
@@ -26,8 +28,8 @@ function executeBubbleSort(input: BubbleSortInput): BubbleSortResult {
       `Dữ liệu đầu vào có ${input.length} phần tử, vượt quá giới hạn ${MAX_INPUT_LENGTH}`,
     );
   }
+
   for (const [index, value] of input.entries()) {
-    // NaN không so sánh được nên sẽ cho ra kết quả sai mà không báo lỗi
     if (Number.isNaN(value)) {
       throw new RangeError(
         `Phần tử tại vị trí ${index} không phải là số (NaN)`,
@@ -35,15 +37,15 @@ function executeBubbleSort(input: BubbleSortInput): BubbleSortResult {
     }
   }
 
-  // Sắp xếp trên bản sao để không thay đổi mảng của người gọi
   const array = [...input];
   const events: BubbleSortEvent[] = [];
   let comparisons = 0;
   let swaps = 0;
-  // Các vị trí [sortedFrom, n) đã nằm ở chỗ cuối cùng
   let sortedFrom = array.length;
 
-  // Mỗi sự kiện giữ bản sao riêng của mảng, nên các bước sau không làm đổi ảnh chụp trước đó
+  /*
+   * Mỗi sự kiện giữ bản sao riêng của mảng, nên các bước sau không làm đổi ảnh chụp trước đó.
+   */
   const record = (payload: BubbleSortStep, description: string) => {
     events.push(
       Object.freeze({
@@ -87,8 +89,9 @@ function executeBubbleSort(input: BubbleSortInput): BubbleSortResult {
       }
     }
 
-    // Không có lần đổi chỗ nào nghĩa là phần còn lại đã đúng thứ tự
-    if (!swapped) break;
+    if (!swapped) {
+      break;
+    }
 
     unsortedLength--;
     sortedFrom = unsortedLength;
@@ -126,7 +129,7 @@ function range(start: number, end: number): number[] {
   return Array.from({ length: end - start }, (_, offset) => start + offset);
 }
 
-export const bubbleSort: AlgorithmDefinition<
+export const bubbleSort: IAlgorithmDefinition<
   BubbleSortInput,
   BubbleSortResult,
   typeof BUBBLE_SORT_ID

@@ -1,12 +1,14 @@
 import { loadEnvConfig } from "@next/env";
 import { defineConfig } from "drizzle-kit";
 
-// drizzle-kit chạy ngoài Next.js nên cần tự nạp các file .env*
+/*
+ * drizzle-kit chạy ngoài Next.js nên cần tự nạp các file .env*.
+ */
 loadEnvConfig(process.cwd());
 
 const dbUrl = process.env.DATABASE_URL;
 if (!dbUrl) {
-  throw new Error("DATABASE_URL is not set");
+  throw new Error("Chưa đặt biến môi trường DATABASE_URL");
 }
 
 export default defineConfig({

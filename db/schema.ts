@@ -19,12 +19,17 @@ const timestamps = {
     .$onUpdate(() => new Date()),
 };
 
+/**
+ * Danh mục gom các thuật toán cùng nhóm.
+ *
+ * `slug`: Chữ thường không dấu nối bằng gạch ngang, ví dụ "sap-xep".
+ */
 export const categoriesTable = pgTable(
   "categories",
   {
     id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-    name: text("name").notNull().unique(), // ví dụ: "Sắp xếp"
-    slug: text("slug").notNull().unique(), // ví dụ: "sap-xep"
+    name: text("name").notNull().unique(),
+    slug: text("slug").notNull().unique(),
     description: text("description"),
     ...timestamps,
   },
@@ -36,6 +41,13 @@ export const categoriesTable = pgTable(
   ],
 );
 
+/**
+ * Thuật toán, mỗi thuật toán thuộc một danh mục.
+ *
+ * `slug`: Chữ thường không dấu nối bằng gạch ngang, ví dụ "sap-xep-noi-bot".
+ * `timeComplexity`: Ví dụ "O(n²)".
+ * `spaceComplexity`: Ví dụ "O(1)".
+ */
 export const algorithmsTable = pgTable(
   "algorithms",
   {
@@ -43,11 +55,11 @@ export const algorithmsTable = pgTable(
     categoryId: integer("category_id")
       .notNull()
       .references(() => categoriesTable.id, { onDelete: "restrict" }),
-    name: text("name").notNull().unique(), // ví dụ: "Sắp xếp nổi bọt"
-    slug: text("slug").notNull().unique(), // ví dụ: "sap-xep-noi-bot"
+    name: text("name").notNull().unique(),
+    slug: text("slug").notNull().unique(),
     description: text("description"),
-    timeComplexity: text("time_complexity"), // ví dụ: "O(n²)"
-    spaceComplexity: text("space_complexity"), // ví dụ: "O(1)"
+    timeComplexity: text("time_complexity"),
+    spaceComplexity: text("space_complexity"),
     ...timestamps,
   },
   (table) => [
@@ -66,9 +78,9 @@ export const runsTable = pgTable(
     algorithmId: integer("algorithm_id")
       .notNull()
       .references(() => algorithmsTable.id, { onDelete: "cascade" }),
-    input: jsonb("input").$type<number[]>().notNull(), // dữ liệu đầu vào, ví dụ: [5, 3, 8, 1]
+    input: jsonb("input").$type<number[]>().notNull(),
     inputSize: integer("input_size").notNull(),
-    stepCount: integer("step_count"), // số bước mô phỏng
+    stepCount: integer("step_count"),
     durationMs: integer("duration_ms"),
     createdAt: timestamps.createdAt,
   },

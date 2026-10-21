@@ -5,27 +5,29 @@ import {
 } from "@/features/algorithm/algorithms/sorting/bubble-sort";
 import { getAlgorithm, listAlgorithms } from "@/features/algorithm/catalog";
 import {
-  type AlgorithmDefinition,
   createAlgorithmRegistry,
   DuplicateAlgorithmError,
-  type ExecutionEvent,
-  type ExecutionResult,
+  type IAlgorithmDefinition,
+  type IExecutionEvent,
+  type IExecutionResult,
   UnknownAlgorithmError,
 } from "@/features/algorithm/engine";
 
-// Thuật toán giả thuộc nhóm khác, với input/kết quả/sự kiện không liên quan gì tới sắp xếp,
-// để chứng minh registry không áp mô hình sắp xếp lên mọi thuật toán.
-type LookupEvent = ExecutionEvent<
+type LookupEvent = IExecutionEvent<
   { readonly type: "inspect"; readonly key: string },
   { readonly inspected: readonly string[] }
 >;
-type LookupResult = ExecutionResult<
+type LookupResult = IExecutionResult<
   boolean,
   LookupEvent,
   { readonly inspections: number }
 >;
 
-const lookupFixture: AlgorithmDefinition<
+/**
+ * Thuật toán giả thuộc nhóm khác, với input/kết quả/sự kiện không liên quan gì tới sắp xếp,
+ * để chứng minh registry không áp mô hình sắp xếp lên mọi thuật toán.
+ */
+const lookupFixture: IAlgorithmDefinition<
   { readonly keys: readonly string[]; readonly target: string },
   LookupResult,
   "searching.lookup-fixture"
@@ -44,7 +46,9 @@ const lookupFixture: AlgorithmDefinition<
         payload: { type: "inspect", key },
         state: { inspected: keys.slice(0, index + 1) },
       });
-      if (key === target) break;
+      if (key === target) {
+        break;
+      }
     }
     return {
       metadata: lookupFixture.metadata,
@@ -94,7 +98,9 @@ describe("createAlgorithmRegistry", () => {
       .get("searching.lookup-fixture")
       .execute({ keys: ["a", "b", "c"], target: "b" });
 
-    // Các phép gán dưới đây chỉ biên dịch được nếu get() trả về đúng kiểu cụ thể
+    /*
+     * Các phép gán dưới đây chỉ biên dịch được nếu get() trả về đúng kiểu cụ thể.
+     */
     const sortedOutput: readonly number[] = sorted.output;
     const swaps: number = sorted.metrics.swaps;
     const foundOutput: boolean = found.output;

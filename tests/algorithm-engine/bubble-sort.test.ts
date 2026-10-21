@@ -41,7 +41,9 @@ function expectTraceReplaysToOutput(
         expect(i).toBeGreaterThanOrEqual(0);
         expect(j).toBeLessThan(input.length);
         expect(marked.has(i) || marked.has(j)).toBe(false);
-        // Sau một lần so sánh, đổi chỗ xảy ra khi và chỉ khi cặp này sai thứ tự
+        /*
+         * Sau một lần so sánh, đổi chỗ xảy ra khi và chỉ khi cặp này sai thứ tự.
+         */
         const next = result.events[step + 1]?.payload;
         const swapsNext =
           next?.type === "swap" &&
@@ -65,6 +67,10 @@ function expectTraceReplaysToOutput(
       case "complete":
         expect(step).toBe(result.events.length - 1);
         break;
+      default: {
+        const unreachable: never = payload;
+        throw new Error(`Bước không hợp lệ: ${JSON.stringify(unreachable)}`);
+      }
     }
 
     expect(event.state.array).toEqual(replay);
@@ -100,7 +106,9 @@ describe("bubbleSort: kết quả", () => {
     const result = bubbleSort.execute(input);
     expect(input).toEqual([4, 2, 9, 1]);
     expect(result.output).not.toBe(input);
-    // Input bị đóng băng vẫn chạy được, chứng tỏ thuật toán không ghi vào nó
+    /*
+     * Input bị đóng băng vẫn chạy được, chứng tỏ thuật toán không ghi vào nó.
+     */
     expect(bubbleSort.execute(Object.freeze([3, 1, 2])).output).toEqual([
       1, 2, 3,
     ]);
@@ -189,11 +197,17 @@ describe("bubbleSort: vết thực thi", () => {
     expect(new Set(snapshots).size).toBe(snapshots.length);
     expect(snapshots[0]).toEqual([3, 2, 1]);
     expect(Object.isFrozen(snapshots[0])).toBe(true);
+    /*
+     * Ép bỏ `readonly` để thử ghi lúc chạy: mảng đã bị đóng băng nên phải ném TypeError.
+     */
     expect(() => {
       (snapshots[0] as number[])[0] = 99;
     }).toThrow(TypeError);
 
-    // Sửa output của người gọi không ảnh hưởng tới vết đã ghi
+    /*
+     * Sửa output của người gọi không ảnh hưởng tới vết đã ghi. Ép bỏ `readonly` vì
+     * người gọi ngoài TypeScript vẫn có thể sửa mảng này.
+     */
     (result.output as number[]).reverse();
     expect(result.events.at(-1)?.state.array).toEqual([1, 2, 3]);
   });
@@ -222,7 +236,9 @@ describe("bubbleSort: vết thực thi", () => {
       expect(metrics.swaps).toBe(count("swap"));
       expect(metrics.writes).toBe(metrics.swaps * 2);
     }
-    // Mảng ngược n phần tử: mọi cặp đều sai thứ tự nên có n(n-1)/2 lần đổi chỗ
+    /*
+     * Mảng ngược n phần tử: mọi cặp đều sai thứ tự nên có n(n-1)/2 lần đổi chỗ.
+     */
     expect(bubbleSort.execute([5, 4, 3, 2, 1]).metrics).toEqual({
       comparisons: 10,
       swaps: 10,
