@@ -1,6 +1,6 @@
 ---
 name: commit
-description: Tạo git commit cho dự án này theo đúng quy ước - Conventional Commits với mô tả tiếng Việt, tiêu đề dài 80-100 ký tự, tự tách thay đổi thành nhiều commit nhỏ theo mục đích, chạy lint/typecheck và chặn file nhạy cảm trước khi commit. Dùng skill này bất cứ khi nào người dùng muốn commit, lưu thay đổi vào git, viết commit message, hoặc nói những câu như "commit đi", "commit giúp mình", "tạo commit", "lưu lại thay đổi", "commit code vừa sửa", "commit and push", "make a commit", kể cả khi họ chỉ nói ngắn gọn "commit" ở cuối một yêu cầu khác.
+description: Tạo git commit cho dự án này theo đúng quy ước - Conventional Commits với mô tả tiếng Việt, tiêu đề dài 80-100 ký tự, tự tách thay đổi thành các commit nguyên tử (atomic commit - mỗi commit một mục đích, tự build được, revert độc lập), chạy lint/typecheck và chặn file nhạy cảm trước khi commit. Dùng skill này bất cứ khi nào người dùng muốn commit, lưu thay đổi vào git, viết commit message, hoặc nói những câu như "commit đi", "commit giúp mình", "tạo commit", "lưu lại thay đổi", "commit code vừa sửa", "commit and push", "make a commit", kể cả khi họ chỉ nói ngắn gọn "commit" ở cuối một yêu cầu khác.
 ---
 
 # Commit
@@ -34,10 +34,23 @@ Sau đó đọc diff thật (`git diff`, `git diff --cached`, và nội dung cá
 
 **Nếu không có thay đổi nào**: báo cho người dùng và dừng, không tạo commit rỗng.
 
-### 2. Nhóm thay đổi thành các commit
+### 2. Tách thành các commit nguyên tử (atomic commit)
 
-Mỗi commit nên trả lời được câu "commit này để làm gì?" bằng **một** mục đích. Nhóm các file theo mục
-đích đó, ví dụ:
+Mọi commit phải **nguyên tử**: là đơn vị thay đổi nhỏ nhất mà vẫn trọn vẹn. Cụ thể, mỗi commit:
+
+- **Chỉ có một mục đích** — trả lời được câu "commit này để làm gì?" bằng một ý, không có chữ "và"
+  nối hai việc không liên quan. Tiêu đề phải gượng ép mới gói được hết thì commit đó đang gộp nhiều
+  việc.
+- **Tự đứng được** — repo tại commit đó vẫn build, lint, typecheck được; không import file hay gọi
+  hàm chỉ xuất hiện ở commit sau. Sắp thứ tự commit theo phụ thuộc: thứ được dùng commit trước, thứ
+  dùng nó commit sau.
+- **Revert được độc lập** — `git revert` commit đó chỉ gỡ đúng một việc, không kéo theo hay làm hỏng
+  việc khác.
+- **Không trộn refactor/định dạng với thay đổi hành vi** — đổi tên, di chuyển code, format lại đi một
+  commit `refactor`/`style` riêng, trước commit `feat`/`fix` dựa trên nó, để diff của commit hành vi
+  chỉ còn phần thực sự thay đổi logic.
+
+Nhóm các file theo mục đích đó, ví dụ:
 
 - Cấu hình Drizzle + schema DB + migration → một commit `feat`
 - Sửa lỗi hiển thị trong component UI → một commit `fix` riêng
@@ -49,9 +62,15 @@ Nguyên tắc nhóm:
 
 - File lock (`bun.lock`) luôn đi cùng `package.json` trong cùng commit.
 - Migration được sinh ra (`drizzle/`) đi cùng schema đã sinh ra nó.
-- Nếu một file chứa nhiều thay đổi khác mục đích, giữ cả file trong một commit thay vì cố tách
-  hunk: `git add -p` là lệnh tương tác và không chạy được ở môi trường này.
-- Đừng tách quá vụn: 3 file cùng phục vụ một tính năng là một commit, không phải ba.
+- Nếu một file chứa nhiều thay đổi khác mục đích, tách theo hunk. `git add -p` là lệnh tương tác,
+  không chạy được ở đây, nên làm thủ công: `git diff -- <file> > "$(git rev-parse --git-dir)/PART.patch"`,
+  xoá khỏi patch các hunk không thuộc commit hiện tại (giữ nguyên header `diff --git`/`---`/`+++`),
+  rồi `git apply --cached "$(git rev-parse --git-dir)/PART.patch"` và kiểm tra lại bằng
+  `git diff --cached -- <file>`. Nếu các thay đổi đan xen trong cùng một hunk không tách sạch được,
+  giữ cả file trong một commit và ghi rõ trong body là commit gộp hai việc.
+- Đừng tách quá vụn: nguyên tử là *nhỏ nhất mà vẫn trọn vẹn*, không phải *càng nhỏ càng tốt*. 3 file
+  cùng phục vụ một tính năng là một commit, không phải ba; test của tính năng đi cùng commit thêm
+  tính năng đó.
 
 Khi có từ 2 commit trở lên, nói ngắn gọn cho người dùng biết bạn định chia thế nào rồi làm luôn,
 không cần chờ xác nhận.
