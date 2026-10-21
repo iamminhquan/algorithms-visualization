@@ -1,14 +1,15 @@
 export {
-  type AlgorithmRegistry,
   createAlgorithmRegistry,
   DuplicateAlgorithmError,
+  type IAlgorithmRegistry,
   UnknownAlgorithmError,
 } from "./registry";
+
 export type {
-  AlgorithmDefinition,
-  AlgorithmMetadata,
   AnyAlgorithmDefinition,
-  EventPayload,
-  ExecutionEvent,
-  ExecutionResult,
+  IAlgorithmDefinition,
+  IAlgorithmMetadata,
+  IEventPayload,
+  IExecutionEvent,
+  IExecutionResult,
 } from "./types";
