@@ -44,6 +44,7 @@ export const categoriesTable = pgTable(
 /**
  * Thuật toán, mỗi thuật toán thuộc một danh mục.
  *
+ * `key`: Khoá nối với cài đặt trong code, ví dụ "bubble-sort" (`BUBBLE_SORT_KEY`). Không đổi sau khi tạo.
  * `slug`: Chữ thường không dấu nối bằng gạch ngang, ví dụ "sap-xep-noi-bot".
  * `timeComplexity`: Ví dụ "O(n²)".
  * `spaceComplexity`: Ví dụ "O(1)".
@@ -55,6 +56,7 @@ export const algorithmsTable = pgTable(
     categoryId: integer("category_id")
       .notNull()
       .references(() => categoriesTable.id, { onDelete: "restrict" }),
+    key: text("key").notNull().unique(),
     name: text("name").notNull().unique(),
     slug: text("slug").notNull().unique(),
     description: text("description"),
@@ -64,6 +66,10 @@ export const algorithmsTable = pgTable(
   },
   (table) => [
     index("algorithms_category_id_idx").on(table.categoryId),
+    check(
+      "algorithms_key_format",
+      sql`${table.key} ~ '^[a-z0-9]+(-[a-z0-9]+)*$'`,
+    ),
     check(
       "algorithms_slug_format",
       sql`${table.slug} ~ '^[a-z0-9]+(-[a-z0-9]+)*$'`,
