@@ -1,6 +1,6 @@
 export {
   MAX_INPUT_LENGTH,
-  SELECTION_SORT_ID,
+  SELECTION_SORT_KEY,
   selectionSort,
 } from "./selection-sort";
 export type {

@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import {
   MAX_INPUT_LENGTH,
+  SELECTION_SORT_KEY,
   type SelectionSortResult,
   selectionSort,
 } from "@/features/algorithm/algorithms/sorting/selection-sort";
@@ -109,9 +110,9 @@ describe("selectionSort: kết quả", () => {
   });
 
   test("được đăng ký trong catalog", () => {
-    const result = getAlgorithm("sorting.selection-sort").execute([3, 1, 2]);
+    const result = getAlgorithm(SELECTION_SORT_KEY).execute([3, 1, 2]);
     expect(result.output).toEqual([1, 2, 3]);
-    expect(result.metadata.id).toBe("sorting.selection-sort");
+    expect(result.metadata.key).toBe(SELECTION_SORT_KEY);
   });
 });
 

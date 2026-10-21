@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import {
+  BUBBLE_SORT_KEY,
   type BubbleSortResult,
   bubbleSort,
   MAX_INPUT_LENGTH,
@@ -125,12 +126,7 @@ describe("bubbleSort: kết quả", () => {
   });
 
   test("gắn metadata của thuật toán vào kết quả", () => {
-    expect(bubbleSort.execute([1]).metadata).toEqual({
-      id: "sorting.bubble-sort",
-      name: "Sắp xếp nổi bọt (Bubble Sort)",
-      category: "sorting",
-      description: expect.any(String),
-    });
+    expect(bubbleSort.execute([1]).metadata).toEqual({ key: BUBBLE_SORT_KEY });
   });
 });
 
