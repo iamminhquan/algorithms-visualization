@@ -1,26 +1,113 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Bảng màu lấy từ Figma "Algorithm Visualizer – Wireframe", trang "Bảng màu".
+ * Primitives là giá trị gốc, giao diện chỉ nên dùng token ngữ nghĩa bên dưới.
+ */
+@theme {
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+  --color-slate-950: #020617;
+
+  --color-indigo-50: #eef2ff;
+  --color-indigo-100: #e0e7ff;
+  --color-indigo-200: #c7d2fe;
+  --color-indigo-300: #a5b4fc;
+  --color-indigo-400: #818cf8;
+  --color-indigo-500: #6366f1;
+  --color-indigo-600: #4f46e5;
+  --color-indigo-700: #4338ca;
+  --color-indigo-800: #3730a3;
+  --color-indigo-900: #312e81;
+  --color-indigo-950: #1e1b4b;
+
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  /*
+   * Okabe-Ito cho trạng thái mô phỏng, an toàn với người mù màu.
+   */
+  --color-okabe-ito-orange: #e69f00;
+  --color-okabe-ito-vermillion: #d55e00;
+  --color-okabe-ito-reddish-purple: #cc79a7;
+  --color-okabe-ito-blue: #0072b2;
+  --color-okabe-ito-sky-blue: #56b4e9;
+  --color-okabe-ito-bluish-green: #009e73;
+}
+
+/*
+ * Token ngữ nghĩa, giá trị mặc định là theme Light.
+ * Tên biến trùng với code syntax của variable trong Figma.
+ */
+@theme {
+  --color-bg-page: var(--color-slate-50);
+  --color-bg-surface: var(--color-white);
+  --color-bg-subtle: var(--color-slate-100);
+  --color-bg-inverse: var(--color-slate-900);
+
+  --color-border-default: var(--color-slate-200);
+  --color-border-strong: var(--color-slate-300);
+
+  --color-text-primary: var(--color-slate-900);
+  --color-text-secondary: var(--color-slate-600);
+  --color-text-muted: var(--color-slate-400);
+  --color-text-inverse: var(--color-white);
+
+  --color-accent-default: var(--color-indigo-600);
+  --color-accent-hover: var(--color-indigo-700);
+  --color-accent-subtle: var(--color-indigo-50);
+  --color-accent-text: var(--color-indigo-700);
+  --color-accent-on: var(--color-white);
+
+  --color-state-default: var(--color-slate-300);
+  --color-state-compare: var(--color-okabe-ito-orange);
+  --color-state-swap: var(--color-okabe-ito-vermillion);
+  --color-state-pivot: var(--color-okabe-ito-reddish-purple);
+  --color-state-pointer: var(--color-okabe-ito-blue);
+  --color-state-sorted: var(--color-okabe-ito-bluish-green);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --color-bg-page: var(--color-slate-950);
+    --color-bg-surface: var(--color-slate-900);
+    --color-bg-subtle: var(--color-slate-800);
+    --color-bg-inverse: var(--color-slate-50);
+
+    --color-border-default: var(--color-slate-800);
+    --color-border-strong: var(--color-slate-700);
+
+    --color-text-primary: var(--color-slate-50);
+    --color-text-secondary: var(--color-slate-400);
+    --color-text-muted: var(--color-slate-500);
+    --color-text-inverse: var(--color-slate-900);
+
+    --color-accent-default: var(--color-indigo-400);
+    --color-accent-hover: var(--color-indigo-300);
+    --color-accent-subtle: var(--color-indigo-950);
+    --color-accent-text: var(--color-indigo-300);
+    --color-accent-on: var(--color-slate-950);
+
+    --color-state-default: var(--color-slate-600);
+    --color-state-pointer: var(--color-okabe-ito-sky-blue);
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--color-bg-page);
+  color: var(--color-text-primary);
   font-family: Arial, Helvetica, sans-serif;
 }
