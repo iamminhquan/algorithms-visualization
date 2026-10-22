@@ -22,7 +22,7 @@ const timestamps = {
 /**
  * Danh mục gom các thuật toán cùng nhóm.
  *
- * `slug`: Chữ thường không dấu nối bằng gạch ngang, ví dụ "sap-xep".
+ * `slug`: Chữ thường không dấu nối bằng gạch ngang, ví dụ "sorting".
  */
 export const categoriesTable = pgTable(
   "categories",
@@ -45,7 +45,7 @@ export const categoriesTable = pgTable(
  * Thuật toán, mỗi thuật toán thuộc một danh mục.
  *
  * `key`: Khoá nối với cài đặt trong code, ví dụ "bubble-sort" (`BUBBLE_SORT_KEY`). Không đổi sau khi tạo.
- * `slug`: Chữ thường không dấu nối bằng gạch ngang, ví dụ "sap-xep-noi-bot".
+ * `slug`: Chữ thường không dấu nối bằng gạch ngang, ví dụ "bubble-sort".
  * `timeComplexity`: Ví dụ "O(n²)".
  * `spaceComplexity`: Ví dụ "O(1)".
  */

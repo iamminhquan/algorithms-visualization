@@ -1,6 +1,7 @@
 import { Mail } from "lucide-react";
 import Link from "next/link";
 import { CATEGORIES } from "@/features/catalog/categories";
+import { getVisualizationHref } from "@/features/catalog/routes";
 import { SITE_NAME } from "@/lib/site";
 import { Logo } from "./logo";
 
@@ -19,7 +20,10 @@ const FOOTER_COLUMNS: readonly IFooterColumn[] = [
   {
     id: "footer-kham-pha",
     title: "Khám phá",
-    links: CATEGORIES.map(({ name, href }) => ({ label: name, href })),
+    links: CATEGORIES.map(({ name, slug }) => ({
+      label: name,
+      href: getVisualizationHref(slug),
+    })),
   },
   {
     id: "footer-tai-nguyen",
