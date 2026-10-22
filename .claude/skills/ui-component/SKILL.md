@@ -31,20 +31,34 @@ bắt đầu viết loại component đó.
 
 ```
 components/ui/          primitive dùng chung, không biết gì về nghiệp vụ: button.tsx, card.tsx, badge.tsx
-features/<domain>/
-  components/           component theo nghiệp vụ: algorithm-card.tsx, category-list.tsx
-  queries.ts            hàm đọc dữ liệu (import "server-only")
-  actions.ts            Server Functions ("use server")
-app/                    chỉ chứa page/layout/loading/error, ghép từ features và ui
+components/layout/      khung trang dùng chung nhiều trang: site-header.tsx, site-footer.tsx
+engine/                 lõi dùng chung cho mọi thuật toán, TypeScript thuần, không có React/UI
+  algorithm/            Algorithm Engine: interface, registry mà mọi thuật toán phải triển khai
+  visualization/        Visualization Engine
+features/
+  catalog/              phần dùng chung mọi danh mục: categories.ts, catalog.ts (ghép registry),
+                        queries.ts, components/ (category-card, category-grid, illustrations/)
+  sorting-algorithms/   mỗi danh mục một feature: bubble-sort/, selection-sort/, components/,
+                        index.ts export SORTING_ALGORITHMS cho catalog ghép vào registry
+  searching-algorithms/ (khi có) cùng khuôn với sorting-algorithms
+app/                    page/layout/loading/error, ghép từ features và components
+  <route>/_components/  component chỉ dùng cho đúng một route (vd: app/_components/home-hero.tsx)
 lib/                    tiện ích thuần: cn.ts, format.ts
 ```
 
-Domain hiện có: `algorithm` (thuật toán, danh mục, lượt chạy — xem `db/schema.ts`). Tên file viết
+Mỗi feature có thể có `components/`, `queries.ts` (hàm đọc dữ liệu, `import "server-only"`) và
+`actions.ts` (Server Functions, `"use server"`). Chiều phụ thuộc: `catalog` được import các feature danh
+mục; các feature danh mục **không** import lẫn nhau — thứ cần dùng chung (vd: vẽ dãy cột cho cả sắp xếp
+lẫn tìm kiếm) đẩy xuống `engine/visualization/` hoặc `components/`. Tên file viết
 kebab-case (`algorithm-card.tsx`), tên component PascalCase (`AlgorithmCard`). Mỗi file một component
 chính; component phụ nhỏ (skeleton, item) có thể nằm cùng file với component dùng nó.
 
 Lý do tách như vậy: `components/ui` phải tái sử dụng được ở bất kỳ đâu nên không được import từ
 `features/` hay `db/`. Nếu một primitive bắt đầu cần biết "thuật toán" là gì, nó thuộc về `features/`.
+`engine/` là tầng thấp nhất: `features/` và UI được import từ `engine/`, còn `engine/` không bao giờ
+import ngược lại `features/`, `components/` hay React. Component chỉ phục vụ một trang (hero, banner)
+không phải nghiệp vụ, nên đặt trong `_components/` cạnh route đó (Next bỏ qua thư mục có `_` khi tạo
+route) thay vì tạo một "domain" giả trong `features/`.
 
 ## Server hay Client Component
 

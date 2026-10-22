@@ -8,7 +8,7 @@ Các ví dụ dưới đây đã được kiểm tra với `tsc --noEmit` và `b
 1. [Helper `cn`](#1-helper-cn) — `lib/cn.ts`
 2. [Primitive có biến thể: Button](#2-primitive-có-biến-thể-button) — `components/ui/button.tsx`
 3. [Primitive bố cục: Card](#3-primitive-bố-cục-card) — `components/ui/card.tsx`
-4. [Query có cache](#4-query-có-cache) — `features/algorithm/queries.ts`
+4. [Query có cache](#4-query-có-cache) — `features/catalog/queries.ts`
 5. [Server Component đọc dữ liệu + skeleton](#5-server-component-đọc-dữ-liệu--skeleton)
 6. [Trang động với `params` và Suspense](#6-trang-động-với-params-và-suspense)
 7. [Client Component tương tác](#7-client-component-tương-tác)
@@ -117,7 +117,7 @@ Dữ liệu danh mục/thuật toán ít đổi và giống nhau với mọi ng�
 mutation (`updateTag("algorithms")` trong Server Function).
 
 ```ts
-// features/algorithm/queries.ts
+// features/catalog/queries.ts
 import "server-only";
 import { eq } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
@@ -158,10 +158,10 @@ Component "section" tự đọc dữ liệu; component trình bày (`AlgorithmCa
 cùng file, có kích thước gần giống nội dung thật.
 
 ```tsx
-// features/algorithm/components/algorithm-card.tsx
+// features/catalog/components/algorithm-card.tsx
 import Link from "next/link";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
-import type { AlgorithmListItem } from "@/features/algorithm/queries";
+import type { AlgorithmListItem } from "@/features/catalog/queries";
 
 type AlgorithmCardProps = {
   algorithm: AlgorithmListItem;
@@ -186,9 +186,9 @@ export function AlgorithmCard({ algorithm }: AlgorithmCardProps) {
 ```
 
 ```tsx
-// features/algorithm/components/algorithm-list.tsx
-import { AlgorithmCard } from "@/features/algorithm/components/algorithm-card";
-import { getAlgorithms } from "@/features/algorithm/queries";
+// features/catalog/components/algorithm-list.tsx
+import { AlgorithmCard } from "@/features/catalog/components/algorithm-card";
+import { getAlgorithms } from "@/features/catalog/queries";
 
 export async function AlgorithmList() {
   const algorithms = await getAlgorithms();
@@ -237,7 +237,7 @@ hiện ngay.
 // app/thuat-toan/[slug]/page.tsx
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { getAlgorithmBySlug } from "@/features/algorithm/queries";
+import { getAlgorithmBySlug } from "@/features/catalog/queries";
 
 export default function AlgorithmPage({
   params,
@@ -295,12 +295,12 @@ Lọc danh sách ngay trên trình duyệt. Server truyền xuống dữ liệu 
 tìm kiếm. Không có `useMemo` — React Compiler tự lo.
 
 ```tsx
-// features/algorithm/components/algorithm-search.tsx
+// features/catalog/components/algorithm-search.tsx
 "use client";
 
 import { useState } from "react";
-import { AlgorithmCard } from "@/features/algorithm/components/algorithm-card";
-import type { AlgorithmListItem } from "@/features/algorithm/queries";
+import { AlgorithmCard } from "@/features/catalog/components/algorithm-card";
+import type { AlgorithmListItem } from "@/features/catalog/queries";
 
 type AlgorithmSearchProps = {
   algorithms: AlgorithmListItem[];
