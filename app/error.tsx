@@ -1,11 +1,17 @@
 "use client";
 
+import { useEffect } from "react";
+
 type ErrorPageProps = {
   error: unknown;
   retry: () => void;
 };
 
-export default function ErrorPage({ retry }: ErrorPageProps) {
+export default function ErrorPage({ error, retry }: ErrorPageProps) {
+  useEffect(() => {
+    console.error(error);
+  }, [error]);
+
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-5 px-4 py-24 text-center sm:px-8">
       <h1 className="text-3xl font-semibold tracking-tight text-text-primary sm:text-4xl">
