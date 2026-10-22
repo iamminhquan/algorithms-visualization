@@ -1,11 +1,11 @@
 import { describe, expect, test } from "bun:test";
+import { getAlgorithm } from "@/features/catalog/catalog";
 import {
   MAX_INPUT_LENGTH,
   SELECTION_SORT_KEY,
   type SelectionSortResult,
   selectionSort,
-} from "@/features/algorithm/algorithms/sorting/selection-sort";
-import { getAlgorithm } from "@/features/algorithm/catalog";
+} from "@/features/sorting-algorithms/selection-sort";
 
 const sortAscending = (values: readonly number[]) =>
   [...values].sort((a, b) => a - b);

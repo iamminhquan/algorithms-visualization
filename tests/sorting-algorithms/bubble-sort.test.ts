@@ -4,7 +4,7 @@ import {
   type BubbleSortResult,
   bubbleSort,
   MAX_INPUT_LENGTH,
-} from "@/features/algorithm/algorithms/sorting/bubble-sort";
+} from "@/features/sorting-algorithms/bubble-sort";
 
 const sortAscending = (values: readonly number[]) =>
   [...values].sort((a, b) => a - b);

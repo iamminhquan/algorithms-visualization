@@ -1,4 +1,4 @@
-import type { IExecutionEvent, IExecutionResult } from "../../../engine";
+import type { IExecutionEvent, IExecutionResult } from "@/engine/algorithm";
 
 export type BubbleSortInput = readonly number[];
 

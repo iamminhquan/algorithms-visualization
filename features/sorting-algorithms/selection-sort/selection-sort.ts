@@ -1,4 +1,7 @@
-import type { IAlgorithmDefinition, IAlgorithmMetadata } from "../../../engine";
+import type {
+  IAlgorithmDefinition,
+  IAlgorithmMetadata,
+} from "@/engine/algorithm";
 import type {
   SelectionSortEvent,
   SelectionSortInput,
