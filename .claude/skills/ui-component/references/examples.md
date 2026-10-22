@@ -131,20 +131,24 @@ export async function getAlgorithms() {
 
   return db.query.algorithmsTable.findMany({
     columns: { id: true, name: true, slug: true, timeComplexity: true },
-    with: { category: { columns: { name: true } } },
+    with: { category: { columns: { name: true, slug: true } } },
     orderBy: (t, { asc }) => asc(t.name),
   });
 }
 
-export async function getAlgorithmBySlug(slug: string) {
+export async function getAlgorithmBySlug(
+  categorySlug: string,
+  algorithmSlug: string,
+) {
   "use cache";
   cacheLife("hours");
-  cacheTag("algorithms", `algorithm-${slug}`);
+  cacheTag("algorithms", `algorithm-${algorithmSlug}`);
 
-  return db.query.algorithmsTable.findFirst({
-    where: eq(algorithmsTable.slug, slug),
+  const algorithm = await db.query.algorithmsTable.findFirst({
+    where: eq(algorithmsTable.slug, algorithmSlug),
     with: { category: true },
   });
+  return algorithm?.category.slug === categorySlug ? algorithm : undefined;
 }
 
 export type AlgorithmListItem = Awaited<
@@ -162,6 +166,7 @@ cùng file, có kích thước gần giống nội dung thật.
 import Link from "next/link";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import type { AlgorithmListItem } from "@/features/catalog/queries";
+import { getAlgorithmHref } from "@/features/catalog/routes";
 
 type AlgorithmCardProps = {
   algorithm: AlgorithmListItem;
@@ -170,7 +175,7 @@ type AlgorithmCardProps = {
 export function AlgorithmCard({ algorithm }: AlgorithmCardProps) {
   return (
     <Link
-      href={`/visualization/${algorithm.slug}`}
+      href={getAlgorithmHref(algorithm.category.slug, algorithm.slug)}
       className="block rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
     >
       <Card className="h-full transition-colors hover:border-foreground/30">

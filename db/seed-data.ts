@@ -3,7 +3,7 @@ import { BUBBLE_SORT_KEY } from "@/features/sorting-algorithms/bubble-sort";
 import { SELECTION_SORT_KEY } from "@/features/sorting-algorithms/selection-sort";
 import type { NewAlgorithm, NewCategory } from "./schema";
 
-/*
+/**
  * Trang chủ và footer đọc thẳng `CATEGORIES` mà không qua DB, nên seed lấy từ cùng nguồn đó
  * để tên và mô tả danh mục ở mọi trang luôn khớp nhau.
  */
