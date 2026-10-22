@@ -1,6 +1,6 @@
 ---
 name: commit
-description: Tạo git commit cho dự án này theo đúng quy ước - Conventional Commits với mô tả tiếng Việt, tiêu đề dài 80-100 ký tự, tự tách thay đổi thành các commit nguyên tử (atomic commit - mỗi commit một mục đích, tự build được, revert độc lập), chạy lint/typecheck và chặn file nhạy cảm trước khi commit. Dùng skill này bất cứ khi nào người dùng muốn commit, lưu thay đổi vào git, viết commit message, hoặc nói những câu như "commit đi", "commit giúp mình", "tạo commit", "lưu lại thay đổi", "commit code vừa sửa", "commit and push", "make a commit", kể cả khi họ chỉ nói ngắn gọn "commit" ở cuối một yêu cầu khác.
+description: Tạo git commit cho dự án này theo đúng quy ước - Conventional Commits với mô tả tiếng Việt, tiêu đề dài 80-100 ký tự, tự tách thay đổi thành các commit nguyên tử (atomic commit - mỗi commit một mục đích, tự build được, revert độc lập), chạy lint/typecheck và chặn file nhạy cảm trước khi commit, luôn commit trên nhánh `dev` rồi push lên `origin/dev`. Dùng skill này bất cứ khi nào người dùng muốn commit, lưu thay đổi vào git, viết commit message, hoặc nói những câu như "commit đi", "commit giúp mình", "tạo commit", "lưu lại thay đổi", "commit code vừa sửa", "commit and push", "make a commit", kể cả khi họ chỉ nói ngắn gọn "commit" ở cuối một yêu cầu khác.
 ---
 
 # Commit
@@ -12,6 +12,9 @@ rõ nó làm gì mà không phải mở diff ra xem.
 
 Các script hỗ trợ nằm ở `.claude/skills/commit/scripts/` (đường dẫn tính từ gốc repo).
 
+Dự án chỉ có một người làm, nên mọi commit đều nằm trên nhánh `dev` — không tạo nhánh `feat/...`,
+`fix/...` hay nhánh nào khác. Commit xong thì push luôn lên `origin/dev`.
+
 ## Quy trình
 
 ### 1. Xem toàn cảnh thay đổi
@@ -20,10 +23,15 @@ Chạy song song:
 
 ```bash
 git status --short
+git branch --show-current
 git diff --cached --stat
 git diff --stat
 git log --oneline -10
 ```
+
+**Nếu đang không ở `dev`**: chuyển sang bằng `git switch dev` trước khi stage. Thay đổi chưa commit đi
+theo sang `dev`; nếu git từ chối vì xung đột, dừng và báo người dùng. Nếu nhánh hiện tại có commit
+chưa nằm trên `dev`, cũng dừng và hỏi — đừng tự cherry-pick hay rebase.
 
 Sau đó đọc diff thật (`git diff`, `git diff --cached`, và nội dung các file untracked) để hiểu thay
 đổi làm gì. Đừng viết message chỉ dựa vào tên file: tên file cho biết *ở đâu*, còn message cần nói
@@ -193,13 +201,24 @@ bằng mắt — dùng kết quả của script.
 
 Lặp lại bước 5–7 cho từng commit trong kế hoạch.
 
-### 8. Báo cáo
+### 8. Push lên `dev`
+
+Sau khi tạo xong mọi commit trong lượt, push một lần:
+
+```bash
+git push -u origin dev
+```
+
+Nếu push bị từ chối vì `origin/dev` có commit mới, báo người dùng, đừng tự `pull --rebase` hay force.
+
+### 9. Báo cáo
 
 Sau khi xong, chạy `git log --oneline -<số commit vừa tạo>` và `git status --short`, rồi báo ngắn
-gọn: các commit đã tạo, và còn thay đổi nào chưa commit (nếu có).
+gọn: các commit đã tạo và đã push lên `dev`, và còn thay đổi nào chưa commit (nếu có).
 
 ## Những điều không làm
 
-- **Không push** trừ khi người dùng yêu cầu rõ ràng trong lượt này.
+- Không tạo nhánh mới, không push lên nhánh nào khác ngoài `dev` (nhất là `main`).
+- Không `push --force` (kể cả `--force-with-lease`) trừ khi người dùng yêu cầu rõ ràng.
 - Không dùng `--no-verify`, không `--amend` commit đã có, không `reset --hard`, không đổi git config.
   Nếu pre-commit hook thất bại, sửa nguyên nhân hoặc báo người dùng, rồi tạo commit mới.
