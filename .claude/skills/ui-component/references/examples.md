@@ -230,31 +230,37 @@ mỗi request), trang phải bọc nó: `<Suspense fallback={<AlgorithmListSkele
 
 ## 6. Trang động với `params` và Suspense
 
-`params` là Promise. Trang giữ đồng bộ, phần phụ thuộc `slug` nằm trong Suspense nên header của trang
+`params` là Promise. Trang giữ đồng bộ, phần phụ thuộc `params` nằm trong Suspense nên header của trang
 hiện ngay.
 
 ```tsx
-// app/visualization/[slug]/page.tsx
+// app/visualization/[category]/[algorithm]/page.tsx
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { getAlgorithmBySlug } from "@/features/catalog/queries";
 
 export default function AlgorithmPage({
   params,
-}: PageProps<"/visualization/[slug]">) {
+}: PageProps<"/visualization/[category]/[algorithm]">) {
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10">
       <Suspense fallback={<AlgorithmDetailSkeleton />}>
-        {params.then(({ slug }) => (
-          <AlgorithmDetail slug={slug} />
+        {params.then(({ category, algorithm }) => (
+          <AlgorithmDetail categorySlug={category} algorithmSlug={algorithm} />
         ))}
       </Suspense>
     </main>
   );
 }
 
-async function AlgorithmDetail({ slug }: { slug: string }) {
-  const algorithm = await getAlgorithmBySlug(slug);
+async function AlgorithmDetail({
+  categorySlug,
+  algorithmSlug,
+}: {
+  categorySlug: string;
+  algorithmSlug: string;
+}) {
+  const algorithm = await getAlgorithmBySlug(categorySlug, algorithmSlug);
   if (!algorithm) notFound();
 
   return (

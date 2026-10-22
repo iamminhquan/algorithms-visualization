@@ -1,6 +1,13 @@
 import "server-only";
+import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/db";
 import { findAlgorithm } from "./catalog";
+
+/**
+ * Tag chung cho mọi query danh mục, để sau này một Server Function sửa dữ liệu gọi
+ * `revalidateTag(CATALOG_CACHE_TAG)` là làm mới được cả trang chủ lẫn `/visualization`.
+ */
+const CATALOG_CACHE_TAG = "catalog";
 
 /**
  * Danh sách thuật toán hiển thị cho người dùng, đọc từ bảng `algorithms` kèm danh mục.
@@ -10,6 +17,8 @@ import { findAlgorithm } from "./catalog";
  */
 export async function getAlgorithmCatalog() {
   "use cache";
+  cacheLife("hours");
+  cacheTag(CATALOG_CACHE_TAG);
   const rows = await db.query.algorithmsTable.findMany({
     with: { category: true },
     orderBy: (algorithms, { asc }) => asc(algorithms.id),
@@ -25,6 +34,8 @@ export async function getAlgorithmCatalog() {
  */
 export async function getCategoryCatalog() {
   "use cache";
+  cacheLife("hours");
+  cacheTag(CATALOG_CACHE_TAG);
   const rows = await db.query.categoriesTable.findMany({
     with: {
       algorithms: { orderBy: (algorithms, { asc }) => asc(algorithms.id) },
@@ -47,39 +58,35 @@ export type CategoryCatalogItem = Awaited<
   ReturnType<typeof getCategoryCatalog>
 >[number];
 
-export type VisualizationEntry =
-  | { readonly type: "category"; readonly category: CategoryCatalogItem }
-  | { readonly type: "algorithm"; readonly algorithm: AlgorithmCatalogItem };
-
 /**
- * Tìm trang ứng với một slug của `/visualization/[slug]`. Danh mục được tra trước thuật toán;
- * test seed-data bảo đảm hai bên không trùng slug.
+ * Tìm danh mục cho trang `/visualization/[category]`.
  *
- * @param slug Slug lấy từ URL.
- * @returns Danh mục hoặc thuật toán mang slug này, hoặc `undefined` nếu không có.
+ * @param categorySlug Slug lấy từ URL.
+ * @returns Danh mục mang slug này, hoặc `undefined` nếu không có.
  */
-export async function findVisualizationEntry(
-  slug: string,
-): Promise<VisualizationEntry | undefined> {
-  const category = (await getCategoryCatalog()).find(
-    (item) => item.slug === slug,
+export async function getCategoryBySlug(
+  categorySlug: string,
+): Promise<CategoryCatalogItem | undefined> {
+  return (await getCategoryCatalog()).find(
+    (category) => category.slug === categorySlug,
   );
-  if (category) {
-    return { type: "category", category };
-  }
-  const algorithm = (await getAlgorithmCatalog()).find(
-    (item) => item.slug === slug,
-  );
-  return algorithm ? { type: "algorithm", algorithm } : undefined;
 }
 
 /**
- * Mọi slug của `/visualization/[slug]`, gồm cả danh mục lẫn thuật toán.
+ * Tìm thuật toán cho trang `/visualization/[category]/[algorithm]`. Slug thuật toán đã là duy nhất,
+ * nhưng vẫn phải khớp danh mục để mỗi thuật toán chỉ có một URL.
+ *
+ * @param categorySlug Slug danh mục lấy từ URL.
+ * @param algorithmSlug Slug thuật toán lấy từ URL.
+ * @returns Thuật toán mang slug này trong đúng danh mục, hoặc `undefined` nếu không có.
  */
-export async function listVisualizationSlugs(): Promise<string[]> {
-  const [categories, algorithms] = await Promise.all([
-    getCategoryCatalog(),
-    getAlgorithmCatalog(),
-  ]);
-  return [...categories, ...algorithms].map((item) => item.slug);
+export async function getAlgorithmBySlug(
+  categorySlug: string,
+  algorithmSlug: string,
+): Promise<AlgorithmCatalogItem | undefined> {
+  return (await getAlgorithmCatalog()).find(
+    (algorithm) =>
+      algorithm.slug === algorithmSlug &&
+      algorithm.category.slug === categorySlug,
+  );
 }

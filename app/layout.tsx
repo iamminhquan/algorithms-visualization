@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { SiteFooter } from "@/components/layout/site-footer";
-import { SiteHeader } from "@/components/layout/site-header";
 import { SITE_NAME } from "@/lib/site";
+import { SiteFooter } from "./_components/site-footer";
+import { SiteHeader } from "./_components/site-header";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,7 +16,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: SITE_NAME,
+  title: {
+    default: SITE_NAME,
+    template: `%s | ${SITE_NAME}`,
+  },
   description:
     "Nền tảng học thuật toán và cấu trúc dữ liệu qua mô phỏng trực quan.",
 };

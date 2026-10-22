@@ -36,22 +36,26 @@ Nhờ vậy UI vẽ lại bất kỳ bước nào mà không cần phát lại t
 `createAlgorithmRegistry` nhận tuple `const` để giữ key literal: `getAlgorithm("bubble-sort")` trả đúng kiểu, còn `findAlgorithm(string)` dùng cho key đọc từ DB.
 
 **Feature theo danh mục.** `features/sorting-algorithms/` chứa các thuật toán sắp xếp và export `SORTING_ALGORITHMS`; danh mục mới theo cùng khuôn (`features/searching-algorithms/`...).
-`features/catalog/` là phần dùng chung: `catalog.ts` ghép registry từ mọi feature, `queries.ts` đọc DB, `categories.ts` và `components/` phục vụ trang chủ.
+`features/catalog/` là phần dùng chung: `catalog.ts` ghép registry từ mọi feature, `queries.ts` đọc DB, `routes.ts` dựng link, `categories.ts` và `components/` phục vụ trang chủ và `/visualization`.
 Các feature danh mục không import lẫn nhau; thứ dùng chung đẩy xuống `engine/` hoặc `components/`.
 
 **Code ↔ DB.** Bảng `algorithms` nối với code qua cột `key` (không đổi sau khi tạo); cột `slug` dùng cho URL.
 Dòng DB không có cài đặt trong registry bị ẩn (`getAlgorithmCatalog`, `getCategoryCatalog`).
 Thêm một thuật toán gồm: cài đặt trong feature, thêm vào `*_ALGORITHMS`, thêm dòng vào `db/seed-data.ts` cùng `key`, rồi chạy `db:seed`.
-`tests/catalog/seed-data.test.ts` bắt các chỗ lệch: registry ↔ seed, `CATEGORIES` (ghi cứng cho trang chủ) ↔ `seedCategories`, và slug trùng.
+`tests/catalog/seed-data.test.ts` bắt chỗ lệch giữa registry và seed.
+Danh mục chỉ khai báo một nơi là `CATEGORIES` trong `features/catalog/categories.ts`: trang chủ và footer đọc trực tiếp, `seedCategories` lấy lại chính nó, nên sửa xong phải chạy `db:seed`.
 
-**Route.** `/` là trang chủ, `/visualization` liệt kê mọi danh mục, `/visualization/[slug]` dùng chung cho cả danh mục lẫn thuật toán (`findVisualizationEntry` tra danh mục trước).
-Vì dùng chung segment nên slug danh mục và slug thuật toán không được trùng.
-Dựng link bằng `getVisualizationHref()` trong `features/catalog/routes.ts`.
-Query có `"use cache"` nên đi vào static shell; dữ liệu theo request phải nằm trong `<Suspense>`.
+**Route.** `/` là trang chủ, `/visualization` liệt kê mọi danh mục, `/visualization/[category]` là trang danh mục, `/visualization/[category]/[algorithm]` là trang thuật toán.
+Thuật toán phải đúng danh mục của nó (`getAlgorithmBySlug(category, algorithm)`), sai danh mục thì `notFound()`.
+Dựng link bằng `getCategoryHref()` / `getAlgorithmHref()` trong `features/catalog/routes.ts`.
+Root layout có `title.template`, trang chỉ đặt tên riêng của nó; `app/not-found.tsx`, `app/error.tsx`, `app/global-error.tsx` lo trang 404 và trang lỗi.
+Query có `"use cache"` + `cacheLife("hours")` + `cacheTag("catalog")` nên đi vào static shell; dữ liệu theo request phải nằm trong `<Suspense>`.
+Chạy `db:seed` xong phải build lại (hoặc đợi hết `revalidate`), vì script seed chạy ngoài Next nên không gọi được `revalidateTag`.
 Với Cache Components không dùng được `dynamicParams`, nên slug lạ được xử lý bằng `notFound()`.
+Trang đã bắt đầu stream nên slug lạ trả status 200 kèm `noindex` (soft 404); muốn 404 thật phải kiểm tra slug trong `proxy.ts`.
 
 **Đặt file.** `components/ui/` chứa primitive không biết nghiệp vụ (không import `features/`, `db/`).
-`components/layout/` chứa header, footer, logo, gắn ở root layout.
+Header, footer, logo chỉ root layout dùng nên nằm ở `app/_components/`; khi có route group thì chuyển theo layout của group đó.
 Component chỉ một route dùng thì đặt ở `app/<route>/_components/`.
 
 **Style.** Chỉ dùng token ngữ nghĩa khai báo trong `app/globals.css` (`bg-bg-surface`, `text-text-secondary`, `border-border-strong`, `bg-accent-default`...), không dùng hex hay palette mặc định (`slate-*`, `indigo-*`).

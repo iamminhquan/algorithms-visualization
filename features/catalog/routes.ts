@@ -1,11 +1,23 @@
 export const VISUALIZATION_PATH = "/visualization";
 
 /**
- * Đường dẫn tới trang của một danh mục hoặc một thuật toán. Hai loại dùng chung một segment
- * `[slug]`, nên slug danh mục và slug thuật toán không được trùng nhau.
+ * Đường dẫn tới trang của một danh mục.
  *
- * @param slug Slug trong bảng `categories` hoặc `algorithms`, ví dụ "sorting", "bubble-sort".
+ * @param categorySlug Slug trong bảng `categories`, ví dụ "sorting".
  */
-export function getVisualizationHref(slug: string): string {
-  return `${VISUALIZATION_PATH}/${slug}`;
+export function getCategoryHref(categorySlug: string): string {
+  return `${VISUALIZATION_PATH}/${categorySlug}`;
+}
+
+/**
+ * Đường dẫn tới trang của một thuật toán, nằm dưới danh mục chứa nó.
+ *
+ * @param categorySlug Slug danh mục của thuật toán, ví dụ "sorting".
+ * @param algorithmSlug Slug trong bảng `algorithms`, ví dụ "bubble-sort".
+ */
+export function getAlgorithmHref(
+  categorySlug: string,
+  algorithmSlug: string,
+): string {
+  return `${getCategoryHref(categorySlug)}/${algorithmSlug}`;
 }

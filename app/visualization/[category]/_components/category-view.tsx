@@ -1,8 +1,7 @@
 import { Breadcrumb } from "@/components/ui/breadcrumb";
-import { AlgorithmCard } from "@/features/catalog/components/algorithm-card";
 import type { CategoryCatalogItem } from "@/features/catalog/queries";
 import { VISUALIZATION_PATH } from "@/features/catalog/routes";
-import { EmptyCategory } from "../../_components/empty-category";
+import { AlgorithmGrid } from "../../_components/algorithm-grid";
 
 type CategoryViewProps = {
   category: CategoryCatalogItem;
@@ -27,17 +26,7 @@ export function CategoryView({ category }: CategoryViewProps) {
           </p>
         )}
       </header>
-      {category.algorithms.length === 0 ? (
-        <EmptyCategory />
-      ) : (
-        <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {category.algorithms.map((algorithm) => (
-            <li key={algorithm.slug}>
-              <AlgorithmCard algorithm={algorithm} />
-            </li>
-          ))}
-        </ul>
-      )}
+      <AlgorithmGrid category={category} />
     </div>
   );
 }

@@ -1,7 +1,8 @@
 /**
- * Danh mục hiển thị ở trang chủ và footer.
+ * Danh mục thuật toán. Trang chủ và footer đọc trực tiếp từ đây, còn `db/seed-data.ts` seed
+ * chính danh sách này vào bảng `categories`, nên sửa tên/mô tả xong phải chạy lại `db:seed`.
  *
- * `slug`: Phải trùng với `categories.slug` trong `db/seed-data.ts`; test seed-data kiểm tra điều này.
+ * `slug`: Seed upsert theo slug, nên đổi slug sẽ tạo dòng mới thay vì sửa dòng cũ.
  */
 export interface ICategory {
   readonly slug: string;

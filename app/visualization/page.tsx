@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AlgorithmCard } from "@/features/catalog/components/algorithm-card";
 import { getCategoryCatalog } from "@/features/catalog/queries";
-import { getVisualizationHref } from "@/features/catalog/routes";
-import { SITE_NAME } from "@/lib/site";
-import { EmptyCategory } from "./_components/empty-category";
+import { getCategoryHref } from "@/features/catalog/routes";
+import { AlgorithmGrid } from "./_components/algorithm-grid";
 
 export const metadata: Metadata = {
-  title: `Mô phỏng thuật toán | ${SITE_NAME}`,
+  title: "Mô phỏng thuật toán",
 };
 
 export default async function VisualizationPage() {
@@ -40,7 +38,7 @@ export default async function VisualizationPage() {
                   className="text-2xl font-semibold text-text-primary"
                 >
                   <Link
-                    href={getVisualizationHref(category.slug)}
+                    href={getCategoryHref(category.slug)}
                     className="rounded-sm transition-colors hover:text-accent-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default"
                   >
                     {category.name}
@@ -50,17 +48,7 @@ export default async function VisualizationPage() {
                   <p className="text-text-secondary">{category.description}</p>
                 )}
               </div>
-              {category.algorithms.length === 0 ? (
-                <EmptyCategory />
-              ) : (
-                <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                  {category.algorithms.map((algorithm) => (
-                    <li key={algorithm.slug}>
-                      <AlgorithmCard algorithm={algorithm} />
-                    </li>
-                  ))}
-                </ul>
-              )}
+              <AlgorithmGrid category={category} />
             </section>
           ))
         )}

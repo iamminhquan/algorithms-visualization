@@ -1,9 +1,6 @@
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import type { AlgorithmCatalogItem } from "@/features/catalog/queries";
-import {
-  getVisualizationHref,
-  VISUALIZATION_PATH,
-} from "@/features/catalog/routes";
+import { getCategoryHref, VISUALIZATION_PATH } from "@/features/catalog/routes";
 
 type AlgorithmViewProps = {
   algorithm: AlgorithmCatalogItem;
@@ -18,7 +15,7 @@ export function AlgorithmView({ algorithm }: AlgorithmViewProps) {
             { label: "Mô phỏng", href: VISUALIZATION_PATH },
             {
               label: algorithm.category.name,
-              href: getVisualizationHref(algorithm.category.slug),
+              href: getCategoryHref(algorithm.category.slug),
             },
             { label: algorithm.name },
           ]}
