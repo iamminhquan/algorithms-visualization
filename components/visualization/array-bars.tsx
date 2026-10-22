@@ -1,3 +1,4 @@
+import { domMax, LazyMotion, MotionConfig, m } from "motion/react";
 import { scaleBarHeights, type VisualTone } from "@/engine/visualization";
 import { cn } from "@/lib/cn";
 import { TONE_BACKGROUND } from "./tones";
@@ -6,6 +7,12 @@ import { TONE_BACKGROUND } from "./tones";
  * Mảng dài hơn thì cột quá hẹp để ghi giá trị bên dưới.
  */
 const MAX_LABELED_BARS = 20;
+
+/**
+ * Lò xo không nảy: khi người xem bấm bước kế lúc cột còn đang trượt, cột đổi hướng mượt từ vị trí
+ * hiện tại thay vì nhảy về đích rồi mới trượt tiếp.
+ */
+const SLIDE_TRANSITION = { type: "spring", bounce: 0, duration: 0.3 } as const;
 
 /**
  * Một cột trên hình.
@@ -28,33 +35,43 @@ export function ArrayBars({ bars, className }: ArrayBarsProps) {
   const heights = scaleBarHeights(bars.map((bar) => bar.value));
   const showValues = bars.length <= MAX_LABELED_BARS;
 
+  /*
+   * `reducedMotion="user"` tắt hiệu ứng trượt khi người dùng bật giảm chuyển động trong hệ điều hành.
+   * `LazyMotion` + `m` chỉ nạp phần layout animation cần dùng thay vì toàn bộ `motion`.
+   */
   return (
-    <div
-      role="img"
-      aria-label={`Mảng gồm ${bars.length} phần tử: ${bars.map((bar) => bar.value).join(", ")}`}
-      className={cn("flex items-stretch gap-0.5 sm:gap-1", className)}
-    >
-      {bars.map((bar, position) => (
+    <MotionConfig reducedMotion="user">
+      <LazyMotion features={domMax} strict>
         <div
-          key={bar.id}
-          className="flex min-w-0 flex-1 flex-col items-center gap-1.5"
+          role="img"
+          aria-label={`Mảng gồm ${bars.length} phần tử: ${bars.map((bar) => bar.value).join(", ")}`}
+          className={cn("flex items-stretch gap-0.5 sm:gap-1", className)}
         >
-          <div className="relative w-full flex-1">
-            <div
-              className={cn(
-                "absolute inset-x-0 bottom-0 rounded-t-md transition-[height,background-color] duration-300 ease-out motion-reduce:transition-none",
-                TONE_BACKGROUND[bar.tone],
+          {bars.map((bar, position) => (
+            <m.div
+              key={bar.id}
+              layout="position"
+              transition={SLIDE_TRANSITION}
+              className="flex min-w-0 flex-1 flex-col items-center gap-1.5"
+            >
+              <div className="relative w-full flex-1">
+                <div
+                  className={cn(
+                    "absolute inset-x-0 bottom-0 rounded-t-md transition-[height,background-color] duration-300 ease-out motion-reduce:transition-none",
+                    TONE_BACKGROUND[bar.tone],
+                  )}
+                  style={{ height: `${heights[position]}%` }}
+                />
+              </div>
+              {showValues && (
+                <span className="font-mono text-xs text-text-secondary tabular-nums">
+                  {bar.value}
+                </span>
               )}
-              style={{ height: `${heights[position]}%` }}
-            />
-          </div>
-          {showValues && (
-            <span className="font-mono text-xs text-text-secondary tabular-nums">
-              {bar.value}
-            </span>
-          )}
+            </m.div>
+          ))}
         </div>
-      ))}
-    </div>
+      </LazyMotion>
+    </MotionConfig>
   );
 }
