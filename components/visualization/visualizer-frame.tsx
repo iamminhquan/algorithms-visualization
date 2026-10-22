@@ -22,12 +22,15 @@ export interface IMetricItem {
  * `children`: Hình mô phỏng; khung đã cho sẵn chiều cao, nên hình chỉ cần lấp đầy (`h-full`).
  * `description`: Câu giải thích bước đang xem, được trình đọc màn hình đọc lại mỗi khi đổi.
  * `toolbar`: Phần nhập dữ liệu, đặt phía trên hình.
+ * `aside`: Phần đặt cạnh hình trên màn hình rộng, ví dụ mã giả. Trên màn hình hẹp nó xuống dưới
+ *   thanh điều khiển, để nút phát luôn nằm ngay dưới hình.
  */
 type VisualizerFrameProps = {
   children: ReactNode;
   description: string;
   controls: ReactNode;
   toolbar?: ReactNode;
+  aside?: ReactNode;
   legend?: readonly ILegendItem[];
   metrics?: readonly IMetricItem[];
   className?: string;
@@ -42,6 +45,7 @@ export function VisualizerFrame({
   description,
   controls,
   toolbar,
+  aside,
   legend = [],
   metrics = [],
   className,
@@ -52,16 +56,28 @@ export function VisualizerFrame({
       className={cn("flex flex-col gap-4", className)}
     >
       {toolbar}
-      <div className="flex flex-col gap-4 rounded-xl border border-border-default bg-bg-surface p-4 sm:p-6">
-        <div className="h-64 sm:h-80">{children}</div>
-        <p
-          aria-live="polite"
-          className="min-h-12 text-center text-base leading-6 text-text-primary sm:min-h-6"
-        >
-          {description}
-        </p>
+      <div
+        className={cn(
+          "grid gap-4",
+          aside !== undefined && "lg:grid-cols-[minmax(0,1fr)_20rem]",
+        )}
+      >
+        <div className="flex flex-col gap-4 rounded-xl border border-border-default bg-bg-surface p-4 sm:p-6">
+          <div className="h-64 sm:h-80">{children}</div>
+          <p
+            aria-live="polite"
+            className="min-h-12 text-center text-base leading-6 text-text-primary sm:min-h-6"
+          >
+            {description}
+          </p>
+        </div>
+        {aside !== undefined && (
+          <div className="order-last lg:order-none">{aside}</div>
+        )}
+        <div className={cn(aside !== undefined && "lg:col-span-2")}>
+          {controls}
+        </div>
       </div>
-      {controls}
       {(legend.length > 0 || metrics.length > 0) && (
         <div className="flex flex-wrap items-start justify-between gap-x-8 gap-y-4">
           {legend.length > 0 && (
