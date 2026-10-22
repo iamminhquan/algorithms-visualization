@@ -176,7 +176,7 @@ export interface IBubbleSortState {
 - **Named export**, không `export default` (trừ file Next.js bắt buộc: `page.tsx`, `layout.tsx`...).
   Module có `index.ts` thì chỉ re-export những gì bên ngoài cần dùng.
 - Import chỉ dùng làm kiểu thì viết `import type { ... }` hoặc `type` trong danh sách import.
-- Import chéo thư mục dùng alias `@/` (`@/features/algorithm/engine`); import trong cùng feature được
+- Import chéo thư mục dùng alias `@/` (`@/engine/algorithm`); import trong cùng feature được
   dùng đường dẫn tương đối.
 - Không mutate tham số đầu vào; tạo bản sao (`[...input]`, `{ ...obj }`) như code hiện có.
 

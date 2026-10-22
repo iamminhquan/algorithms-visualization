@@ -1,17 +1,17 @@
 import { describe, expect, test } from "bun:test";
 import {
-  BUBBLE_SORT_KEY,
-  bubbleSort,
-} from "@/features/algorithm/algorithms/sorting/bubble-sort";
-import { getAlgorithm, listAlgorithmInfo } from "@/features/algorithm/catalog";
-import {
   createAlgorithmRegistry,
   DuplicateAlgorithmError,
   type IAlgorithmDefinition,
   type IExecutionEvent,
   type IExecutionResult,
   UnknownAlgorithmError,
-} from "@/features/algorithm/engine";
+} from "@/engine/algorithm";
+import {
+  BUBBLE_SORT_KEY,
+  bubbleSort,
+} from "@/features/algorithm/algorithms/sorting/bubble-sort";
+import { getAlgorithm, listAlgorithmInfo } from "@/features/algorithm/catalog";
 
 const LOOKUP_FIXTURE_KEY = "lookup-fixture";
 
