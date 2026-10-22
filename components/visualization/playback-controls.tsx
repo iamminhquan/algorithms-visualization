@@ -12,6 +12,10 @@ import { type ComponentProps, useId } from "react";
 import { isAtEnd, PLAYBACK_SPEEDS } from "@/engine/visualization";
 import { cn } from "@/lib/cn";
 import type { IPlaybackControls } from "./use-playback";
+import {
+  PLAYBACK_SHORTCUTS,
+  usePlaybackShortcuts,
+} from "./use-playback-shortcuts";
 
 type PlaybackControlsProps = {
   controls: IPlaybackControls;
@@ -25,6 +29,7 @@ export function PlaybackControls({
   const sliderId = useId();
   const speedId = useId();
   const { state } = controls;
+  usePlaybackShortcuts(controls);
   const lastIndex = Math.max(state.total - 1, 0);
   const atStart = state.index === 0;
   const atEnd = isAtEnd(state);
@@ -42,12 +47,14 @@ export function PlaybackControls({
         <ControlButton
           icon={SkipBack}
           label="Về bước đầu"
+          aria-keyshortcuts={PLAYBACK_SHORTCUTS.first}
           disabled={atStart}
           onClick={() => controls.seek(0)}
         />
         <ControlButton
           icon={ChevronLeft}
           label="Bước trước"
+          aria-keyshortcuts={PLAYBACK_SHORTCUTS.stepBack}
           disabled={atStart}
           onClick={controls.stepBack}
         />
@@ -55,6 +62,7 @@ export function PlaybackControls({
           <ControlButton
             icon={Pause}
             label="Tạm dừng"
+            aria-keyshortcuts={PLAYBACK_SHORTCUTS.toggle}
             variant="primary"
             onClick={controls.pause}
           />
@@ -62,6 +70,7 @@ export function PlaybackControls({
           <ControlButton
             icon={atEnd && state.total > 1 ? RotateCcw : Play}
             label={atEnd && state.total > 1 ? "Phát lại" : "Phát"}
+            aria-keyshortcuts={PLAYBACK_SHORTCUTS.toggle}
             variant="primary"
             disabled={state.total <= 1}
             onClick={controls.play}
@@ -70,12 +79,14 @@ export function PlaybackControls({
         <ControlButton
           icon={ChevronRight}
           label="Bước sau"
+          aria-keyshortcuts={PLAYBACK_SHORTCUTS.stepForward}
           disabled={atEnd}
           onClick={controls.stepForward}
         />
         <ControlButton
           icon={SkipForward}
           label="Tới bước cuối"
+          aria-keyshortcuts={PLAYBACK_SHORTCUTS.last}
           disabled={atEnd}
           onClick={() => controls.seek(lastIndex)}
         />
@@ -125,7 +136,25 @@ export function PlaybackControls({
           ))}
         </select>
       </div>
+
+      <p className="hidden w-full text-xs text-text-muted lg:block">
+        Phím tắt: <Kbd>Space</Kbd> phát hoặc tạm dừng, <Kbd>←</Kbd> <Kbd>→</Kbd>{" "}
+        lùi hoặc tới một bước, <Kbd>Home</Kbd> <Kbd>End</Kbd> về bước đầu hoặc
+        cuối.
+      </p>
     </div>
+  );
+}
+
+type KbdProps = {
+  children: string;
+};
+
+function Kbd({ children }: KbdProps) {
+  return (
+    <kbd className="rounded border border-border-default bg-bg-subtle px-1 font-mono text-text-secondary">
+      {children}
+    </kbd>
   );
 }
 
