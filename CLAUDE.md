@@ -37,14 +37,21 @@ Mỗi event có `description` (câu tiếng Việt hiển thị cho người xem
 Nhờ vậy UI vẽ lại bất kỳ bước nào mà không cần phát lại từ đầu.
 `createAlgorithmRegistry` nhận tuple `const` để giữ key literal: `getAlgorithm("bubble-sort")` trả đúng kiểu, còn `findAlgorithm(string)` dùng cho key đọc từ DB.
 
+**Visualization Engine.** Thuật toán chạy một lần ở client khi input đổi, rồi UI phát lại `events` như tua video; server chỉ truyền `algorithm.key`.
+`engine/visualization/` là TypeScript thuần: `playbackReducer` (phát, tua, tốc độ), `countPayloadTypes` (bộ đếm theo bước), `scaleBarHeights`, kiểu `VisualTone` và `IPseudocode`.
+`components/visualization/` là React dùng chung, không biết thuật toán cụ thể: `usePlayback` (gọi `load` khi đổi vết), `usePlaybackShortcuts`, `PlaybackControls`, `VisualizerFrame`, `ArrayBars` (cột trượt bằng `motion`), `PseudocodePanel`.
+Feature chỉ chuyển event thành hình: chọn tone (`getBarTones`), giữ định danh phần tử khi hoán đổi (`trackElementIds`), khai báo mã giả.
+Mỗi feature export map key → trình mô phỏng tải lười (`SORTING_VISUALIZERS`); `features/catalog/visualizers.ts` ghép lại và `satisfies Record<AlgorithmKey, ...>`, `AlgorithmVisualizer` (client) tra theo key trong `<Suspense>`.
+Input mặc định phải cố định (không random khi render) để HTML server khớp lần render đầu ở client.
+
 **Feature theo danh mục.** `features/sorting-algorithms/` chứa `bubble-sort/` và `selection-sort/`, export `SORTING_ALGORITHMS`; danh mục mới theo cùng khuôn (hiện chưa có, ví dụ `features/searching-algorithms/`).
 `features/catalog/` là phần dùng chung: `catalog.ts` ghép registry từ mọi feature, `queries.ts` đọc DB, `routes.ts` dựng link, `categories.ts` và `components/` phục vụ trang chủ và `/visualization`.
 Các feature danh mục không import lẫn nhau; thứ dùng chung đẩy xuống `engine/` hoặc `components/`.
 
 **Code ↔ DB.** Bảng `algorithms` nối với code qua cột `key` (không đổi sau khi tạo); cột `slug` dùng cho URL.
 Dòng DB không có cài đặt trong registry bị ẩn (`getAlgorithmCatalog`, `getCategoryCatalog`).
-Thêm một thuật toán gồm: cài đặt trong feature, thêm vào `*_ALGORITHMS`, thêm dòng vào `db/seed-data.ts` cùng `key`, rồi chạy `db:seed`.
-`tests/catalog/seed-data.test.ts` bắt chỗ lệch giữa registry và seed.
+Thêm một thuật toán gồm: cài đặt trong feature, thêm vào `*_ALGORITHMS`, thêm trình mô phỏng vào `*_VISUALIZERS` (kèm mã giả nếu có), thêm dòng vào `db/seed-data.ts` cùng `key`, rồi chạy `db:seed`.
+`tests/catalog/seed-data.test.ts` bắt chỗ lệch giữa registry và seed, `tests/catalog/visualizers.test.ts` bắt thuật toán thiếu trình mô phỏng.
 Danh mục chỉ khai báo một nơi là `CATEGORIES` trong `features/catalog/categories.ts`: trang chủ và footer đọc trực tiếp, `seedCategories` lấy lại chính nó, nên sửa xong phải chạy `db:seed`.
 
 **Route.** `/` là trang chủ, `/visualization` liệt kê mọi danh mục, `/visualization/[category]` là trang danh mục, `/visualization/[category]/[algorithm]` là trang thuật toán.
