@@ -22,6 +22,8 @@ docker compose up -d postgres  # Postgres local (compose còn có redis, rabbitm
 bun run db:generate            # sinh migration vào drizzle/ sau khi sửa db/schema.ts
 bun run db:migrate             # áp migration
 bun run db:seed                # upsert danh mục + thuật toán từ db/seed-data.ts
+bun run db:push                # đẩy thẳng schema lên DB, không tạo migration (chỉ dùng khi thử nghiệm)
+bun run db:studio              # Drizzle Studio để xem dữ liệu trong DB
 ```
 
 `db/index.ts` có `import "server-only"`, nên script Bun nào import code đọc DB phải chạy với `--conditions=react-server` (như `db:seed`).
@@ -35,7 +37,7 @@ Mỗi event có `description` (câu tiếng Việt hiển thị cho người xem
 Nhờ vậy UI vẽ lại bất kỳ bước nào mà không cần phát lại từ đầu.
 `createAlgorithmRegistry` nhận tuple `const` để giữ key literal: `getAlgorithm("bubble-sort")` trả đúng kiểu, còn `findAlgorithm(string)` dùng cho key đọc từ DB.
 
-**Feature theo danh mục.** `features/sorting-algorithms/` chứa các thuật toán sắp xếp và export `SORTING_ALGORITHMS`; danh mục mới theo cùng khuôn (`features/searching-algorithms/`...).
+**Feature theo danh mục.** `features/sorting-algorithms/` chứa `bubble-sort/` và `selection-sort/`, export `SORTING_ALGORITHMS`; danh mục mới theo cùng khuôn (hiện chưa có, ví dụ `features/searching-algorithms/`).
 `features/catalog/` là phần dùng chung: `catalog.ts` ghép registry từ mọi feature, `queries.ts` đọc DB, `routes.ts` dựng link, `categories.ts` và `components/` phục vụ trang chủ và `/visualization`.
 Các feature danh mục không import lẫn nhau; thứ dùng chung đẩy xuống `engine/` hoặc `components/`.
 
@@ -53,11 +55,12 @@ Query có `"use cache"` + `cacheLife("hours")` + `cacheTag("catalog")` nên đi 
 Page không `await params`: truyền Promise xuống view async nằm trong `<Suspense>` (xem `CategoryView`), nếu không `partialPrefetching` báo lỗi `instant-shell-url-data` vì App Shell dùng chung cho mọi URL của route.
 Chạy `db:seed` xong phải build lại (hoặc đợi hết `revalidate`), vì script seed chạy ngoài Next nên không gọi được `revalidateTag`.
 Với Cache Components không dùng được `dynamicParams`, nên slug lạ được xử lý bằng `notFound()`.
-Trang đã bắt đầu stream nên slug lạ trả status 200 kèm `noindex` (soft 404); muốn 404 thật phải kiểm tra slug trong `proxy.ts`.
+Hiện repo chưa có `proxy.ts` (hay `middleware.ts`) nên không có chỗ kiểm tra slug trước khi render. Trang đã bắt đầu stream nên slug lạ thành soft 404 (status 200 kèm `noindex`); muốn 404 thật thì thêm `proxy.ts` kiểm tra slug trước khi trang stream.
 
 **Đặt file.** `components/ui/` chứa primitive không biết nghiệp vụ (không import `features/`, `db/`).
 Header, footer, logo chỉ root layout dùng nên nằm ở `app/_components/`; khi có route group thì chuyển theo layout của group đó.
-Component chỉ một route dùng thì đặt ở `app/<route>/_components/`.
+Component chỉ một route dùng thì đặt ở `app/<route>/_components/`; component dùng chung cho cả `/visualization` và `/visualization/[category]` nằm ở `app/visualization/_components/` (ví dụ `algorithm-grid.tsx`).
+`lib/` chứa tiện ích dùng chung không gắn nghiệp vụ (`cn.ts`, `site.ts`).
 
 **Style.** Chỉ dùng token ngữ nghĩa khai báo trong `app/globals.css` (`bg-bg-surface`, `text-text-secondary`, `border-border-strong`, `bg-accent-default`...), không dùng hex hay palette mặc định (`slate-*`, `indigo-*`).
 `accent/*` dành cho tương tác; `state/*` (compare, swap, pivot, pointer, sorted) chỉ dùng trong hình mô phỏng.
