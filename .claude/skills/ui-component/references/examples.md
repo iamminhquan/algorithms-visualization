@@ -170,7 +170,7 @@ type AlgorithmCardProps = {
 export function AlgorithmCard({ algorithm }: AlgorithmCardProps) {
   return (
     <Link
-      href={`/thuat-toan/${algorithm.slug}`}
+      href={`/visualization/${algorithm.slug}`}
       className="block rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
     >
       <Card className="h-full transition-colors hover:border-foreground/30">
@@ -234,14 +234,14 @@ mỗi request), trang phải bọc nó: `<Suspense fallback={<AlgorithmListSkele
 hiện ngay.
 
 ```tsx
-// app/thuat-toan/[slug]/page.tsx
+// app/visualization/[slug]/page.tsx
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { getAlgorithmBySlug } from "@/features/catalog/queries";
 
 export default function AlgorithmPage({
   params,
-}: PageProps<"/thuat-toan/[slug]">) {
+}: PageProps<"/visualization/[slug]">) {
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10">
       <Suspense fallback={<AlgorithmDetailSkeleton />}>

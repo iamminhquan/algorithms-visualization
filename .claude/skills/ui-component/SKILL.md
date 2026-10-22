@@ -88,7 +88,7 @@ lúc request (truy vấn DB không cache, `cookies()`, `headers()`, `params`, `s
   + `cacheLife(...)` + `cacheTag(...)`. Kết quả vào thẳng static shell, không cần Suspense.
 - **Dữ liệu theo request** (lượt chạy mới nhất, dữ liệu theo người dùng): không cache, đặt component
   đọc nó trong `<Suspense fallback={<XxxSkeleton />}>`.
-- **`params` và `searchParams` là Promise.** Dùng kiểu global `PageProps<"/thuat-toan/[slug]">` /
+- **`params` và `searchParams` là Promise.** Dùng kiểu global `PageProps<"/visualization/[slug]">` /
   `LayoutProps<"/">`. Đừng `await params` ở đầu page nếu làm vậy chặn cả trang — truyền Promise xuống
   component con nằm trong Suspense, hoặc dùng `params.then(...)` trong JSX (xem ví dụ).
 - **Client Component dùng `useSearchParams()`** cũng phải nằm trong `<Suspense>`.
@@ -150,6 +150,9 @@ tốt hơn vì phần còn lại của trang hiện ngay.
 - Chữ trên giao diện viết **tiếng Việt có dấu đầy đủ**, viết hoa chữ cái đầu câu (không Title Case kiểu
   tiếng Anh): "Danh sách thuật toán", "Xem chi tiết", "Không tìm thấy thuật toán nào". Thuật ngữ như
   `O(n log n)` giữ nguyên. Root layout nên đặt `<html lang="vi">`.
+- **URL thì ngược lại: route và slug viết tiếng Anh** (`/visualization`, `/visualization/bubble-sort`,
+  `/visualization/sorting`), không dùng slug tiếng Việt không dấu. Dựng link bằng
+  `getVisualizationHref(slug)` trong `features/catalog/routes.ts` thay vì ghép chuỗi tay.
 - Luôn xử lý trạng thái rỗng (danh sách không có phần tử) bằng một thông báo thân thiện.
 
 ## Dùng primitive của Next
