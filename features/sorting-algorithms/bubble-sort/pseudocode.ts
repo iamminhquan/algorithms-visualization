@@ -3,13 +3,13 @@ import type { BubbleSortStep } from "./types";
 
 export const BUBBLE_SORT_PSEUDOCODE: IPseudocode<BubbleSortStep> = {
   lines: [
-    "lặp khi đoạn chưa sắp xếp còn từ 2 phần tử",
-    "  với mỗi cặp kề nhau a[i], a[i + 1] trong đoạn",
-    "    nếu a[i] > a[i + 1]",
-    "      hoán đổi a[i] và a[i + 1]",
-    "  nếu cả lượt không có hoán đổi: dừng, đoạn còn lại đã đúng thứ tự",
-    "  phần tử cuối đoạn đã vào đúng vị trí",
-    "hoàn tất",
+    "while the unsorted range has at least 2 elements",
+    "  for each adjacent pair a[i], a[i + 1] in the range",
+    "    if a[i] > a[i + 1]",
+    "      swap a[i] and a[i + 1]",
+    "  if the whole pass made no swap: stop, the rest is already sorted",
+    "  the last element of the range is now sorted",
+    "done",
   ],
   getActiveLine(step) {
     switch (step.type) {
