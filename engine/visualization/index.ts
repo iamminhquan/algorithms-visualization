@@ -11,4 +11,6 @@ export {
   playbackReducer,
 } from "./playback";
 
+export { MIN_BAR_HEIGHT_PERCENT, scaleBarHeights } from "./scale";
 export { countPayloadTypes, type PayloadTypeCounts } from "./timeline";
+export type { VisualTone } from "./tones";
