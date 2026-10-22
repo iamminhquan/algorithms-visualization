@@ -18,20 +18,21 @@ export interface IPlaybackControls {
   readonly stepBack: () => void;
   readonly seek: (index: number) => void;
   readonly setSpeed: (speed: PlaybackSpeed) => void;
+  readonly load: (total: number) => void;
 }
 
 /**
- * Điều khiển phát một vết thực thi có `total` sự kiện, tự sang bước kế khi đang phát.
- * Hook chỉ đọc `total` ở lần render đầu; khi vết đổi (người dùng đổi input), component dùng hook
- * phải được gắn `key` mới để nạp lại từ đầu.
+ * Điều khiển phát một vết thực thi, tự sang bước kế khi đang phát.
+ * Hook chỉ đọc `initialTotal` ở lần render đầu; khi vết đổi (người dùng đổi input), gọi `load`
+ * trong cùng event handler đặt vết mới, để hai thay đổi được render cùng một lần.
  *
- * @param total Số sự kiện của vết.
+ * @param initialTotal Số sự kiện của vết ban đầu.
  * @returns Trạng thái phát và các thao tác điều khiển.
  */
-export function usePlayback(total: number): IPlaybackControls {
+export function usePlayback(initialTotal: number): IPlaybackControls {
   const [state, dispatch] = useReducer(
     playbackReducer,
-    total,
+    initialTotal,
     createPlaybackState,
   );
 
@@ -57,5 +58,6 @@ export function usePlayback(total: number): IPlaybackControls {
     stepBack: () => dispatch({ type: "step-back" }),
     seek: (index) => dispatch({ type: "seek", index }),
     setSpeed: (speed) => dispatch({ type: "set-speed", speed }),
+    load: (total) => dispatch({ type: "load", total }),
   };
 }
