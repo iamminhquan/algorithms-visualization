@@ -65,10 +65,7 @@ function executeSelectionSort(input: SelectionSortInput): SelectionSortResult {
       comparisons++;
       record(
         { type: "compare", indices: [minIndex, j] },
-        `So sánh ${current} (vị trí ${j}) với giá trị nhỏ nhất hiện tại ${min} (vị trí ${minIndex}): ` +
-          (isSmaller
-            ? `${current} < ${min} nên ${current} là giá trị nhỏ nhất mới`
-            : `${current} ≥ ${min} nên giữ nguyên`),
+        `Đang so sánh ${min} và ${current}`,
       );
 
       if (isSmaller) {
@@ -84,16 +81,14 @@ function executeSelectionSort(input: SelectionSortInput): SelectionSortResult {
       swaps++;
       record(
         { type: "swap", indices: [i, minIndex] },
-        `Đổi chỗ ${first} và ${min}: ${min} về vị trí ${i}, ${first} về vị trí ${minIndex}`,
+        `Đang hoán đổi ${first} và ${min}`,
       );
     }
 
     sortedUntil = i + 1;
     record(
       { type: "mark-sorted", indices: [i] },
-      minIndex === i
-        ? `${array[i]} đã là giá trị nhỏ nhất và nằm sẵn ở vị trí ${i} nên không cần đổi chỗ`
-        : `${array[i]} đã nằm đúng vị trí cuối cùng ${i}`,
+      `${array[i]} đã vào đúng vị trí`,
     );
   }
 
@@ -102,13 +97,13 @@ function executeSelectionSort(input: SelectionSortInput): SelectionSortResult {
     sortedUntil = array.length;
     record(
       { type: "mark-sorted", indices: [last] },
-      `${array[last]} là phần tử cuối cùng còn lại nên đã nằm đúng vị trí ${last}`,
+      `${array[last]} đã vào đúng vị trí`,
     );
   }
 
   record(
     { type: "complete" },
-    `Hoàn tất: mảng đã được sắp xếp tăng dần sau ${comparisons} lần so sánh và ${swaps} lần đổi chỗ`,
+    `Hoàn tất: ${comparisons} lần so sánh, ${swaps} lần hoán đổi`,
   );
 
   return {

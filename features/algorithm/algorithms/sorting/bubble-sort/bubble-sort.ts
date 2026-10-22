@@ -66,10 +66,7 @@ function executeBubbleSort(input: BubbleSortInput): BubbleSortResult {
       comparisons++;
       record(
         { type: "compare", indices: [i, i + 1] },
-        `So sánh ${left} (vị trí ${i}) với ${right} (vị trí ${i + 1}): ` +
-          (outOfOrder
-            ? `${left} > ${right} nên cần đổi chỗ`
-            : `${left} ≤ ${right} nên giữ nguyên`),
+        `Đang so sánh ${left} và ${right}`,
       );
 
       if (outOfOrder) {
@@ -79,7 +76,7 @@ function executeBubbleSort(input: BubbleSortInput): BubbleSortResult {
         swapped = true;
         record(
           { type: "swap", indices: [i, i + 1] },
-          `Đổi chỗ ${left} và ${right}: ${right} về vị trí ${i}, ${left} về vị trí ${i + 1}`,
+          `Đang hoán đổi ${left} và ${right}`,
         );
       }
     }
@@ -92,7 +89,7 @@ function executeBubbleSort(input: BubbleSortInput): BubbleSortResult {
     sortedFrom = unsortedLength;
     record(
       { type: "mark-sorted", indices: [unsortedLength] },
-      `${array[unsortedLength]} đã nằm đúng vị trí cuối cùng ${unsortedLength}`,
+      `${array[unsortedLength]} đã vào đúng vị trí`,
     );
   }
 
@@ -102,14 +99,14 @@ function executeBubbleSort(input: BubbleSortInput): BubbleSortResult {
     record(
       { type: "mark-sorted", indices: remaining },
       unsortedLength === 1
-        ? `${array[0]} là phần tử cuối cùng còn lại nên đã nằm đúng vị trí 0`
-        : `Lượt vừa rồi không có lần đổi chỗ nào nên các vị trí 0–${unsortedLength - 1} đều đã đúng thứ tự`,
+        ? `${array[0]} đã vào đúng vị trí`
+        : "Không còn hoán đổi, các phần tử còn lại đã đúng thứ tự",
     );
   }
 
   record(
     { type: "complete" },
-    `Hoàn tất: mảng đã được sắp xếp tăng dần sau ${comparisons} lần so sánh và ${swaps} lần đổi chỗ`,
+    `Hoàn tất: ${comparisons} lần so sánh, ${swaps} lần hoán đổi`,
   );
 
   return {

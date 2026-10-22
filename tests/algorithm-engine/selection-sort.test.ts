@@ -165,19 +165,19 @@ describe("selectionSort: vết thực thi", () => {
     expect(
       selectionSort.execute([5, 3]).events.map((event) => event.description),
     ).toEqual([
-      "So sánh 3 (vị trí 1) với giá trị nhỏ nhất hiện tại 5 (vị trí 0): 3 < 5 nên 3 là giá trị nhỏ nhất mới",
-      "Đổi chỗ 5 và 3: 3 về vị trí 0, 5 về vị trí 1",
-      "3 đã nằm đúng vị trí cuối cùng 0",
-      "5 là phần tử cuối cùng còn lại nên đã nằm đúng vị trí 1",
-      "Hoàn tất: mảng đã được sắp xếp tăng dần sau 1 lần so sánh và 1 lần đổi chỗ",
+      "Đang so sánh 5 và 3",
+      "Đang hoán đổi 5 và 3",
+      "3 đã vào đúng vị trí",
+      "5 đã vào đúng vị trí",
+      "Hoàn tất: 1 lần so sánh, 1 lần hoán đổi",
     ]);
     expect(
       selectionSort.execute([1, 2]).events.map((event) => event.description),
     ).toEqual([
-      "So sánh 2 (vị trí 1) với giá trị nhỏ nhất hiện tại 1 (vị trí 0): 2 ≥ 1 nên giữ nguyên",
-      "1 đã là giá trị nhỏ nhất và nằm sẵn ở vị trí 0 nên không cần đổi chỗ",
-      "2 là phần tử cuối cùng còn lại nên đã nằm đúng vị trí 1",
-      "Hoàn tất: mảng đã được sắp xếp tăng dần sau 1 lần so sánh và 0 lần đổi chỗ",
+      "Đang so sánh 1 và 2",
+      "1 đã vào đúng vị trí",
+      "2 đã vào đúng vị trí",
+      "Hoàn tất: 1 lần so sánh, 0 lần hoán đổi",
     ]);
   });
 
