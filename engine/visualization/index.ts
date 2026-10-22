@@ -10,3 +10,5 @@ export {
   type PlaybackStatus,
   playbackReducer,
 } from "./playback";
+
+export { countPayloadTypes, type PayloadTypeCounts } from "./timeline";
