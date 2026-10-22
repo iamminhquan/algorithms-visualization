@@ -1,12 +1,20 @@
+import { notFound } from "next/navigation";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
-import type { AlgorithmCatalogItem } from "@/features/catalog/queries";
+import { getAlgorithmBySlug } from "@/features/catalog/queries";
 import { getCategoryHref, VISUALIZATION_PATH } from "@/features/catalog/routes";
 
-type AlgorithmViewProps = {
-  algorithm: AlgorithmCatalogItem;
-};
+type AlgorithmViewProps = Pick<
+  PageProps<"/visualization/[category]/[algorithm]">,
+  "params"
+>;
 
-export function AlgorithmView({ algorithm }: AlgorithmViewProps) {
+export async function AlgorithmView({ params }: AlgorithmViewProps) {
+  const { category, algorithm: algorithmSlug } = await params;
+  const algorithm = await getAlgorithmBySlug(category, algorithmSlug);
+  if (!algorithm) {
+    notFound();
+  }
+
   return (
     <article className="flex flex-col gap-10">
       <header className="flex flex-col gap-4">
@@ -46,6 +54,23 @@ export function AlgorithmView({ algorithm }: AlgorithmViewProps) {
         Phần mô phỏng đang được xây dựng.
       </section>
     </article>
+  );
+}
+
+export function AlgorithmViewSkeleton() {
+  return (
+    <div aria-hidden="true" className="flex animate-pulse flex-col gap-10">
+      <div className="flex flex-col gap-4">
+        <div className="h-5 w-64 rounded bg-bg-subtle" />
+        <div className="h-10 w-80 max-w-full rounded-lg bg-bg-subtle" />
+        <div className="h-15 w-full max-w-160 rounded-lg bg-bg-subtle" />
+        <div className="grid max-w-md grid-cols-2 gap-4">
+          <div className="h-21 rounded-lg bg-bg-subtle" />
+          <div className="h-21 rounded-lg bg-bg-subtle" />
+        </div>
+      </div>
+      <div className="aspect-video rounded-xl bg-bg-subtle" />
+    </div>
   );
 }
 

@@ -50,6 +50,7 @@ Thuật toán phải đúng danh mục của nó (`getAlgorithmBySlug(category, 
 Dựng link bằng `getCategoryHref()` / `getAlgorithmHref()` trong `features/catalog/routes.ts`.
 Root layout có `title.template`, trang chỉ đặt tên riêng của nó; `app/not-found.tsx`, `app/error.tsx`, `app/global-error.tsx` lo trang 404 và trang lỗi.
 Query có `"use cache"` + `cacheLife("hours")` + `cacheTag("catalog")` nên đi vào static shell; dữ liệu theo request phải nằm trong `<Suspense>`.
+Page không `await params`: truyền Promise xuống view async nằm trong `<Suspense>` (xem `CategoryView`), nếu không `partialPrefetching` báo lỗi `instant-shell-url-data` vì App Shell dùng chung cho mọi URL của route.
 Chạy `db:seed` xong phải build lại (hoặc đợi hết `revalidate`), vì script seed chạy ngoài Next nên không gọi được `revalidateTag`.
 Với Cache Components không dùng được `dynamicParams`, nên slug lạ được xử lý bằng `notFound()`.
 Trang đã bắt đầu stream nên slug lạ trả status 200 kèm `noindex` (soft 404); muốn 404 thật phải kiểm tra slug trong `proxy.ts`.
