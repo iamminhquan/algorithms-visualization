@@ -1,5 +1,5 @@
-import { BUBBLE_SORT_KEY } from "@/features/algorithm/algorithms/sorting/bubble-sort";
-import { SELECTION_SORT_KEY } from "@/features/algorithm/algorithms/sorting/selection-sort";
+import { BUBBLE_SORT_KEY } from "@/features/sorting-algorithms/bubble-sort";
+import { SELECTION_SORT_KEY } from "@/features/sorting-algorithms/selection-sort";
 import type { NewAlgorithm, NewCategory } from "./schema";
 
 export const seedCategories = [

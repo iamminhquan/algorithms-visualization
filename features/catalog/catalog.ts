@@ -1,8 +1,7 @@
 import { createAlgorithmRegistry } from "@/engine/algorithm";
-import { bubbleSort } from "./algorithms/sorting/bubble-sort";
-import { selectionSort } from "./algorithms/sorting/selection-sort";
+import { SORTING_ALGORITHMS } from "@/features/sorting-algorithms";
 
-const algorithmRegistry = createAlgorithmRegistry([bubbleSort, selectionSort]);
+const algorithmRegistry = createAlgorithmRegistry([...SORTING_ALGORITHMS]);
 
 export const getAlgorithm = algorithmRegistry.getAlgorithm;
 export const findAlgorithm = algorithmRegistry.findAlgorithm;

@@ -7,11 +7,11 @@ import {
   type IExecutionResult,
   UnknownAlgorithmError,
 } from "@/engine/algorithm";
+import { getAlgorithm, listAlgorithmInfo } from "@/features/catalog/catalog";
 import {
   BUBBLE_SORT_KEY,
   bubbleSort,
-} from "@/features/algorithm/algorithms/sorting/bubble-sort";
-import { getAlgorithm, listAlgorithmInfo } from "@/features/algorithm/catalog";
+} from "@/features/sorting-algorithms/bubble-sort";
 
 const LOOKUP_FIXTURE_KEY = "lookup-fixture";
 

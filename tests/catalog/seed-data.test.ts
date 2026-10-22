@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { seedAlgorithms, seedCategories } from "@/db/seed-data";
-import { listAlgorithmInfo } from "@/features/algorithm/catalog";
+import { listAlgorithmInfo } from "@/features/catalog/catalog";
 
 describe("seed-data", () => {
   test("mỗi thuật toán trong registry có đúng một dòng seed và ngược lại", () => {
