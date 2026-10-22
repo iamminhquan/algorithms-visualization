@@ -3,12 +3,12 @@ import type { SelectionSortStep } from "./types";
 
 export const SELECTION_SORT_PSEUDOCODE: IPseudocode<SelectionSortStep> = {
   lines: [
-    "for i from 0 to n − 2",
-    "  min ← i",
-    "  for j from i + 1 to n − 1",
-    "    if a[j] < a[min]: min ← j",
-    "  if min ≠ i: swap a[i] and a[min]",
-    "  a[i] is in its final position",
+    "for i from 0 to n - 2",
+    "  min = i",
+    "  for j from i + 1 to n - 1",
+    "    if a[j] < a[min]: min = j",
+    "  if min != i: swap a[i], a[min]",
+    "  a[i] is sorted",
     "done",
   ],
   getActiveLine(step) {

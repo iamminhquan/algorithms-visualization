@@ -35,7 +35,7 @@ const SELECTION_SORT_KEYWORDS: Readonly<
 > = {
   compare: "if a[j] < a[min]",
   swap: "swap",
-  "mark-sorted": "final position",
+  "mark-sorted": "sorted",
   complete: "done",
 };
 

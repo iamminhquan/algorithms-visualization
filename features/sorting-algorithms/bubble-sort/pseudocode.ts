@@ -3,12 +3,12 @@ import type { BubbleSortStep } from "./types";
 
 export const BUBBLE_SORT_PSEUDOCODE: IPseudocode<BubbleSortStep> = {
   lines: [
-    "while the unsorted range has at least 2 elements",
-    "  for each adjacent pair a[i], a[i + 1] in the range",
+    "for end from n - 1 down to 1",
+    "  for i from 0 to end - 1",
     "    if a[i] > a[i + 1]",
-    "      swap a[i] and a[i + 1]",
-    "  if the whole pass made no swap: stop, the rest is already sorted",
-    "  the last element of the range is now sorted",
+    "      swap a[i], a[i + 1]",
+    "  if no swap: rest is sorted, stop",
+    "  a[end] is sorted",
     "done",
   ],
   getActiveLine(step) {
