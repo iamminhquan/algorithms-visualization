@@ -37,6 +37,7 @@ Nhờ vậy UI vẽ lại bất kỳ bước nào mà không cần phát lại t
 `engine/visualization/` là TypeScript thuần: `playbackReducer` (phát, tua, tốc độ), `countPayloadTypes` (bộ đếm theo bước), `scaleBarHeights`, kiểu `VisualTone` và `IPseudocode`.
 `components/visualization/` là React dùng chung, không biết thuật toán cụ thể: `usePlayback` (gọi `load` khi đổi vết), `usePlaybackShortcuts`, `PlaybackControls`, `VisualizerFrame`, `ArrayBars` (cột trượt bằng `motion`), `PseudocodePanel`.
 Feature chỉ chuyển event thành hình: chọn tone (`getBarTones`), giữ định danh phần tử khi hoán đổi (`trackElementIds`), khai báo mã giả.
+Mã giả viết bằng tiếng Anh, ngắn gọn kiểu Python nhưng không phải Python (thụt lề thay ngoặc, không `def`/`range`/`len`, mỗi dòng một thao tác, gán bằng `=`, kết thúc bằng `done`); xem `IPseudocode`.
 Mỗi feature export map key → trình mô phỏng tải lười (`SORTING_VISUALIZERS`); `features/catalog/visualizers.ts` ghép lại và `satisfies Record<AlgorithmKey, ...>`, `AlgorithmVisualizer` (client) tra theo key trong `<Suspense>`.
 Input mặc định phải cố định (không random khi render) để HTML server khớp lần render đầu ở client.
 
