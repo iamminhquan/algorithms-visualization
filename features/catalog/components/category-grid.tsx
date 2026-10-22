@@ -7,10 +7,10 @@ import { SearchingIllustration } from "./illustrations/searching-illustration";
 import { SortingIllustration } from "./illustrations/sorting-illustration";
 
 const ILLUSTRATIONS = {
-  "sap-xep": <SortingIllustration />,
-  "cau-truc-du-lieu": <DataStructureIllustration />,
-  "tim-kiem": <SearchingIllustration />,
-  "khai-niem-cot-loi": <CoreConceptsIllustration />,
+  sorting: <SortingIllustration />,
+  "data-structures": <DataStructureIllustration />,
+  searching: <SearchingIllustration />,
+  "core-concepts": <CoreConceptsIllustration />,
 } satisfies Record<CategorySlug, ReactNode>;
 
 export function CategoryGrid() {

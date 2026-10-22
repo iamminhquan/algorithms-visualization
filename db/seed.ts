@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { and, eq, notExists, notInArray, sql } from "drizzle-orm";
 import { db } from ".";
 import { algorithmsTable, categoriesTable } from "./schema";
 import { seedAlgorithms, seedCategories } from "./seed-data";
@@ -39,6 +39,25 @@ await db
       spaceComplexity: sql`excluded.space_complexity`,
     },
   });
+
+/*
+ * `CATEGORIES` là nguồn duy nhất của danh mục, nhưng upsert theo slug nên đổi slug sẽ để lại dòng cũ
+ * (ví dụ "sap-xep") hiện trên `/visualization`. Xoá các dòng đó, trừ khi còn thuật toán trỏ tới.
+ */
+await db.delete(categoriesTable).where(
+  and(
+    notInArray(
+      categoriesTable.slug,
+      seedCategories.map((category) => category.slug),
+    ),
+    notExists(
+      db
+        .select({ id: algorithmsTable.id })
+        .from(algorithmsTable)
+        .where(eq(algorithmsTable.categoryId, categoriesTable.id)),
+    ),
+  ),
+);
 
 await db.$client.end();
 console.log("Đã chạy seed data!!!");

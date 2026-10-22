@@ -131,20 +131,24 @@ export async function getAlgorithms() {
 
   return db.query.algorithmsTable.findMany({
     columns: { id: true, name: true, slug: true, timeComplexity: true },
-    with: { category: { columns: { name: true } } },
+    with: { category: { columns: { name: true, slug: true } } },
     orderBy: (t, { asc }) => asc(t.name),
   });
 }
 
-export async function getAlgorithmBySlug(slug: string) {
+export async function getAlgorithmBySlug(
+  categorySlug: string,
+  algorithmSlug: string,
+) {
   "use cache";
   cacheLife("hours");
-  cacheTag("algorithms", `algorithm-${slug}`);
+  cacheTag("algorithms", `algorithm-${algorithmSlug}`);
 
-  return db.query.algorithmsTable.findFirst({
-    where: eq(algorithmsTable.slug, slug),
+  const algorithm = await db.query.algorithmsTable.findFirst({
+    where: eq(algorithmsTable.slug, algorithmSlug),
     with: { category: true },
   });
+  return algorithm?.category.slug === categorySlug ? algorithm : undefined;
 }
 
 export type AlgorithmListItem = Awaited<
@@ -162,6 +166,7 @@ cùng file, có kích thước gần giống nội dung thật.
 import Link from "next/link";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import type { AlgorithmListItem } from "@/features/catalog/queries";
+import { getAlgorithmHref } from "@/features/catalog/routes";
 
 type AlgorithmCardProps = {
   algorithm: AlgorithmListItem;
@@ -170,7 +175,7 @@ type AlgorithmCardProps = {
 export function AlgorithmCard({ algorithm }: AlgorithmCardProps) {
   return (
     <Link
-      href={`/thuat-toan/${algorithm.slug}`}
+      href={getAlgorithmHref(algorithm.category.slug, algorithm.slug)}
       className="block rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
     >
       <Card className="h-full transition-colors hover:border-foreground/30">
@@ -230,31 +235,37 @@ mỗi request), trang phải bọc nó: `<Suspense fallback={<AlgorithmListSkele
 
 ## 6. Trang động với `params` và Suspense
 
-`params` là Promise. Trang giữ đồng bộ, phần phụ thuộc `slug` nằm trong Suspense nên header của trang
+`params` là Promise. Trang giữ đồng bộ, phần phụ thuộc `params` nằm trong Suspense nên header của trang
 hiện ngay.
 
 ```tsx
-// app/thuat-toan/[slug]/page.tsx
+// app/visualization/[category]/[algorithm]/page.tsx
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { getAlgorithmBySlug } from "@/features/catalog/queries";
 
 export default function AlgorithmPage({
   params,
-}: PageProps<"/thuat-toan/[slug]">) {
+}: PageProps<"/visualization/[category]/[algorithm]">) {
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10">
       <Suspense fallback={<AlgorithmDetailSkeleton />}>
-        {params.then(({ slug }) => (
-          <AlgorithmDetail slug={slug} />
+        {params.then(({ category, algorithm }) => (
+          <AlgorithmDetail categorySlug={category} algorithmSlug={algorithm} />
         ))}
       </Suspense>
     </main>
   );
 }
 
-async function AlgorithmDetail({ slug }: { slug: string }) {
-  const algorithm = await getAlgorithmBySlug(slug);
+async function AlgorithmDetail({
+  categorySlug,
+  algorithmSlug,
+}: {
+  categorySlug: string;
+  algorithmSlug: string;
+}) {
+  const algorithm = await getAlgorithmBySlug(categorySlug, algorithmSlug);
   if (!algorithm) notFound();
 
   return (

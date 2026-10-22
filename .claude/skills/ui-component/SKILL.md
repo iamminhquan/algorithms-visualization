@@ -31,7 +31,6 @@ bắt đầu viết loại component đó.
 
 ```
 components/ui/          primitive dùng chung, không biết gì về nghiệp vụ: button.tsx, card.tsx, badge.tsx
-components/layout/      khung trang dùng chung nhiều trang: site-header.tsx, site-footer.tsx
 engine/                 lõi dùng chung cho mọi thuật toán, TypeScript thuần, không có React/UI
   algorithm/            Algorithm Engine: interface, registry mà mọi thuật toán phải triển khai
   visualization/        Visualization Engine
@@ -41,8 +40,9 @@ features/
   sorting-algorithms/   mỗi danh mục một feature: bubble-sort/, selection-sort/, components/,
                         index.ts export SORTING_ALGORITHMS cho catalog ghép vào registry
   searching-algorithms/ (khi có) cùng khuôn với sorting-algorithms
-app/                    page/layout/loading/error, ghép từ features và components
-  <route>/_components/  component chỉ dùng cho đúng một route (vd: app/_components/home-hero.tsx)
+app/                    page/layout/not-found/error, ghép từ features và components
+  _components/          component của root layout và trang chủ: site-header, site-footer, logo, home-hero
+  <route>/_components/  component chỉ dùng cho đúng một route (vd: app/visualization/_components/)
 lib/                    tiện ích thuần: cn.ts, format.ts
 ```
 
@@ -88,7 +88,7 @@ lúc request (truy vấn DB không cache, `cookies()`, `headers()`, `params`, `s
   + `cacheLife(...)` + `cacheTag(...)`. Kết quả vào thẳng static shell, không cần Suspense.
 - **Dữ liệu theo request** (lượt chạy mới nhất, dữ liệu theo người dùng): không cache, đặt component
   đọc nó trong `<Suspense fallback={<XxxSkeleton />}>`.
-- **`params` và `searchParams` là Promise.** Dùng kiểu global `PageProps<"/thuat-toan/[slug]">` /
+- **`params` và `searchParams` là Promise.** Dùng kiểu global `PageProps<"/visualization/[category]/[algorithm]">` /
   `LayoutProps<"/">`. Đừng `await params` ở đầu page nếu làm vậy chặn cả trang — truyền Promise xuống
   component con nằm trong Suspense, hoặc dùng `params.then(...)` trong JSX (xem ví dụ).
 - **Client Component dùng `useSearchParams()`** cũng phải nằm trong `<Suspense>`.
@@ -150,6 +150,11 @@ tốt hơn vì phần còn lại của trang hiện ngay.
 - Chữ trên giao diện viết **tiếng Việt có dấu đầy đủ**, viết hoa chữ cái đầu câu (không Title Case kiểu
   tiếng Anh): "Danh sách thuật toán", "Xem chi tiết", "Không tìm thấy thuật toán nào". Thuật ngữ như
   `O(n log n)` giữ nguyên. Root layout nên đặt `<html lang="vi">`.
+- **URL thì ngược lại: route và slug viết tiếng Anh** (`/visualization`, `/visualization/sorting`,
+  `/visualization/sorting/bubble-sort`), không dùng slug tiếng Việt không dấu. Dựng link bằng
+  `getCategoryHref()` / `getAlgorithmHref()` trong `features/catalog/routes.ts` thay vì ghép chuỗi tay.
+- **Title:** root layout có `title.template` (`%s | SITE_NAME`), nên trang chỉ đặt `title: "Tên trang"`,
+  không tự ghép tên site.
 - Luôn xử lý trạng thái rỗng (danh sách không có phần tử) bằng một thông báo thân thiện.
 
 ## Dùng primitive của Next
