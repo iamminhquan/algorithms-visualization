@@ -20,7 +20,7 @@ export function Breadcrumb({ items }: BreadcrumbProps) {
     <nav aria-label="Đường dẫn">
       <ol className="flex flex-wrap items-center gap-2 text-sm text-text-secondary">
         {items.map((item, index) => (
-          <Fragment key={item.label}>
+          <Fragment key={item.href ?? item.label}>
             {index > 0 && (
               <li aria-hidden="true" className="text-text-muted">
                 /
