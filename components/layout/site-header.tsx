@@ -1,0 +1,43 @@
+import { Search } from "lucide-react";
+import Link from "next/link";
+import { Logo } from "./logo";
+
+export function SiteHeader() {
+  return (
+    <header className="sticky top-0 z-10 border-b border-border-default bg-bg-surface">
+      <div className="mx-auto flex h-18 max-w-360 items-center justify-between gap-3 px-4 sm:px-8 lg:px-20">
+        <Logo className="bg-bg-subtle text-text-primary" />
+        <div className="flex items-center gap-3">
+          <div className="relative hidden sm:block">
+            <label htmlFor="site-search" className="sr-only">
+              Tìm kiếm thuật toán
+            </label>
+            <Search
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-y-0 left-3 my-auto size-4 text-text-muted"
+            />
+            <input
+              id="site-search"
+              type="search"
+              placeholder="Tìm kiếm thuật toán..."
+              className="h-10 w-64 rounded-lg border border-border-strong bg-bg-surface pr-3 pl-9 text-sm text-text-primary outline-none placeholder:text-text-muted focus-visible:ring-2 focus-visible:ring-accent-default lg:w-80"
+            />
+          </div>
+          <button
+            type="button"
+            aria-label="Tìm kiếm thuật toán"
+            className="flex size-10 items-center justify-center rounded-lg border border-border-strong bg-bg-surface text-text-muted transition-colors hover:text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default sm:hidden"
+          >
+            <Search aria-hidden="true" className="size-4" />
+          </button>
+          <Link
+            href="#"
+            className="inline-flex h-9.25 items-center rounded-lg bg-accent-default px-5 text-sm font-medium whitespace-nowrap text-accent-on transition-colors hover:bg-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default"
+          >
+            Đăng nhập
+          </Link>
+        </div>
+      </div>
+    </header>
+  );
+}
