@@ -1,7 +1,15 @@
 import { type ComponentType, lazy } from "react";
-import { BUBBLE_SORT_KEY, bubbleSort } from "./bubble-sort";
+import {
+  BUBBLE_SORT_KEY,
+  BUBBLE_SORT_PSEUDOCODE,
+  bubbleSort,
+} from "./bubble-sort";
 import type { SortingAlgorithm } from "./index";
-import { SELECTION_SORT_KEY, selectionSort } from "./selection-sort";
+import {
+  SELECTION_SORT_KEY,
+  SELECTION_SORT_PSEUDOCODE,
+  selectionSort,
+} from "./selection-sort";
 
 /*
  * Tải lười để trang của danh mục khác không phải tải code mô phỏng sắp xếp.
@@ -13,11 +21,21 @@ const SortingVisualizer = lazy(() =>
 );
 
 function BubbleSortVisualizer() {
-  return <SortingVisualizer algorithm={bubbleSort} />;
+  return (
+    <SortingVisualizer
+      algorithm={bubbleSort}
+      pseudocode={BUBBLE_SORT_PSEUDOCODE}
+    />
+  );
 }
 
 function SelectionSortVisualizer() {
-  return <SortingVisualizer algorithm={selectionSort} />;
+  return (
+    <SortingVisualizer
+      algorithm={selectionSort}
+      pseudocode={SELECTION_SORT_PSEUDOCODE}
+    />
+  );
 }
 
 /**

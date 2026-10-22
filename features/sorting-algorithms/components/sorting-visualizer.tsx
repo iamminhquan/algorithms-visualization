@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArrayBars } from "@/components/visualization/array-bars";
 import { PlaybackControls } from "@/components/visualization/playback-controls";
+import { PseudocodePanel } from "@/components/visualization/pseudocode-panel";
 import { usePlayback } from "@/components/visualization/use-playback";
 import {
   type ILegendItem,
@@ -8,6 +9,7 @@ import {
 } from "@/components/visualization/visualizer-frame";
 import {
   countPayloadTypes,
+  type IPseudocode,
   type PayloadTypeCounts,
 } from "@/engine/visualization";
 import { DEFAULT_ARRAY } from "../array-input";
@@ -54,12 +56,16 @@ function createRun(
 
 type SortingVisualizerProps = {
   algorithm: SortingAlgorithm;
+  pseudocode: IPseudocode<SortingEvent["payload"]>;
 };
 
 /**
  * Trình mô phỏng dùng chung cho các thuật toán sắp xếp, vì chúng có cùng dạng bước và ảnh chụp.
  */
-export function SortingVisualizer({ algorithm }: SortingVisualizerProps) {
+export function SortingVisualizer({
+  algorithm,
+  pseudocode,
+}: SortingVisualizerProps) {
   const [run, setRun] = useState(() => createRun(algorithm, DEFAULT_ARRAY));
   const controls = usePlayback(run.events.length);
   const { index } = controls.state;
@@ -81,6 +87,12 @@ export function SortingVisualizer({ algorithm }: SortingVisualizerProps) {
         />
       }
       description={event.description}
+      aside={
+        <PseudocodePanel
+          lines={pseudocode.lines}
+          activeLine={pseudocode.getActiveLine(event.payload)}
+        />
+      }
       controls={<PlaybackControls controls={controls} />}
       legend={SORTING_LEGEND}
       metrics={[

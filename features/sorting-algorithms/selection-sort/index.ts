@@ -1,3 +1,4 @@
+export { SELECTION_SORT_PSEUDOCODE } from "./pseudocode";
 export {
   MAX_INPUT_LENGTH,
   SELECTION_SORT_KEY,
