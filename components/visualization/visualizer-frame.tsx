@@ -100,3 +100,13 @@ export function VisualizerFrame({
     </section>
   );
 }
+
+export function VisualizerSkeleton() {
+  return (
+    <div aria-hidden="true" className="flex animate-pulse flex-col gap-4">
+      <div className="h-51 rounded-xl bg-bg-subtle sm:h-31" />
+      <div className="h-88 rounded-xl bg-bg-subtle sm:h-102" />
+      <div className="h-28 rounded-xl bg-bg-subtle sm:h-16" />
+    </div>
+  );
+}
