@@ -136,25 +136,7 @@ export function PlaybackControls({
           ))}
         </select>
       </div>
-
-      <p className="hidden w-full text-xs text-text-muted lg:block">
-        Phím tắt: <Kbd>Space</Kbd> phát hoặc tạm dừng, <Kbd>←</Kbd> <Kbd>→</Kbd>{" "}
-        lùi hoặc tới một bước, <Kbd>Home</Kbd> <Kbd>End</Kbd> về bước đầu hoặc
-        cuối.
-      </p>
     </div>
-  );
-}
-
-type KbdProps = {
-  children: string;
-};
-
-function Kbd({ children }: KbdProps) {
-  return (
-    <kbd className="rounded border border-border-default bg-bg-subtle px-1 font-mono text-text-secondary">
-      {children}
-    </kbd>
   );
 }
 
