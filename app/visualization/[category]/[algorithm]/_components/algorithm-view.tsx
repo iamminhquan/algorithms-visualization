@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { VisualizerSkeleton } from "@/components/visualization/visualizer-frame";
+import { AlgorithmVisualizer } from "@/features/catalog/components/algorithm-visualizer";
 import { getAlgorithmBySlug } from "@/features/catalog/queries";
 import { getCategoryHref, VISUALIZATION_PATH } from "@/features/catalog/routes";
 
@@ -47,12 +49,7 @@ export async function AlgorithmView({ params }: AlgorithmViewProps) {
           />
         </dl>
       </header>
-      <section
-        aria-label="Mô phỏng"
-        className="flex aspect-video items-center justify-center rounded-xl border border-dashed border-border-strong bg-bg-subtle p-6 text-center text-text-secondary"
-      >
-        Phần mô phỏng đang được xây dựng.
-      </section>
+      <AlgorithmVisualizer algorithmKey={algorithm.key} />
     </article>
   );
 }
@@ -69,7 +66,7 @@ export function AlgorithmViewSkeleton() {
           <div className="h-21 rounded-lg bg-bg-subtle" />
         </div>
       </div>
-      <div className="aspect-video rounded-xl bg-bg-subtle" />
+      <VisualizerSkeleton />
     </div>
   );
 }

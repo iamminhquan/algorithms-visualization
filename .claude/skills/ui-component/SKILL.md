@@ -31,9 +31,11 @@ bắt đầu viết loại component đó.
 
 ```
 components/ui/          primitive dùng chung, không biết gì về nghiệp vụ: button.tsx, card.tsx, badge.tsx
+components/visualization/  khối mô phỏng dùng chung (điều khiển phát, khung, dãy cột, mã giả),
+                        không biết thuật toán cụ thể nào
 engine/                 lõi dùng chung cho mọi thuật toán, TypeScript thuần, không có React/UI
   algorithm/            Algorithm Engine: interface, registry mà mọi thuật toán phải triển khai
-  visualization/        Visualization Engine
+  visualization/        Visualization Engine: điều khiển phát, bộ đếm theo bước, thang chiều cao, tone
 features/
   catalog/              phần dùng chung mọi danh mục: categories.ts, catalog.ts (ghép registry),
                         queries.ts, components/ (category-card, category-grid, illustrations/)
