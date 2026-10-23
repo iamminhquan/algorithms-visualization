@@ -2,9 +2,16 @@ import { MAX_INPUT_LENGTH as BUBBLE_SORT_MAX_LENGTH } from "./bubble-sort";
 import { MAX_INPUT_LENGTH as SELECTION_SORT_MAX_LENGTH } from "./selection-sort";
 
 /**
- * Một input dùng được cho mọi thuật toán sắp xếp, nên lấy giới hạn chặt nhất.
+ * Số phần tử tối đa để mô phỏng còn dễ theo dõi.
+ */
+const DISPLAY_MAX_LENGTH = 50;
+
+/**
+ * Một input dùng được cho mọi thuật toán sắp xếp, nên lấy giới hạn chặt nhất,
+ * kể cả giới hạn hiển thị.
  */
 export const MAX_ARRAY_LENGTH = Math.min(
+  DISPLAY_MAX_LENGTH,
   BUBBLE_SORT_MAX_LENGTH,
   SELECTION_SORT_MAX_LENGTH,
 );
@@ -81,10 +88,10 @@ export function parseArrayInput(text: string): ArrayInputParseResult {
  * Viết mảng thành chuỗi để hiện trong ô nhập; `parseArrayInput` đọc lại được đúng mảng này.
  *
  * @param values Mảng cần hiện.
- * @returns Các số cách nhau bởi dấu phẩy và khoảng trắng.
+ * @returns Các số cách nhau bởi một khoảng trắng.
  */
 export function formatArrayInput(values: readonly number[]): string {
-  return values.join(", ");
+  return values.join(" ");
 }
 
 /**

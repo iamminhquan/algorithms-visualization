@@ -38,16 +38,6 @@ export async function AlgorithmView({ params }: AlgorithmViewProps) {
             {algorithm.description}
           </p>
         )}
-        <dl className="grid max-w-md grid-cols-2 gap-4">
-          <ComplexityItem
-            label="Độ phức tạp thời gian"
-            value={algorithm.timeComplexity}
-          />
-          <ComplexityItem
-            label="Độ phức tạp bộ nhớ"
-            value={algorithm.spaceComplexity}
-          />
-        </dl>
       </header>
       <AlgorithmVisualizer algorithmKey={algorithm.key} />
     </article>
@@ -61,26 +51,8 @@ export function AlgorithmViewSkeleton() {
         <div className="h-5 w-64 rounded bg-bg-subtle" />
         <div className="h-10 w-80 max-w-full rounded-lg bg-bg-subtle" />
         <div className="h-15 w-full max-w-160 rounded-lg bg-bg-subtle" />
-        <div className="grid max-w-md grid-cols-2 gap-4">
-          <div className="h-21 rounded-lg bg-bg-subtle" />
-          <div className="h-21 rounded-lg bg-bg-subtle" />
-        </div>
       </div>
       <VisualizerSkeleton />
-    </div>
-  );
-}
-
-type ComplexityItemProps = {
-  label: string;
-  value: string | null;
-};
-
-function ComplexityItem({ label, value }: ComplexityItemProps) {
-  return (
-    <div className="flex flex-col gap-1 rounded-lg border border-border-default bg-bg-surface p-4">
-      <dt className="text-sm text-text-secondary">{label}</dt>
-      <dd className="font-mono text-lg text-text-primary">{value ?? "—"}</dd>
     </div>
   );
 }

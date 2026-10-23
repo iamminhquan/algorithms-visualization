@@ -1,4 +1,5 @@
 import {
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   type LucideIcon,
@@ -116,45 +117,33 @@ export function PlaybackControls({
         <label htmlFor={speedId} className="text-sm text-text-secondary">
           Tốc độ
         </label>
-        <select
-          id={speedId}
-          value={state.speed}
-          onChange={(event) => {
-            const speed = PLAYBACK_SPEEDS.find(
-              (option) => option === Number(event.currentTarget.value),
-            );
-            if (speed !== undefined) {
-              controls.setSpeed(speed);
-            }
-          }}
-          className="h-9 rounded-lg border border-border-strong bg-bg-surface px-2 text-sm text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default"
-        >
-          {PLAYBACK_SPEEDS.map((speed) => (
-            <option key={speed} value={speed}>
-              {speed}×
-            </option>
-          ))}
-        </select>
+        <div className="relative">
+          <select
+            id={speedId}
+            value={state.speed}
+            onChange={(event) => {
+              const speed = PLAYBACK_SPEEDS.find(
+                (option) => option === Number(event.currentTarget.value),
+              );
+              if (speed !== undefined) {
+                controls.setSpeed(speed);
+              }
+            }}
+            className="h-9 cursor-pointer appearance-none rounded-lg border border-border-strong bg-bg-surface pr-8 pl-3 text-sm text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default"
+          >
+            {PLAYBACK_SPEEDS.map((speed) => (
+              <option key={speed} value={speed}>
+                {speed}×
+              </option>
+            ))}
+          </select>
+          <ChevronDown
+            aria-hidden="true"
+            className="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-text-secondary"
+          />
+        </div>
       </div>
-
-      <p className="hidden w-full text-xs text-text-muted lg:block">
-        Phím tắt: <Kbd>Space</Kbd> phát hoặc tạm dừng, <Kbd>←</Kbd> <Kbd>→</Kbd>{" "}
-        lùi hoặc tới một bước, <Kbd>Home</Kbd> <Kbd>End</Kbd> về bước đầu hoặc
-        cuối.
-      </p>
     </div>
-  );
-}
-
-type KbdProps = {
-  children: string;
-};
-
-function Kbd({ children }: KbdProps) {
-  return (
-    <kbd className="rounded border border-border-default bg-bg-subtle px-1 font-mono text-text-secondary">
-      {children}
-    </kbd>
   );
 }
 

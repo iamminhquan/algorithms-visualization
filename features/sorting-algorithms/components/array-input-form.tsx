@@ -1,6 +1,5 @@
 import { CircleAlert, Shuffle } from "lucide-react";
 import { useId, useState } from "react";
-import { cn } from "@/lib/cn";
 import {
   createRandomArray,
   formatArrayInput,
@@ -44,7 +43,7 @@ export function ArrayInputForm({
         apply(result.values);
         setSize(result.values.length);
       }}
-      className="flex flex-col gap-4 rounded-xl border border-border-default bg-bg-surface p-4 sm:flex-row sm:items-end sm:gap-6"
+      className="flex flex-col gap-4 rounded-xl border border-border-default bg-bg-surface p-4 sm:flex-row sm:items-start sm:gap-6"
     >
       <div className="flex flex-1 flex-col gap-1.5">
         <label
@@ -63,8 +62,8 @@ export function ArrayInputForm({
             value={text}
             onChange={(event) => setText(event.currentTarget.value)}
             aria-invalid={error !== undefined}
-            aria-describedby={errorId}
-            placeholder="Ví dụ: 5, 3, 8, 1"
+            aria-describedby={error ? errorId : undefined}
+            placeholder="Ví dụ: 5 3 8 1"
             className="h-10 min-w-0 flex-1 rounded-lg border border-border-strong bg-bg-surface px-3 font-mono text-sm text-text-primary outline-none placeholder:text-text-muted focus-visible:ring-2 focus-visible:ring-accent-default"
           />
           <button
@@ -74,23 +73,19 @@ export function ArrayInputForm({
             Áp dụng
           </button>
         </div>
-        <p
-          id={errorId}
-          role={error ? "alert" : undefined}
-          className={cn(
-            "flex min-h-5 items-center gap-1.5 text-sm",
-            error ? "font-medium text-text-primary" : "text-text-secondary",
-          )}
-        >
-          {error && (
+        {error && (
+          <p
+            id={errorId}
+            role="alert"
+            className="flex items-center gap-1.5 text-sm font-medium text-text-primary"
+          >
             <CircleAlert aria-hidden="true" className="size-4 shrink-0" />
-          )}
-          {error ??
-            `Tối đa ${MAX_ARRAY_LENGTH} số nguyên, cách nhau bởi dấu phẩy hoặc khoảng trắng.`}
-        </p>
+            {error}
+          </p>
+        )}
       </div>
 
-      <div className="flex flex-col gap-1.5 sm:pb-6.5">
+      <div className="flex flex-col gap-1.5">
         <label
           htmlFor={sizeId}
           className="text-sm font-medium text-text-primary"
