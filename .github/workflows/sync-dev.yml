@@ -1,0 +1,19 @@
+# Sau mỗi lần push lên main (kể cả khi merge PR từ dev), fast-forward dev lên đúng commit đó.
+# Lệnh không dùng --force: nếu dev có commit mà main chưa có, push sẽ bị từ chối và workflow báo lỗi.
+name: Đồng bộ dev với main
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  sync-dev:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fast-forward dev lên commit của main
+        run: git push origin "${GITHUB_SHA}:refs/heads/dev"
