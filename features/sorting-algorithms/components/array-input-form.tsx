@@ -63,7 +63,7 @@ export function ArrayInputForm({
             onChange={(event) => setText(event.currentTarget.value)}
             aria-invalid={error !== undefined}
             aria-describedby={error ? errorId : undefined}
-            placeholder="Ví dụ: 5, 3, 8, 1"
+            placeholder="Ví dụ: 5 3 8 1"
             className="h-10 min-w-0 flex-1 rounded-lg border border-border-strong bg-bg-surface px-3 font-mono text-sm text-text-primary outline-none placeholder:text-text-muted focus-visible:ring-2 focus-visible:ring-accent-default"
           />
           <button

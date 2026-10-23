@@ -88,10 +88,10 @@ export function parseArrayInput(text: string): ArrayInputParseResult {
  * Viết mảng thành chuỗi để hiện trong ô nhập; `parseArrayInput` đọc lại được đúng mảng này.
  *
  * @param values Mảng cần hiện.
- * @returns Các số cách nhau bởi dấu phẩy và khoảng trắng.
+ * @returns Các số cách nhau bởi một khoảng trắng.
  */
 export function formatArrayInput(values: readonly number[]): string {
-  return values.join(", ");
+  return values.join(" ");
 }
 
 /**
