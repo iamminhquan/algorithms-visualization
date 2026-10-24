@@ -8,8 +8,6 @@ export const PLAYBACK_SHORTCUTS = {
   toggle: "Space",
   stepBack: "ArrowLeft",
   stepForward: "ArrowRight",
-  first: "Home",
-  last: "End",
 } as const;
 
 /**
@@ -25,7 +23,7 @@ const TEXT_ENTRY_SELECTOR =
 const SPACE_ACTIVATED_SELECTOR = "button, a[href], summary, [role='button']";
 
 /**
- * Gắn phím tắt trên toàn trang: Space phát/dừng, ←/→ lùi/tới một bước, Home/End về đầu/cuối.
+ * Gắn phím tắt trên toàn trang: Space phát/dừng, ←/→ lùi/tới một bước.
  * Bỏ qua khi người dùng đang nhập liệu hoặc giữ Ctrl/Alt/Meta để không chặn phím tắt của trình duyệt.
  *
  * @param controls Bộ điều khiển trả về từ `usePlayback`.
@@ -61,12 +59,6 @@ export function usePlaybackShortcuts(controls: IPlaybackControls): void {
         break;
       case "ArrowRight":
         controls.stepForward();
-        break;
-      case "Home":
-        controls.seek(0);
-        break;
-      case "End":
-        controls.seek(controls.state.total - 1);
         break;
       default:
         return;

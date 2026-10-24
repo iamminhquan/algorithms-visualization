@@ -6,8 +6,6 @@ import {
   Pause,
   Play,
   RotateCcw,
-  SkipBack,
-  SkipForward,
 } from "lucide-react";
 import { type ComponentProps, useId } from "react";
 import { isAtEnd, PLAYBACK_SPEEDS } from "@/engine/visualization";
@@ -46,13 +44,6 @@ export function PlaybackControls({
     >
       <div className="flex items-center gap-1">
         <ControlButton
-          icon={SkipBack}
-          label="Về bước đầu"
-          aria-keyshortcuts={PLAYBACK_SHORTCUTS.first}
-          disabled={atStart}
-          onClick={() => controls.seek(0)}
-        />
-        <ControlButton
           icon={ChevronLeft}
           label="Bước trước"
           aria-keyshortcuts={PLAYBACK_SHORTCUTS.stepBack}
@@ -83,13 +74,6 @@ export function PlaybackControls({
           aria-keyshortcuts={PLAYBACK_SHORTCUTS.stepForward}
           disabled={atEnd}
           onClick={controls.stepForward}
-        />
-        <ControlButton
-          icon={SkipForward}
-          label="Tới bước cuối"
-          aria-keyshortcuts={PLAYBACK_SHORTCUTS.last}
-          disabled={atEnd}
-          onClick={() => controls.seek(lastIndex)}
         />
       </div>
 
