@@ -1,7 +1,8 @@
 import { createAlgorithmRegistry } from "@/engine/algorithm";
+import { SEARCHING_ALGORITHMS } from "@/features/searching-algorithms";
 import { SORTING_ALGORITHMS } from "@/features/sorting-algorithms";
 
-const ALGORITHMS = [...SORTING_ALGORITHMS] as const;
+const ALGORITHMS = [...SORTING_ALGORITHMS, ...SEARCHING_ALGORITHMS] as const;
 
 const algorithmRegistry = createAlgorithmRegistry(ALGORITHMS);
 

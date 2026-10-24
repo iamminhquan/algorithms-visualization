@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ArrayBars } from "@/components/visualization/array-bars";
+import { ArrayInputForm } from "@/components/visualization/array-input-form";
 import { PlaybackControls } from "@/components/visualization/playback-controls";
 import { PseudocodePanel } from "@/components/visualization/pseudocode-panel";
 import { usePlayback } from "@/components/visualization/use-playback";
@@ -12,14 +13,13 @@ import {
   type IPseudocode,
   type PayloadTypeCounts,
 } from "@/engine/visualization";
-import { DEFAULT_ARRAY } from "../array-input";
+import { DEFAULT_ARRAY, MAX_ARRAY_LENGTH } from "../array-input";
 import type { SortingAlgorithm } from "../index";
 import {
   type ISortingFrame,
   type SortingEvent,
   trackElementIds,
 } from "../visualization";
-import { ArrayInputForm } from "./array-input-form";
 
 /**
  * Mọi thứ cần để vẽ một lần chạy, tính một lần khi input đổi thay vì ở mỗi lần render.
@@ -82,6 +82,7 @@ export function SortingVisualizer({
       toolbar={
         <ArrayInputForm
           initialValues={run.values}
+          maxLength={MAX_ARRAY_LENGTH}
           onChange={(values) => {
             const next = createRun(algorithm, values);
             setRun(next);

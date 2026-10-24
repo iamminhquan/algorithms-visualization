@@ -3,16 +3,21 @@ import {
   ChartNoAxesColumn,
   type LucideIcon,
   MousePointerClick,
+  ScanLine,
+  SquareSplitHorizontal,
 } from "lucide-react";
 import type { AlgorithmKey } from "../catalog";
 
 /*
  * Khai báo bằng `satisfies Record<AlgorithmKey, ...>` để thêm thuật toán mới mà quên chọn icon thì
- * `tsc` báo lỗi. Icon bám theo chính tên thuật toán: nổi bọt (bong bóng) và chọn (bấm chọn).
+ * `tsc` báo lỗi. Icon bám theo chính tên thuật toán: nổi bọt (bong bóng), chọn (bấm chọn),
+ * tuyến tính (quét lần lượt) và nhị phân (chia đôi).
  */
 const ALGORITHM_ICONS = {
   "bubble-sort": Bubbles,
   "selection-sort": MousePointerClick,
+  "linear-search": ScanLine,
+  "binary-search": SquareSplitHorizontal,
 } satisfies Record<AlgorithmKey, LucideIcon>;
 
 const ICON_BY_KEY: ReadonlyMap<string, LucideIcon> = new Map(

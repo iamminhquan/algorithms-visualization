@@ -73,6 +73,8 @@
   --color-state-pivot: var(--color-okabe-ito-reddish-purple);
   --color-state-pointer: var(--color-okabe-ito-blue);
   --color-state-sorted: var(--color-okabe-ito-bluish-green);
+  --color-state-discarded: var(--color-slate-100);
+  --color-state-found: var(--color-okabe-ito-bluish-green);
 }
 
 @theme inline {
@@ -103,6 +105,7 @@
 
     --color-state-default: var(--color-slate-600);
     --color-state-pointer: var(--color-okabe-ito-sky-blue);
+    --color-state-discarded: var(--color-slate-800);
   }
 }
 
