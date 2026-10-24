@@ -1,3 +1,7 @@
+import type {
+  IBarBracket,
+  IBarMarker,
+} from "@/components/visualization/array-bars";
 import type { VisualTone } from "@/engine/visualization";
 import type { BubbleSortEvent } from "./bubble-sort";
 import type { SelectionSortEvent } from "./selection-sort";
@@ -8,6 +12,32 @@ import type { SelectionSortEvent } from "./selection-sort";
  * vẽ được tất cả.
  */
 export type SortingEvent = BubbleSortEvent | SelectionSortEvent;
+
+/**
+ * Mọi thứ cần vẽ trên mảng ở một bước.
+ *
+ * `tones`: Tone của từng vị trí.
+ * `markers`: Huy hiệu của từng vị trí, cùng độ dài với `tones`; từ đỉnh cột đi lên.
+ * `bracket`: Ngoặc phủ cặp phần tử đang thao tác, không có ở bước không thao tác trên cặp nào.
+ */
+export interface ISortingFrame {
+  readonly tones: readonly VisualTone[];
+  readonly markers: readonly (readonly IBarMarker[])[];
+  readonly bracket?: IBarBracket;
+}
+
+/**
+ * Hình cơ bản của một bước, chưa có huy hiệu hay ngoặc; thuật toán thêm phần riêng của nó lên trên.
+ *
+ * @param event Sự kiện đang xem.
+ * @returns Tone từ `getBarTones` và mọi vị trí chưa có huy hiệu.
+ */
+export function getBaseFrame(event: SortingEvent): ISortingFrame {
+  return {
+    tones: getBarTones(event),
+    markers: event.state.array.map(() => []),
+  };
+}
 
 /**
  * Vai trò của từng cột ở một bước: cột đã đúng vị trí tô `sorted`, rồi các cột thao tác của bước

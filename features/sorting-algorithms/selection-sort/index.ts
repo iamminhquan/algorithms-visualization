@@ -12,3 +12,7 @@ export type {
   SelectionSortResult,
   SelectionSortStep,
 } from "./types";
+export {
+  getSelectionSortFrame,
+  SELECTION_SORT_LEGEND,
+} from "./visualization";
