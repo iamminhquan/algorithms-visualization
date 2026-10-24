@@ -99,14 +99,13 @@ export function SortingVisualizer({
       controls={<PlaybackControls controls={controls} />}
       legend={legend}
       metrics={[
-        { label: "Số phần tử", value: run.values.length },
         { label: "So sánh", value: counts.compare },
         { label: "Hoán đổi", value: counts.swap },
       ]}
     >
       <ArrayBars
         className="h-full"
-        bracket={frame.bracket}
+        bracket={index === 0 ? undefined : frame.bracket}
         bars={event.state.array.map((value, position) => ({
           id: ids[position],
           value,
