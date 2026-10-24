@@ -7,6 +7,8 @@ export const TONE_BACKGROUND: Readonly<Record<VisualTone, string>> = {
   pivot: "bg-state-pivot",
   pointer: "bg-state-pointer",
   sorted: "bg-state-sorted",
+  discarded: "bg-state-discarded",
+  found: "bg-state-found",
 };
 
 export const TONE_BORDER: Readonly<Record<VisualTone, string>> = {
@@ -16,4 +18,6 @@ export const TONE_BORDER: Readonly<Record<VisualTone, string>> = {
   pivot: "border-state-pivot",
   pointer: "border-state-pointer",
   sorted: "border-state-sorted",
+  discarded: "border-state-discarded",
+  found: "border-state-found",
 };
