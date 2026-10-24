@@ -14,6 +14,14 @@ const MAX_LABELED_BARS = 20;
  */
 const SLIDE_TRANSITION = { type: "spring", bounce: 0, duration: 0.3 } as const;
 
+/**
+ * Cột đang hoán đổi phóng to rồi thu lại trong lúc trượt, cùng thời gian với `SLIDE_TRANSITION`,
+ * trông như tiến lại gần người xem rồi lùi về; kèm `z-10` để nó nằm đè lên cột bên cạnh thay vì
+ * chui xuyên qua.
+ */
+const LIFT_KEYFRAMES = [1, 1.12, 1];
+const LIFT_TRANSITION = { duration: 0.3, ease: "easeInOut" } as const;
+
 /*
  * Các hằng dưới đây tính bằng rem và phải khớp với class Tailwind tương ứng
  * (`h-5` = 1,25rem, `gap-0.5` = 0.125rem) vì ngoặc cần biết huy hiệu cao bao nhiêu để nằm phía trên.
@@ -119,24 +127,33 @@ export function ArrayBars({ bars, bracket, className }: ArrayBarsProps) {
                 key={bar.id}
                 layout="position"
                 transition={SLIDE_TRANSITION}
-                className="flex min-w-0 flex-1 flex-col items-center gap-1.5"
-              >
-                <div className="relative w-full flex-1">
-                  <div
-                    className={cn(
-                      "absolute inset-x-0 bottom-0 rounded-t-md transition-[height,background-color] duration-300 ease-out motion-reduce:transition-none",
-                      TONE_BACKGROUND[bar.tone],
-                    )}
-                    style={{
-                      height: `calc((100% - ${HEADROOM_REM}rem) * ${heights[position] / 100})`,
-                    }}
-                  />
-                </div>
-                {showValues && (
-                  <span className="h-4 font-mono text-xs leading-4 text-text-secondary tabular-nums">
-                    {bar.value}
-                  </span>
+                className={cn(
+                  "relative min-w-0 flex-1",
+                  bar.tone === "swap" && "z-10",
                 )}
+              >
+                <m.div
+                  animate={{ scale: bar.tone === "swap" ? LIFT_KEYFRAMES : 1 }}
+                  transition={LIFT_TRANSITION}
+                  className="flex h-full flex-col items-center gap-1.5"
+                >
+                  <div className="relative w-full flex-1">
+                    <div
+                      className={cn(
+                        "absolute inset-x-0 bottom-0 rounded-t-md transition-[height,background-color] duration-300 ease-out motion-reduce:transition-none",
+                        TONE_BACKGROUND[bar.tone],
+                      )}
+                      style={{
+                        height: `calc((100% - ${HEADROOM_REM}rem) * ${heights[position] / 100})`,
+                      }}
+                    />
+                  </div>
+                  {showValues && (
+                    <span className="h-4 font-mono text-xs leading-4 text-text-secondary tabular-nums">
+                      {bar.value}
+                    </span>
+                  )}
+                </m.div>
               </m.div>
             ))}
           </div>
