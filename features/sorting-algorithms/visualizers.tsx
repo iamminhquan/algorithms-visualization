@@ -1,12 +1,16 @@
 import { type ComponentType, lazy } from "react";
 import {
   BUBBLE_SORT_KEY,
+  BUBBLE_SORT_LEGEND,
   BUBBLE_SORT_PSEUDOCODE,
   bubbleSort,
+  getBubbleSortFrame,
 } from "./bubble-sort";
 import type { SortingAlgorithm } from "./index";
 import {
+  getSelectionSortFrame,
   SELECTION_SORT_KEY,
+  SELECTION_SORT_LEGEND,
   SELECTION_SORT_PSEUDOCODE,
   selectionSort,
 } from "./selection-sort";
@@ -25,6 +29,8 @@ function BubbleSortVisualizer() {
     <SortingVisualizer
       algorithm={bubbleSort}
       pseudocode={BUBBLE_SORT_PSEUDOCODE}
+      getFrame={getBubbleSortFrame}
+      legend={BUBBLE_SORT_LEGEND}
     />
   );
 }
@@ -34,6 +40,8 @@ function SelectionSortVisualizer() {
     <SortingVisualizer
       algorithm={selectionSort}
       pseudocode={SELECTION_SORT_PSEUDOCODE}
+      getFrame={getSelectionSortFrame}
+      legend={SELECTION_SORT_LEGEND}
     />
   );
 }

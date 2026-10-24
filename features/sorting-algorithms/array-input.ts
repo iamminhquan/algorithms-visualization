@@ -4,7 +4,7 @@ import { MAX_INPUT_LENGTH as SELECTION_SORT_MAX_LENGTH } from "./selection-sort"
 /**
  * Số phần tử tối đa để mô phỏng còn dễ theo dõi.
  */
-const DISPLAY_MAX_LENGTH = 50;
+const DISPLAY_MAX_LENGTH = 20;
 
 /**
  * Một input dùng được cho mọi thuật toán sắp xếp, nên lấy giới hạn chặt nhất,

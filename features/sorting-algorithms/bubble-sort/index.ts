@@ -8,3 +8,4 @@ export type {
   IBubbleSortMetrics,
   IBubbleSortState,
 } from "./types";
+export { BUBBLE_SORT_LEGEND, getBubbleSortFrame } from "./visualization";

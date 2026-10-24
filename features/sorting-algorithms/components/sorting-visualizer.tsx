@@ -15,18 +15,11 @@ import {
 import { DEFAULT_ARRAY } from "../array-input";
 import type { SortingAlgorithm } from "../index";
 import {
-  getBarTones,
+  type ISortingFrame,
   type SortingEvent,
   trackElementIds,
 } from "../visualization";
 import { ArrayInputForm } from "./array-input-form";
-
-const SORTING_LEGEND: readonly ILegendItem[] = [
-  { tone: "default", label: "Chưa sắp xếp" },
-  { tone: "compare", label: "Đang so sánh" },
-  { tone: "swap", label: "Đang hoán đổi" },
-  { tone: "sorted", label: "Đã đúng vị trí" },
-];
 
 /**
  * Mọi thứ cần để vẽ một lần chạy, tính một lần khi input đổi thay vì ở mỗi lần render.
@@ -54,9 +47,17 @@ function createRun(
   };
 }
 
+/**
+ * Props của `SortingVisualizer`.
+ *
+ * `getFrame`: Biến một sự kiện thành hình cần vẽ (tone, huy hiệu, ngoặc); mỗi thuật toán tự khai báo.
+ * `legend`: Chú giải màu và huy hiệu riêng của thuật toán.
+ */
 type SortingVisualizerProps = {
   algorithm: SortingAlgorithm;
   pseudocode: IPseudocode<SortingEvent["payload"]>;
+  getFrame: (event: SortingEvent) => ISortingFrame;
+  legend: readonly ILegendItem[];
 };
 
 /**
@@ -65,12 +66,14 @@ type SortingVisualizerProps = {
 export function SortingVisualizer({
   algorithm,
   pseudocode,
+  getFrame,
+  legend,
 }: SortingVisualizerProps) {
   const [run, setRun] = useState(() => createRun(algorithm, DEFAULT_ARRAY));
   const controls = usePlayback(run.events.length);
   const { index } = controls.state;
   const event = run.events[index];
-  const tones = getBarTones(event);
+  const frame = getFrame(event);
   const ids = run.ids[index];
   const counts = run.counts[index];
 
@@ -94,19 +97,20 @@ export function SortingVisualizer({
         />
       }
       controls={<PlaybackControls controls={controls} />}
-      legend={SORTING_LEGEND}
+      legend={legend}
       metrics={[
-        { label: "Số phần tử", value: run.values.length },
         { label: "So sánh", value: counts.compare },
         { label: "Hoán đổi", value: counts.swap },
       ]}
     >
       <ArrayBars
         className="h-full"
+        bracket={index === 0 ? undefined : frame.bracket}
         bars={event.state.array.map((value, position) => ({
           id: ids[position],
           value,
-          tone: tones[position],
+          tone: frame.tones[position],
+          markers: frame.markers[position],
         }))}
       />
     </VisualizerFrame>
