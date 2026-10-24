@@ -1,4 +1,6 @@
 import { CATEGORIES, type CategorySlug } from "@/features/catalog/categories";
+import { BINARY_SEARCH_KEY } from "@/features/searching-algorithms/binary-search";
+import { LINEAR_SEARCH_KEY } from "@/features/searching-algorithms/linear-search";
 import { BUBBLE_SORT_KEY } from "@/features/sorting-algorithms/bubble-sort";
 import { SELECTION_SORT_KEY } from "@/features/sorting-algorithms/selection-sort";
 import type { NewAlgorithm, NewCategory } from "./schema";
@@ -32,6 +34,28 @@ export const seedAlgorithms: readonly (Omit<NewAlgorithm, "categoryId"> & {
       "Ở mỗi lượt, duyệt đoạn chưa sắp xếp để tìm giá trị nhỏ nhất rồi đổi nó về đầu đoạn; " +
       "đoạn đã sắp xếp ở đầu mảng dài thêm một phần tử sau mỗi lượt.",
     timeComplexity: "O(n²)",
+    spaceComplexity: "O(1)",
+  },
+  {
+    key: LINEAR_SEARCH_KEY,
+    categorySlug: "searching",
+    name: "Tìm kiếm tuyến tính (Linear Search)",
+    slug: "linear-search",
+    description:
+      "Duyệt lần lượt từng phần tử từ đầu mảng và so sánh với giá trị cần tìm; dừng ngay khi gặp " +
+      "phần tử bằng nó, hoặc báo không tìm thấy khi đã xét hết mảng. Không cần mảng có thứ tự.",
+    timeComplexity: "O(n)",
+    spaceComplexity: "O(1)",
+  },
+  {
+    key: BINARY_SEARCH_KEY,
+    categorySlug: "searching",
+    name: "Tìm kiếm nhị phân (Binary Search)",
+    slug: "binary-search",
+    description:
+      "Trên mảng đã sắp xếp, so sánh giá trị cần tìm với phần tử ở giữa vùng đang xét rồi bỏ " +
+      "nửa không thể chứa nó; mỗi bước vùng tìm kiếm còn một nửa, đến khi tìm thấy hoặc rỗng.",
+    timeComplexity: "O(log n)",
     spaceComplexity: "O(1)",
   },
 ];
