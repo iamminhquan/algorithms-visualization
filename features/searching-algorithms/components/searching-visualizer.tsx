@@ -1,0 +1,165 @@
+import { useState } from "react";
+import { ArrayBars } from "@/components/visualization/array-bars";
+import { ArrayInputForm } from "@/components/visualization/array-input-form";
+import { PlaybackControls } from "@/components/visualization/playback-controls";
+import { PseudocodePanel } from "@/components/visualization/pseudocode-panel";
+import { usePlayback } from "@/components/visualization/use-playback";
+import {
+  type ILegendItem,
+  VisualizerFrame,
+} from "@/components/visualization/visualizer-frame";
+import type {
+  IAlgorithmDefinition,
+  IExecutionResult,
+} from "@/engine/algorithm";
+import type { IPseudocode } from "@/engine/visualization";
+import {
+  DEFAULT_ARRAY,
+  DEFAULT_TARGET,
+  MAX_ARRAY_LENGTH,
+  pickRandomTarget,
+} from "../search-input";
+import type { ISearchInput, ISearchMetrics, SearchOutput } from "../types";
+import {
+  getRemainingCount,
+  type ISearchingFrame,
+  type SearchingEvent,
+} from "../visualization";
+import { TargetInputForm } from "./target-input-form";
+
+/**
+ * Mọi thứ cần để vẽ một lần chạy, tính một lần khi input đổi thay vì ở mỗi lần render.
+ *
+ * `output`: Vị trí thuật toán trả về, -1 nếu không tìm thấy.
+ * `comparisons`: Số lần so sánh dồn tới mỗi sự kiện, cùng độ dài với `events`.
+ */
+interface ISearchingRun<TEvent extends SearchingEvent> {
+  readonly values: readonly number[];
+  readonly target: number;
+  readonly output: SearchOutput;
+  readonly events: readonly TEvent[];
+  readonly comparisons: readonly number[];
+}
+
+type SearchingAlgorithmDefinition<TEvent extends SearchingEvent> =
+  IAlgorithmDefinition<
+    ISearchInput,
+    IExecutionResult<SearchOutput, TEvent, ISearchMetrics>
+  >;
+
+function createRun<TEvent extends SearchingEvent>(
+  algorithm: SearchingAlgorithmDefinition<TEvent>,
+  values: readonly number[],
+  target: number,
+): ISearchingRun<TEvent> {
+  const { output, events } = algorithm.execute({ array: values, target });
+  let running = 0;
+  const comparisons = events.map((event) => {
+    if (event.payload.type === "compare") {
+      running += 1;
+    }
+    return running;
+  });
+  return { values, target, output, events, comparisons };
+}
+
+/**
+ * Props của `SearchingVisualizer`.
+ *
+ * `getFrame`: Biến một sự kiện thành hình cần vẽ (tone, huy hiệu, ngoặc); mỗi thuật toán tự khai báo.
+ * `legend`: Chú giải màu riêng của thuật toán.
+ * `normalize`: Biến đổi mảng trước khi chạy, kể cả mảng mặc định, ví dụ sắp xếp cho Binary Search.
+ * `inputHint`: Câu hướng dẫn dưới ô nhập mảng.
+ */
+type SearchingVisualizerProps<TEvent extends SearchingEvent> = {
+  algorithm: SearchingAlgorithmDefinition<TEvent>;
+  pseudocode: IPseudocode<TEvent["payload"]>;
+  getFrame: (event: TEvent) => ISearchingFrame;
+  legend: readonly ILegendItem[];
+  normalize?: (values: readonly number[]) => readonly number[];
+  inputHint?: string;
+};
+
+/**
+ * Trình mô phỏng dùng chung cho các thuật toán tìm kiếm: nhập mảng và số cần tìm (key), rồi phát
+ * lại từng lần so sánh trên các cột. Mũi tên `key` dưới cột chỉ ra ngay từ đầu phần tử mà thuật
+ * toán sẽ tìm thấy, để người xem thấy vùng tìm kiếm thu hẹp dần về phía nó. Khi mảng có nhiều
+ * phần tử bằng key, chỉ phần tử được trả về có mũi tên, vì tìm kiếm nhị phân không nhất thiết dừng
+ * ở phần tử đầu tiên.
+ */
+export function SearchingVisualizer<TEvent extends SearchingEvent>({
+  algorithm,
+  pseudocode,
+  getFrame,
+  legend,
+  normalize = (values) => values,
+  inputHint,
+}: SearchingVisualizerProps<TEvent>) {
+  const [run, setRun] = useState(() =>
+    createRun(algorithm, normalize(DEFAULT_ARRAY), DEFAULT_TARGET),
+  );
+  const controls = usePlayback(run.events.length);
+  const { index } = controls.state;
+  const event = run.events[index];
+  const frame = getFrame(event);
+
+  const rerun = (values: readonly number[], target: number) => {
+    const next = createRun(algorithm, values, target);
+    setRun(next);
+    controls.load(next.events.length);
+  };
+
+  return (
+    <VisualizerFrame
+      toolbar={
+        <ArrayInputForm
+          initialValues={run.values}
+          maxLength={MAX_ARRAY_LENGTH}
+          normalize={normalize}
+          hint={inputHint}
+          distinctRandom
+          onChange={(values, source) =>
+            rerun(
+              values,
+              source === "random" ? pickRandomTarget(values) : run.target,
+            )
+          }
+        >
+          <TargetInputForm
+            value={run.target}
+            onChange={(target) => rerun(run.values, target)}
+            onRandom={() => rerun(run.values, pickRandomTarget(run.values))}
+          />
+        </ArrayInputForm>
+      }
+      description={event.description}
+      aside={
+        <PseudocodePanel
+          lines={pseudocode.lines}
+          activeLine={pseudocode.getActiveLine(event.payload)}
+        />
+      }
+      controls={<PlaybackControls controls={controls} />}
+      legend={legend}
+      metrics={[
+        { label: "Key", value: run.target },
+        { label: "So sánh", value: run.comparisons[index] },
+        { label: "Còn lại", value: getRemainingCount(event.state) },
+      ]}
+    >
+      <ArrayBars
+        className="h-full"
+        bracket={index === 0 ? undefined : frame.bracket}
+        range={frame.range}
+        captionRow
+        bars={event.state.array.map((value, position) => ({
+          id: position,
+          value,
+          tone: frame.tones[position],
+          markers: frame.markers[position],
+          caption: position === run.output ? "key" : undefined,
+        }))}
+      />
+    </VisualizerFrame>
+  );
+}
