@@ -66,7 +66,7 @@ export function SiteFooter() {
       <div className="mx-auto flex max-w-360 flex-col gap-12 px-4 pt-18 pb-8 sm:px-8 lg:px-20">
         <div className="flex flex-col gap-10 lg:flex-row lg:gap-16">
           <div className="flex flex-col items-start gap-5 lg:w-90 lg:shrink-0">
-            <Logo className="bg-text-inverse/10 text-text-inverse dark:bg-bg-subtle dark:text-text-primary" />
+            <Logo className="text-text-inverse dark:text-text-primary" />
             <p className="max-w-90 text-sm leading-5.5 text-text-muted dark:text-text-secondary">
               Nền tảng học thuật toán và cấu trúc dữ liệu qua mô phỏng trực
               quan, giúp bạn hiểu từng bước chạy thay vì chỉ đọc lý thuyết.
