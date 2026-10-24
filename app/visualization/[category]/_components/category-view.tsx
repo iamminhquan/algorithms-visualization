@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { getCategoryBySlug } from "@/features/catalog/queries";
 import { VISUALIZATION_PATH } from "@/features/catalog/routes";
+import { SortingComparisonTable } from "@/features/sorting-algorithms/components/sorting-comparison-table";
 import { AlgorithmGrid } from "../../_components/algorithm-grid";
 
 type CategoryViewProps = Pick<PageProps<"/visualization/[category]">, "params">;
@@ -31,6 +32,9 @@ export async function CategoryView({ params }: CategoryViewProps) {
         )}
       </header>
       <AlgorithmGrid category={category} />
+      {category.slug === "sorting" && (
+        <SortingComparisonTable algorithms={category.algorithms} />
+      )}
     </div>
   );
 }
