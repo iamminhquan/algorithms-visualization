@@ -3,18 +3,24 @@ import { useId, useState } from "react";
 import {
   createRandomArray,
   formatArrayInput,
-  MAX_ARRAY_LENGTH,
   MIN_RANDOM_LENGTH,
   parseArrayInput,
-} from "../array-input";
+} from "@/engine/visualization";
 
+/**
+ * Props của `ArrayInputForm`.
+ *
+ * `maxLength`: Số phần tử tối đa mà trình mô phỏng nhận, dùng cho cả ô nhập lẫn thanh trượt.
+ */
 type ArrayInputFormProps = {
   initialValues: readonly number[];
+  maxLength: number;
   onChange: (values: readonly number[]) => void;
 };
 
 export function ArrayInputForm({
   initialValues,
+  maxLength,
   onChange,
 }: ArrayInputFormProps) {
   const textId = useId();
@@ -35,7 +41,7 @@ export function ArrayInputForm({
       noValidate
       onSubmit={(event) => {
         event.preventDefault();
-        const result = parseArrayInput(text);
+        const result = parseArrayInput(text, maxLength);
         if (result.type === "invalid") {
           setError(result.message);
           return;
@@ -97,14 +103,14 @@ export function ArrayInputForm({
             id={sizeId}
             type="range"
             min={MIN_RANDOM_LENGTH}
-            max={MAX_ARRAY_LENGTH}
+            max={maxLength}
             value={size}
             onChange={(event) => setSize(event.currentTarget.valueAsNumber)}
             className="h-2 w-full cursor-pointer accent-accent-default sm:w-40"
           />
           <button
             type="button"
-            onClick={() => apply(createRandomArray(size))}
+            onClick={() => apply(createRandomArray(size, maxLength))}
             className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg border border-border-strong bg-bg-surface px-4 text-sm font-medium text-text-primary transition-colors hover:bg-bg-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default"
           >
             <Shuffle aria-hidden="true" className="size-4" />
