@@ -9,9 +9,9 @@ export function HomeExplainer() {
   return (
     <section
       aria-label="Giới thiệu trình mô phỏng thuật toán"
-      className="flex w-full max-w-310 flex-col gap-10"
+      className="flex w-full max-w-310 flex-col items-center gap-10 text-center"
     >
-      <div className="flex max-w-240 flex-col gap-4">
+      <div className="flex w-full max-w-240 flex-col items-center gap-4">
         <h2 className="text-2xl font-semibold tracking-tight text-text-primary">
           Trình mô phỏng thuật toán là gì?
         </h2>
@@ -31,11 +31,11 @@ export function HomeExplainer() {
         </p>
       </div>
 
-      <div className="flex max-w-240 flex-col gap-4">
+      <div className="flex w-full max-w-240 flex-col items-center gap-4">
         <h2 className="text-2xl font-semibold tracking-tight text-text-primary">
           Cách sử dụng
         </h2>
-        <ol className="flex list-decimal flex-col gap-2 pl-6 text-base leading-7 text-text-secondary marker:font-medium marker:text-accent-text">
+        <ol className="flex list-inside list-decimal flex-col gap-2 text-base leading-7 text-text-secondary marker:font-medium marker:text-accent-text">
           {USAGE_STEPS.map((step) => (
             <li key={step}>{step}</li>
           ))}
