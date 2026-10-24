@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import {
   createRandomArray,
+  createRandomDistinctArray,
   formatArrayInput,
   parseArrayInput,
   parseIntegerInput,
@@ -88,6 +89,35 @@ describe("createRandomArray", () => {
   test("số phần tử bị kẹp về khoảng cho phép", () => {
     expect(createRandomArray(0, MAX_LENGTH)).toHaveLength(1);
     expect(createRandomArray(MAX_LENGTH + 50, MAX_LENGTH)).toHaveLength(
+      MAX_LENGTH,
+    );
+  });
+});
+
+describe("createRandomDistinctArray", () => {
+  test("không có hai phần tử bằng nhau, giá trị nằm trong khoảng ngẫu nhiên", () => {
+    for (let run = 0; run < 50; run++) {
+      const values = createRandomDistinctArray(MAX_LENGTH, MAX_LENGTH);
+      expect(values).toHaveLength(MAX_LENGTH);
+      expect(new Set(values).size).toBe(values.length);
+      for (const value of values) {
+        expect(value).toBeGreaterThanOrEqual(RANDOM_MIN_VALUE);
+        expect(value).toBeLessThanOrEqual(RANDOM_MAX_VALUE);
+      }
+    }
+  });
+
+  test("nguồn ngẫu nhiên luôn ra 0 vẫn không lặp giá trị", () => {
+    expect(createRandomDistinctArray(3, MAX_LENGTH, () => 0)).toEqual([
+      RANDOM_MIN_VALUE,
+      RANDOM_MIN_VALUE + 1,
+      RANDOM_MIN_VALUE + 2,
+    ]);
+  });
+
+  test("số phần tử bị kẹp về khoảng cho phép", () => {
+    expect(createRandomDistinctArray(0, MAX_LENGTH)).toHaveLength(1);
+    expect(createRandomDistinctArray(MAX_LENGTH + 50, MAX_LENGTH)).toHaveLength(
       MAX_LENGTH,
     );
   });

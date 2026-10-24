@@ -2,6 +2,7 @@ import { CircleAlert, Shuffle } from "lucide-react";
 import { type ReactNode, useId, useState } from "react";
 import {
   createRandomArray,
+  createRandomDistinctArray,
   formatArrayInput,
   MIN_RANDOM_LENGTH,
   parseArrayInput,
@@ -19,6 +20,8 @@ export type ArrayInputSource = "manual" | "random";
  * `normalize`: Biến đổi mảng trước khi áp dụng, ví dụ sắp xếp tăng dần cho tìm kiếm nhị phân;
  *   ô nhập hiện lại đúng mảng đã biến đổi.
  * `hint`: Câu hướng dẫn ngắn dưới ô nhập, bị thay bằng thông báo lỗi khi nhập sai.
+ * `distinctRandom`: Nút ngẫu nhiên sinh mảng không có giá trị trùng nhau; ô nhập tay vẫn nhận
+ *   giá trị trùng.
  * `children`: Ô nhập phụ đặt giữa ô nhập mảng và phần sinh ngẫu nhiên, ví dụ giá trị cần tìm.
  *   Khung ngoài không phải `<form>` nên ô nhập phụ được có form riêng.
  */
@@ -28,6 +31,7 @@ type ArrayInputFormProps = {
   onChange: (values: readonly number[], source: ArrayInputSource) => void;
   normalize?: (values: readonly number[]) => readonly number[];
   hint?: string;
+  distinctRandom?: boolean;
   children?: ReactNode;
 };
 
@@ -37,8 +41,12 @@ export function ArrayInputForm({
   onChange,
   normalize = (values) => values,
   hint,
+  distinctRandom = false,
   children,
 }: ArrayInputFormProps) {
+  const createRandom = distinctRandom
+    ? createRandomDistinctArray
+    : createRandomArray;
   const textId = useId();
   const errorId = useId();
   const hintId = useId();
@@ -143,7 +151,7 @@ export function ArrayInputForm({
           />
           <button
             type="button"
-            onClick={() => apply(createRandomArray(size, maxLength), "random")}
+            onClick={() => apply(createRandom(size, maxLength), "random")}
             className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg border border-border-strong bg-bg-surface px-4 text-sm font-medium text-text-primary transition-colors hover:bg-bg-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default"
           >
             <Shuffle aria-hidden="true" className="size-4" />
