@@ -8,3 +8,12 @@ export const TONE_BACKGROUND: Readonly<Record<VisualTone, string>> = {
   pointer: "bg-state-pointer",
   sorted: "bg-state-sorted",
 };
+
+export const TONE_BORDER: Readonly<Record<VisualTone, string>> = {
+  default: "border-state-default",
+  compare: "border-state-compare",
+  swap: "border-state-swap",
+  pivot: "border-state-pivot",
+  pointer: "border-state-pointer",
+  sorted: "border-state-sorted",
+};

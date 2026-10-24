@@ -20,7 +20,8 @@ export interface IMetricItem {
  * Props của `VisualizerFrame`.
  *
  * `children`: Hình mô phỏng; khung đã cho sẵn chiều cao, nên hình chỉ cần lấp đầy (`h-full`).
- * `description`: Câu giải thích bước đang xem, được trình đọc màn hình đọc lại mỗi khi đổi.
+ * `description`: Câu giải thích bước đang xem, chỉ dành cho trình đọc màn hình (đọc lại mỗi khi đổi),
+ *   nên hình phải tự thể hiện được bước đó bằng huy hiệu và ngoặc.
  * `toolbar`: Phần nhập dữ liệu, đặt phía trên hình.
  * `aside`: Phần đặt cạnh hình trên màn hình rộng, ví dụ mã giả. Trên màn hình hẹp nó xuống dưới
  *   thanh điều khiển, để nút phát luôn nằm ngay dưới hình.
@@ -64,10 +65,7 @@ export function VisualizerFrame({
       >
         <div className="flex flex-col gap-4 rounded-xl border border-border-default bg-bg-surface p-4 sm:p-6">
           <div className="h-64 sm:h-80">{children}</div>
-          <p
-            aria-live="polite"
-            className="min-h-12 text-center text-base leading-6 text-text-primary sm:min-h-6"
-          >
+          <p aria-live="polite" className="sr-only">
             {description}
           </p>
         </div>
@@ -121,7 +119,7 @@ export function VisualizerSkeleton() {
   return (
     <div aria-hidden="true" className="flex animate-pulse flex-col gap-4">
       <div className="h-51 rounded-xl bg-bg-subtle sm:h-31" />
-      <div className="h-88 rounded-xl bg-bg-subtle sm:h-102" />
+      <div className="h-72 rounded-xl bg-bg-subtle sm:h-92" />
       <div className="h-28 rounded-xl bg-bg-subtle sm:h-16" />
     </div>
   );
