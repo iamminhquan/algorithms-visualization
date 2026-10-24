@@ -167,10 +167,7 @@ export function ArrayBars({ bars, bracket, className }: ArrayBarsProps) {
                         {bar.markers.map((marker) => (
                           <span
                             key={marker.label}
-                            className={cn(
-                              "flex h-5 min-w-5 items-center justify-center rounded-sm border-2 bg-bg-surface px-0.5 font-mono text-xs leading-none font-semibold text-text-primary",
-                              TONE_BORDER[marker.tone],
-                            )}
+                            className="flex h-5 items-center justify-center font-mono text-xs leading-none font-semibold text-text-primary"
                           >
                             {marker.label}
                           </span>
