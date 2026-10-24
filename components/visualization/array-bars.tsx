@@ -149,7 +149,14 @@ export function ArrayBars({ bars, bracket, className }: ArrayBarsProps) {
                     />
                   </div>
                   {showValues && (
-                    <span className="h-4 font-mono text-xs leading-4 text-text-secondary tabular-nums">
+                    <span
+                      className={cn(
+                        "h-4 font-mono text-xs leading-4 tabular-nums",
+                        bar.tone === "discarded"
+                          ? "text-text-muted"
+                          : "text-text-secondary",
+                      )}
+                    >
                       {bar.value}
                     </span>
                   )}
