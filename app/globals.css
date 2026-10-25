@@ -119,6 +119,13 @@
   --color-state-discarded: var(--color-slate-800);
 }
 
+/*
+ * Khoá cuộn trang khi đang mở hộp thoại modal (bảng tìm kiếm, menu trên mobile).
+ */
+html:has(dialog[open]:modal) {
+  overflow: hidden;
+}
+
 body {
   background: var(--color-bg-page);
   color: var(--color-text-primary);
