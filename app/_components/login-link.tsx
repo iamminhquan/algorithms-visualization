@@ -11,7 +11,7 @@ type LoginLinkProps = {
 export function LoginLink({ className, onNavigate }: LoginLinkProps) {
   return (
     <Link
-      href="#"
+      href="/login"
       onClick={onNavigate}
       className={cn(
         "items-center justify-center rounded-lg bg-accent-default px-5 text-sm font-medium whitespace-nowrap text-accent-on transition-colors hover:bg-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default",
