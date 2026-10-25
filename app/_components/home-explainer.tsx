@@ -8,8 +8,9 @@ const USAGE_STEPS = [
 export function HomeExplainer() {
   return (
     <section
+      id="about"
       aria-label="Giới thiệu trình mô phỏng thuật toán"
-      className="flex w-full max-w-240 flex-col gap-10"
+      className="flex w-full scroll-mt-24 max-w-240 flex-col gap-10"
     >
       <div className="flex flex-col gap-4">
         <h2 className="text-2xl font-semibold tracking-tight text-text-primary">
