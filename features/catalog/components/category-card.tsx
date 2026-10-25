@@ -1,3 +1,4 @@
+import { Play } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import type { ICategory } from "../categories";
@@ -6,9 +7,14 @@ import { getCategoryHref } from "../routes";
 type CategoryCardProps = {
   category: ICategory;
   illustration: ReactNode;
+  simulationCount: number;
 };
 
-export function CategoryCard({ category, illustration }: CategoryCardProps) {
+export function CategoryCard({
+  category,
+  illustration,
+  simulationCount,
+}: CategoryCardProps) {
   return (
     <Link
       href={getCategoryHref(category.slug)}
@@ -22,6 +28,18 @@ export function CategoryCard({ category, illustration }: CategoryCardProps) {
       </h2>
       <p className="text-sm leading-5 text-text-secondary">
         {category.description}
+      </p>
+      <p className="mt-auto pt-1 text-xs font-medium">
+        {simulationCount > 0 ? (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-bg-subtle px-2.5 py-1 text-text-secondary">
+            <Play aria-hidden="true" className="size-3" />
+            {simulationCount} mô phỏng
+          </span>
+        ) : (
+          <span className="inline-flex rounded-full border border-dashed border-border-strong px-2.5 py-1 text-text-muted">
+            Sắp ra mắt
+          </span>
+        )}
       </p>
     </Link>
   );

@@ -11,8 +11,8 @@ import { LoginLink } from "./login-link";
 /**
  * Một mục trên thanh điều hướng.
  *
- * `href`: Mục chưa có trang thì trỏ tạm về `#`, như các link chưa có trang ở footer; mục này
- *   không bao giờ được đánh dấu là trang hiện tại.
+ * `href`: Link tới một phần của trang (có `#`) không bao giờ được đánh dấu là trang hiện tại,
+ *   vì `usePathname()` không chứa phần `#`.
  * `matchPrefix`: Coi mọi đường dẫn con (vd: `/visualization/sorting`) cũng là đang ở mục này.
  */
 interface INavItem {
@@ -24,15 +24,15 @@ interface INavItem {
 const NAV_ITEMS: readonly INavItem[] = [
   { label: "Trang chủ", href: "/" },
   { label: "Mô phỏng", href: VISUALIZATION_PATH, matchPrefix: true },
-  { label: "Học tập", href: "#" },
-  { label: "Giới thiệu", href: "#" },
+  { label: "Học tập", href: "/learn", matchPrefix: true },
+  { label: "Giới thiệu", href: "/#about" },
 ];
 
 const LINK_CLASS_NAME =
   "flex items-center rounded-lg px-3 text-sm font-medium whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default";
 
 function isCurrentPage(item: INavItem, pathname: string | null): boolean {
-  if (pathname === null || item.href === "#") {
+  if (pathname === null || item.href.includes("#")) {
     return false;
   }
   return item.matchPrefix
