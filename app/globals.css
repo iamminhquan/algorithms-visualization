@@ -82,31 +82,48 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg-page: var(--color-slate-950);
-    --color-bg-surface: var(--color-slate-900);
-    --color-bg-subtle: var(--color-slate-800);
-    --color-bg-inverse: var(--color-slate-50);
+/*
+ * Theme Dark bật bằng `data-theme="dark"` trên `<html>` (do `THEME_SCRIPT` trong `lib/theme.ts` đặt
+ * theo lựa chọn của người dùng hoặc theo hệ điều hành), để nút đổi giao diện ghi đè được hệ điều hành.
+ */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
-    --color-border-default: var(--color-slate-800);
-    --color-border-strong: var(--color-slate-700);
+:root {
+  color-scheme: light;
+}
 
-    --color-text-primary: var(--color-slate-50);
-    --color-text-secondary: var(--color-slate-400);
-    --color-text-muted: var(--color-slate-500);
-    --color-text-inverse: var(--color-slate-900);
+:root[data-theme="dark"] {
+  color-scheme: dark;
 
-    --color-accent-default: var(--color-indigo-400);
-    --color-accent-hover: var(--color-indigo-300);
-    --color-accent-subtle: var(--color-indigo-950);
-    --color-accent-text: var(--color-indigo-300);
-    --color-accent-on: var(--color-slate-950);
+  --color-bg-page: var(--color-slate-950);
+  --color-bg-surface: var(--color-slate-900);
+  --color-bg-subtle: var(--color-slate-800);
+  --color-bg-inverse: var(--color-slate-50);
 
-    --color-state-default: var(--color-slate-600);
-    --color-state-pointer: var(--color-okabe-ito-sky-blue);
-    --color-state-discarded: var(--color-slate-800);
-  }
+  --color-border-default: var(--color-slate-800);
+  --color-border-strong: var(--color-slate-700);
+
+  --color-text-primary: var(--color-slate-50);
+  --color-text-secondary: var(--color-slate-400);
+  --color-text-muted: var(--color-slate-500);
+  --color-text-inverse: var(--color-slate-900);
+
+  --color-accent-default: var(--color-indigo-400);
+  --color-accent-hover: var(--color-indigo-300);
+  --color-accent-subtle: var(--color-indigo-950);
+  --color-accent-text: var(--color-indigo-300);
+  --color-accent-on: var(--color-slate-950);
+
+  --color-state-default: var(--color-slate-600);
+  --color-state-pointer: var(--color-okabe-ito-sky-blue);
+  --color-state-discarded: var(--color-slate-800);
+}
+
+/*
+ * Khoá cuộn trang khi đang mở hộp thoại modal (bảng tìm kiếm, menu trên mobile).
+ */
+html:has(dialog[open]:modal) {
+  overflow: hidden;
 }
 
 body {

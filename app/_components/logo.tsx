@@ -4,13 +4,34 @@ import { SITE_NAME } from "@/lib/site";
 
 /*
  * Bốn cột chưa sắp xếp trong ô vuông bo góc; cột cao nhất tô màu "đang so sánh" như trên hình mô phỏng.
- * Giữ cùng hình với `app/icon.svg`.
+ * Giữ cùng hình với `app/icon.svg`. Khi hover, các cột trượt về đúng thứ tự tăng dần (8, 13, 17, 21):
+ * `sortClassName` là quãng dịch tới vị trí đã sắp xếp, tính bằng đơn vị của viewBox.
  */
 const MARK_BARS = [
-  { x: 6, height: 13, isHighlighted: false },
-  { x: 12, height: 21, isHighlighted: true },
-  { x: 18, height: 8, isHighlighted: false },
-  { x: 24, height: 17, isHighlighted: false },
+  {
+    x: 6,
+    height: 13,
+    isHighlighted: false,
+    sortClassName: "group-hover/logo:translate-x-[6px]",
+  },
+  {
+    x: 12,
+    height: 21,
+    isHighlighted: true,
+    sortClassName: "delay-75 group-hover/logo:translate-x-[12px]",
+  },
+  {
+    x: 18,
+    height: 8,
+    isHighlighted: false,
+    sortClassName: "delay-[25ms] group-hover/logo:-translate-x-[12px]",
+  },
+  {
+    x: 24,
+    height: 17,
+    isHighlighted: false,
+    sortClassName: "delay-50 group-hover/logo:-translate-x-[6px]",
+  },
 ] as const;
 
 const MARK_BASELINE = 27;
@@ -32,9 +53,11 @@ function LogoMark() {
           width="4"
           height={bar.height}
           rx="1.5"
-          className={
-            bar.isHighlighted ? "fill-state-compare" : "fill-accent-on"
-          }
+          className={cn(
+            "transition-[translate] duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none motion-reduce:group-hover/logo:translate-x-0",
+            bar.sortClassName,
+            bar.isHighlighted ? "fill-state-compare" : "fill-accent-on",
+          )}
         />
       ))}
     </svg>
@@ -43,23 +66,27 @@ function LogoMark() {
 
 type LogoProps = {
   className?: string;
+  showWordmark?: boolean;
 };
 
 /**
- * Biểu tượng của site, không kèm chữ; link có `aria-label` nên người dùng trình đọc màn hình
+ * Biểu tượng của site, có thể kèm chữ; link có `aria-label` nên người dùng trình đọc màn hình
  * vẫn nghe đủ tên.
  */
-export function Logo({ className }: LogoProps) {
+export function Logo({ className, showWordmark = false }: LogoProps) {
   return (
     <Link
       href="/"
       aria-label={`${SITE_NAME} – Trang chủ`}
       className={cn(
-        "inline-flex items-center rounded-md transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default",
+        "group/logo inline-flex items-center gap-2.5 rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default",
         className,
       )}
     >
       <LogoMark />
+      {showWordmark && (
+        <span className="text-lg font-bold tracking-tight">AlgoViz</span>
+      )}
     </Link>
   );
 }

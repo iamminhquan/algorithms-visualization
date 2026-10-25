@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SITE_NAME } from "@/lib/site";
+import { THEME_SCRIPT } from "@/lib/theme";
+import { SiteHeader } from "./_components/header/site-header";
 import { SiteFooter } from "./_components/site-footer";
-import { SiteHeader } from "./_components/site-header";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -29,8 +30,19 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="vi"
       data-scroll-behavior="smooth"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full scroll-smooth antialiased motion-reduce:scroll-auto`}
     >
+      <head>
+        {/*
+         * `THEME_SCRIPT` đặt `data-theme` trên `<html>` trước khi React hydrate, nên `<html>` cần
+         * `suppressHydrationWarning`.
+         */}
+        <script
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: chuỗi hằng trong lib/theme.ts, không có dữ liệu người dùng.
+          dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">
         <SiteHeader />
         {children}
