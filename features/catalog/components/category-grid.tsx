@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { CATEGORIES, type CategorySlug } from "../categories";
+import { getCategoryCatalog } from "../queries";
 import { CategoryCard } from "./category-card";
 import { CoreConceptsIllustration } from "./illustrations/core-concepts-illustration";
 import { DataStructureIllustration } from "./illustrations/data-structure-illustration";
@@ -17,7 +18,14 @@ const ILLUSTRATIONS = {
   trees: <TreeIllustration />,
 } satisfies Record<CategorySlug, ReactNode>;
 
-export function CategoryGrid() {
+export async function CategoryGrid() {
+  const simulationCounts = new Map(
+    (await getCategoryCatalog()).map((category) => [
+      category.slug,
+      category.algorithms.length,
+    ]),
+  );
+
   return (
     <section aria-label="Danh mục thuật toán" className="w-full max-w-310">
       <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -26,6 +34,7 @@ export function CategoryGrid() {
             <CategoryCard
               category={category}
               illustration={ILLUSTRATIONS[category.slug]}
+              simulationCount={simulationCounts.get(category.slug) ?? 0}
             />
           </li>
         ))}
