@@ -7,14 +7,16 @@ type LoginLinkProps = {
   onNavigate?: () => void;
 };
 
-/** Nút "Đăng nhập" dùng chung cho header (màn hình rộng) và bảng menu (màn hình hẹp). */
+/**
+ * Nút "Đăng nhập" dùng chung cho header (màn hình rộng) và menu trượt (màn hình hẹp).
+ */
 export function LoginLink({ className, onNavigate }: LoginLinkProps) {
   return (
     <Link
       href="/login"
       onClick={onNavigate}
       className={cn(
-        "items-center justify-center rounded-lg bg-accent-default px-5 text-sm font-medium whitespace-nowrap text-accent-on transition-colors hover:bg-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default",
+        "items-center justify-center rounded-xl bg-accent-default px-4 text-sm font-medium whitespace-nowrap text-accent-on transition-[background-color,scale] duration-150 hover:bg-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default active:scale-[0.97] motion-reduce:active:scale-100",
         className,
       )}
     >
