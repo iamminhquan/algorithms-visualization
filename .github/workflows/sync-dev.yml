@@ -11,7 +11,6 @@ jobs:
   sync-dev:
     runs-on: ubuntu-latest
     steps:
-      # Cần đủ lịch sử để git biết commit hiện tại của dev là tổ tiên của main; clone nông (mặc định depth 1) làm push bị từ chối với "fetch first".
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
