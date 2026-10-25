@@ -36,6 +36,18 @@ export const CATEGORIES = [
     description:
       "Đi qua các ý tưởng nền tảng: lời gọi đệ quy rẽ nhánh và quy hoạch động tái sử dụng kết quả.",
   },
+  {
+    slug: "graphs",
+    name: "Đồ thị",
+    description:
+      "Quan sát BFS, DFS và tìm đường đi ngắn nhất lan dần qua từng đỉnh và từng cạnh của đồ thị.",
+  },
+  {
+    slug: "trees",
+    name: "Cấu trúc cây",
+    description:
+      "Thêm, xoá, tìm kiếm trên cây nhị phân tìm kiếm và xem cây tự cân bằng lại sau mỗi thao tác.",
+  },
 ] as const satisfies readonly ICategory[];
 
 export type CategorySlug = (typeof CATEGORIES)[number]["slug"];

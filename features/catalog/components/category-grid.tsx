@@ -3,14 +3,18 @@ import { CATEGORIES, type CategorySlug } from "../categories";
 import { CategoryCard } from "./category-card";
 import { CoreConceptsIllustration } from "./illustrations/core-concepts-illustration";
 import { DataStructureIllustration } from "./illustrations/data-structure-illustration";
+import { GraphIllustration } from "./illustrations/graph-illustration";
 import { SearchingIllustration } from "./illustrations/searching-illustration";
 import { SortingIllustration } from "./illustrations/sorting-illustration";
+import { TreeIllustration } from "./illustrations/tree-illustration";
 
 const ILLUSTRATIONS = {
   sorting: <SortingIllustration />,
   "data-structures": <DataStructureIllustration />,
   searching: <SearchingIllustration />,
   "core-concepts": <CoreConceptsIllustration />,
+  graphs: <GraphIllustration />,
+  trees: <TreeIllustration />,
 } satisfies Record<CategorySlug, ReactNode>;
 
 export function CategoryGrid() {
