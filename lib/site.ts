@@ -1,1 +1,1 @@
-export const SITE_NAME = "Algorithm Visualizer";
+export const SITE_NAME = "Algorithms Visualization";
