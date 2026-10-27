@@ -20,16 +20,16 @@ describe("createPlaybackState", () => {
   test("bắt đầu ở sự kiện đầu tiên, đang dừng, tốc độ 1×", () => {
     expect(createPlaybackState(5)).toEqual({
       index: 0,
-      total: 5,
+      totalEvents: 5,
       status: "paused",
       speed: 1,
     });
   });
 
   test("số sự kiện âm hoặc không hữu hạn được coi là 0", () => {
-    expect(createPlaybackState(-3).total).toBe(0);
-    expect(createPlaybackState(Number.NaN).total).toBe(0);
-    expect(createPlaybackState(2.7).total).toBe(2);
+    expect(createPlaybackState(-3).totalEvents).toBe(0);
+    expect(createPlaybackState(Number.NaN).totalEvents).toBe(0);
+    expect(createPlaybackState(2.7).totalEvents).toBe(2);
   });
 });
 
@@ -115,7 +115,12 @@ describe("playbackReducer", () => {
       { type: "play" },
       { type: "load", total: 8 },
     ]);
-    expect(state).toEqual({ index: 0, total: 8, status: "paused", speed: 2 });
+    expect(state).toEqual({
+      index: 0,
+      totalEvents: 8,
+      status: "paused",
+      speed: 2,
+    });
   });
 
   test("vết rỗng giữ chỉ số ở 0 với mọi thao tác", () => {

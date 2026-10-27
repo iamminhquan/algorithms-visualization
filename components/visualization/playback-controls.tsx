@@ -29,11 +29,11 @@ export function PlaybackControls({
   const speedId = useId();
   const { state } = controls;
   usePlaybackShortcuts(controls);
-  const lastIndex = Math.max(state.total - 1, 0);
+  const lastIndex = Math.max(state.totalEvents - 1, 0);
   const atStart = state.index === 0;
   const atEnd = isAtEnd(state);
   const playing = state.status === "playing";
-  const step = state.total === 0 ? 0 : state.index + 1;
+  const step = state.totalEvents === 0 ? 0 : state.index + 1;
 
   return (
     <div
@@ -60,11 +60,11 @@ export function PlaybackControls({
           />
         ) : (
           <ControlButton
-            icon={atEnd && state.total > 1 ? RotateCcw : Play}
-            label={atEnd && state.total > 1 ? "Phát lại" : "Phát"}
+            icon={atEnd && state.totalEvents > 1 ? RotateCcw : Play}
+            label={atEnd && state.totalEvents > 1 ? "Phát lại" : "Phát"}
             aria-keyshortcuts={PLAYBACK_SHORTCUTS.toggle}
             variant="primary"
-            disabled={state.total <= 1}
+            disabled={state.totalEvents <= 1}
             onClick={controls.play}
           />
         )}
@@ -87,13 +87,13 @@ export function PlaybackControls({
           min={0}
           max={lastIndex}
           value={state.index}
-          disabled={state.total <= 1}
-          aria-valuetext={`Bước ${step} trên ${state.total}`}
+          disabled={state.totalEvents <= 1}
+          aria-valuetext={`Bước ${step} trên ${state.totalEvents}`}
           onChange={(event) => controls.seek(event.currentTarget.valueAsNumber)}
           className="h-2 flex-1 cursor-pointer accent-accent-default disabled:cursor-not-allowed"
         />
         <span className="shrink-0 font-mono text-sm text-text-secondary tabular-nums">
-          {step}/{state.total}
+          {step}/{state.totalEvents}
         </span>
       </div>
 
