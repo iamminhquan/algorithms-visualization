@@ -14,10 +14,6 @@ const COLUMNS = [
   "Cần mảng đã sắp xếp",
 ] as const;
 
-/**
- * Bảng so sánh độ phức tạp của các thuật toán tìm kiếm đang có trong danh mục. Thuật toán nào
- * chưa có số liệu thì bị bỏ qua, và không có dòng nào thì không vẽ bảng.
- */
 export function SearchingComparisonTable({
   algorithms,
 }: SearchingComparisonTableProps) {

@@ -10,9 +10,6 @@ const NODES = {
 
 type NodeId = keyof typeof NODES;
 
-/*
- * Đang duyệt BFS từ đỉnh a: hai cạnh đầu đã đi qua, cạnh b–c là cạnh đang xét.
- */
 const EDGES: readonly (readonly [NodeId, NodeId, boolean])[] = [
   ["a", "b", true],
   ["a", "f", true],

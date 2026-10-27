@@ -21,14 +21,6 @@ export interface IPlaybackControls {
   readonly load: (total: number) => void;
 }
 
-/**
- * Điều khiển phát một vết thực thi, tự sang bước kế khi đang phát.
- * Hook chỉ đọc `initialTotal` ở lần render đầu; khi vết đổi (người dùng đổi input), gọi `load`
- * trong cùng event handler đặt vết mới, để hai thay đổi được render cùng một lần.
- *
- * @param initialTotal Số sự kiện của vết ban đầu.
- * @returns Trạng thái phát và các thao tác điều khiển.
- */
 export function usePlayback(initialTotal: number): IPlaybackControls {
   const [state, dispatch] = useReducer(
     playbackReducer,
@@ -40,9 +32,6 @@ export function usePlayback(initialTotal: number): IPlaybackControls {
     if (state.status !== "playing") {
       return;
     }
-    /*
-     * Tới sự kiện cuối thì reducer tự chuyển sang "paused", effect chạy lại và dừng bộ hẹn giờ.
-     */
     const timer = setInterval(
       () => dispatch({ type: "tick" }),
       getStepInterval(state.speed),

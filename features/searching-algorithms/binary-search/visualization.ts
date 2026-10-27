@@ -16,16 +16,6 @@ export const BINARY_SEARCH_LEGEND: readonly ILegendItem[] = [
   { tone: "found", label: "Tìm thấy" },
 ];
 
-/**
- * Hình của Binary Search ở một bước: huy hiệu `low`, `mid`, `high` trên đúng cột (gộp lại khi
- * trùng nhau), cột `mid` tô `pivot` khi vừa chọn và `compare` khi so sánh, kèm ngoặc ghi
- * `a[mid] <, = hay > key`. Khung `range` bao vùng `[low, high]` ở mọi bước còn vùng để tìm. Sau
- * khi bỏ một nửa, huy hiệu chuyển sang `low`/`high` mới; khi không tìm thấy, hai con trỏ đã vượt
- * qua nhau vẫn được ghi nếu còn nằm trong mảng.
- *
- * @param event Sự kiện đang xem.
- * @returns Hình cần vẽ.
- */
 export function getBinarySearchFrame(
   event: BinarySearchEvent,
 ): ISearchingFrame {

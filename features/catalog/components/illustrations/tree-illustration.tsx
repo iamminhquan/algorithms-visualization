@@ -8,9 +8,6 @@ const NODES = [
   { id: 6, cx: 296, cy: 152, parent: 2 },
 ] as const;
 
-/*
- * Đường tìm kiếm trên cây nhị phân tìm kiếm: gốc → con trái → con phải của nó, nút cuối là nút tìm thấy.
- */
 const SEARCH_PATH: readonly number[] = [0, 1, 4];
 
 const FOUND_NODE = SEARCH_PATH[SEARCH_PATH.length - 1];

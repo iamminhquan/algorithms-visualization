@@ -15,9 +15,6 @@ import {
   selectionSort,
 } from "./selection-sort";
 
-/*
- * Tải lười để trang của danh mục khác không phải tải code mô phỏng sắp xếp.
- */
 const SortingVisualizer = lazy(() =>
   import("./components/sorting-visualizer").then((module) => ({
     default: module.SortingVisualizer,

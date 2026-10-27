@@ -3,10 +3,6 @@ import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/db";
 import { findAlgorithm } from "./catalog";
 
-/**
- * Tag chung cho mọi query danh mục, để sau này một Server Function sửa dữ liệu gọi
- * `revalidateTag(CATALOG_CACHE_TAG)` là làm mới được cả trang chủ lẫn `/visualization`.
- */
 const CATALOG_CACHE_TAG = "catalog";
 
 /**
@@ -26,12 +22,6 @@ export async function getAlgorithmCatalog() {
   return rows.filter((row) => findAlgorithm(row.key) !== undefined);
 }
 
-/**
- * Các danh mục kèm thuật toán chạy được của từng danh mục. Danh mục chưa có thuật toán nào
- * vẫn được trả về, với mảng `algorithms` rỗng.
- *
- * @returns Các danh mục sắp theo id, thuật toán trong mỗi danh mục cũng sắp theo id.
- */
 export async function getCategoryCatalog() {
   "use cache";
   cacheLife("hours");
@@ -58,12 +48,6 @@ export type CategoryCatalogItem = Awaited<
   ReturnType<typeof getCategoryCatalog>
 >[number];
 
-/**
- * Tìm danh mục cho trang `/visualization/[category]`.
- *
- * @param categorySlug Slug lấy từ URL.
- * @returns Danh mục mang slug này, hoặc `undefined` nếu không có.
- */
 export async function getCategoryBySlug(
   categorySlug: string,
 ): Promise<CategoryCatalogItem | undefined> {
@@ -72,14 +56,6 @@ export async function getCategoryBySlug(
   );
 }
 
-/**
- * Tìm thuật toán cho trang `/visualization/[category]/[algorithm]`. Slug thuật toán đã là duy nhất,
- * nhưng vẫn phải khớp danh mục để mỗi thuật toán chỉ có một URL.
- *
- * @param categorySlug Slug danh mục lấy từ URL.
- * @param algorithmSlug Slug thuật toán lấy từ URL.
- * @returns Thuật toán mang slug này trong đúng danh mục, hoặc `undefined` nếu không có.
- */
 export async function getAlgorithmBySlug(
   categorySlug: string,
   algorithmSlug: string,

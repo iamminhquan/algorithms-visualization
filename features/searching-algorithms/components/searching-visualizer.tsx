@@ -27,12 +27,6 @@ import {
 } from "../visualization";
 import { TargetInputForm } from "./target-input-form";
 
-/**
- * Mọi thứ cần để vẽ một lần chạy, tính một lần khi input đổi thay vì ở mỗi lần render.
- *
- * `output`: Vị trí thuật toán trả về, -1 nếu không tìm thấy.
- * `comparisons`: Số lần so sánh dồn tới mỗi sự kiện, cùng độ dài với `events`.
- */
 interface ISearchingRun<TEvent extends SearchingEvent> {
   readonly values: readonly number[];
   readonly target: number;
@@ -63,14 +57,6 @@ function createRun<TEvent extends SearchingEvent>(
   return { values, target, output, events, comparisons };
 }
 
-/**
- * Props của `SearchingVisualizer`.
- *
- * `getFrame`: Biến một sự kiện thành hình cần vẽ (tone, huy hiệu, ngoặc); mỗi thuật toán tự khai báo.
- * `legend`: Chú giải màu riêng của thuật toán.
- * `normalize`: Biến đổi mảng trước khi chạy, kể cả mảng mặc định, ví dụ sắp xếp cho Binary Search.
- * `inputHint`: Câu hướng dẫn dưới ô nhập mảng.
- */
 type SearchingVisualizerProps<TEvent extends SearchingEvent> = {
   algorithm: SearchingAlgorithmDefinition<TEvent>;
   pseudocode: IPseudocode<TEvent["payload"]>;
@@ -80,13 +66,6 @@ type SearchingVisualizerProps<TEvent extends SearchingEvent> = {
   inputHint?: string;
 };
 
-/**
- * Trình mô phỏng dùng chung cho các thuật toán tìm kiếm: nhập mảng và số cần tìm (key), rồi phát
- * lại từng lần so sánh trên các cột. Mũi tên `key` dưới cột chỉ ra ngay từ đầu phần tử mà thuật
- * toán sẽ tìm thấy, để người xem thấy vùng tìm kiếm thu hẹp dần về phía nó. Khi mảng có nhiều
- * phần tử bằng key, chỉ phần tử được trả về có mũi tên, vì tìm kiếm nhị phân không nhất thiết dừng
- * ở phần tử đầu tiên.
- */
 export function SearchingVisualizer<TEvent extends SearchingEvent>({
   algorithm,
   pseudocode,

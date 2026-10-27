@@ -1,11 +1,3 @@
-/*
- * Bộ điều khiển phát lại vết thực thi. Thuật toán đã chạy xong từ trước và trả về toàn bộ
- * sự kiện, nên "phát" chỉ là dời chỉ số của sự kiện đang hiển thị, giống tua một đoạn video.
- */
-
-/**
- * Các mức tốc độ cho người xem chọn, tính theo bội số của tốc độ gốc.
- */
 export const PLAYBACK_SPEEDS = [0.5, 1, 2, 4] as const;
 
 export type PlaybackSpeed = (typeof PLAYBACK_SPEEDS)[number];
@@ -66,11 +58,6 @@ export function createPlaybackState(
 
 /**
  * Hàm thuần chuyển trạng thái phát theo một thao tác, dùng được với `useReducer`.
- * Thao tác không làm đổi gì thì trả về đúng tham chiếu cũ, để React bỏ qua lần render thừa.
- *
- * @param state Trạng thái hiện tại.
- * @param action Thao tác cần áp dụng.
- * @returns Trạng thái sau thao tác.
  */
 export function playbackReducer(
   state: IPlaybackState,
@@ -126,26 +113,17 @@ export function playbackReducer(
   }
 }
 
-/**
- * Đã đứng ở sự kiện cuối của vết hay chưa.
- *
- * @param state Trạng thái phát.
- * @returns `true` nếu không còn bước nào phía sau.
- */
 export function isAtEnd(state: IPlaybackState): boolean {
   return state.index === lastIndex(state.total);
 }
 
-/**
- * Thời gian chờ trước khi sang bước kế ở tốc độ `speed`.
- *
- * @param speed Tốc độ đang chọn.
- * @returns Số mili giây giữa hai bước.
- */
 export function getStepInterval(speed: PlaybackSpeed): number {
   return BASE_STEP_INTERVAL_MS / speed;
 }
 
+/**
+ * Kiểm tra nếu sự kiện không đổi thì trả về sự state cũ, tránh React re-render.
+ */
 function update(
   state: IPlaybackState,
   changes: Partial<IPlaybackState>,

@@ -13,11 +13,6 @@ import {
 import { sortAscending } from "../search-input";
 import { SearchingVisualizer } from "./searching-visualizer";
 
-/*
- * `SearchingVisualizer` là component generic theo kiểu sự kiện, mà `lazy()` làm mất tham số kiểu
- * đó. Vì vậy từng thuật toán được gắn sẵn ở đây, rồi `visualizers.tsx` tải lười các component này.
- */
-
 export function LinearSearchVisualizer() {
   return (
     <SearchingVisualizer

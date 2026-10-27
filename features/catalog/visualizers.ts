@@ -15,13 +15,6 @@ const visualizersByKey = new Map<string, ComponentType>(
   Object.entries(VISUALIZERS),
 );
 
-/**
- * Tìm trình mô phỏng theo cột `key` đọc từ bảng `algorithms`. Component trả về được tải lười,
- * nên phải render bên trong `<Suspense>`.
- *
- * @param key Key của thuật toán, chưa được kiểm tra.
- * @returns Trình mô phỏng của thuật toán, hoặc `undefined` nếu chưa có.
- */
 export function findVisualizer(key: string): ComponentType | undefined {
   return visualizersByKey.get(key);
 }

@@ -10,11 +10,7 @@ export const BUBBLE_SORT_LEGEND: readonly ILegendItem[] = [
 ];
 
 /**
- * Hình của Bubble Sort ở một bước: ngoặc phủ cặp kề nhau, ghi kết quả so sánh (`>` nghĩa là sẽ
- * hoán đổi) hoặc "Hoán đổi".
- *
- * @param event Sự kiện đang xem.
- * @returns Hình cần vẽ.
+ * Frame của Bubble Sort tại thời điểm sự kiện đó xảy ra.
  */
 export function getBubbleSortFrame(event: BubbleSortEvent): ISortingFrame {
   const frame = getBaseFrame(event);

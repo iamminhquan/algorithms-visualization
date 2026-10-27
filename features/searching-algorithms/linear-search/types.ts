@@ -8,12 +8,6 @@ import type {
 
 export type LinearSearchInput = ISearchInput;
 
-/**
- * Thao tác trong một bước. `found` và `not-found` là bước cuối của vết.
- *
- * `compare`: So sánh `a[index]` với `target`; khác nhau thì ảnh chụp của chính bước này đã loại
- *   `index` khỏi vùng tìm kiếm.
- */
 export type LinearSearchStep =
   | { readonly type: "compare"; readonly index: number }
   | { readonly type: "found"; readonly index: number }

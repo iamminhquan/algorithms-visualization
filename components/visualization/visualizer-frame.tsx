@@ -3,9 +3,6 @@ import type { VisualTone } from "@/engine/visualization";
 import { cn } from "@/lib/cn";
 import { TONE_BACKGROUND } from "./tones";
 
-/**
- * Một mục trong chú giải màu, giải thích tone mà hình mô phỏng đang dùng.
- */
 export interface ILegendItem {
   readonly tone: VisualTone;
   readonly label: string;
@@ -16,16 +13,6 @@ export interface IMetricItem {
   readonly value: number | string;
 }
 
-/**
- * Props của `VisualizerFrame`.
- *
- * `children`: Hình mô phỏng; khung đã cho sẵn chiều cao, nên hình chỉ cần lấp đầy (`h-full`).
- * `description`: Câu giải thích bước đang xem, chỉ dành cho trình đọc màn hình (đọc lại mỗi khi đổi),
- *   nên hình phải tự thể hiện được bước đó bằng huy hiệu và ngoặc.
- * `toolbar`: Phần nhập dữ liệu, đặt phía trên hình.
- * `aside`: Phần đặt cạnh hình trên màn hình rộng, ví dụ mã giả. Trên màn hình hẹp nó xuống dưới
- *   thanh điều khiển, để nút phát luôn nằm ngay dưới hình.
- */
 type VisualizerFrameProps = {
   children: ReactNode;
   description: string;
@@ -37,10 +24,6 @@ type VisualizerFrameProps = {
   className?: string;
 };
 
-/**
- * Bố cục chung của mọi trình mô phỏng: thanh nhập dữ liệu, hình vẽ kèm câu mô tả bước,
- * thanh điều khiển phát, rồi chú giải màu; các chỉ số đo nằm ở góc trên bên phải của hình.
- */
 export function VisualizerFrame({
   children,
   description,

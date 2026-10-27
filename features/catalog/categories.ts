@@ -1,9 +1,6 @@
 /**
- * Danh mục thuật toán. Trang chủ và footer đọc trực tiếp từ đây, còn `db/seed-data.ts` seed
- * chính danh sách này vào bảng `categories`, nên sửa tên/mô tả xong phải chạy lại `db:seed`.
- *
- * `slug`: Seed upsert theo slug, nên đổi slug sẽ tạo dòng mới; dòng cũ bị seed xoá nếu không còn
- *   thuật toán nào thuộc về nó.
+ * Danh mục thuật toán. Trang chủ và footer đọc trực tiếp từ đây.
+ * Sửa tên, mô tả xong nhớ chạy: bun run db:seed.
  */
 export interface ICategory {
   readonly slug: string;
