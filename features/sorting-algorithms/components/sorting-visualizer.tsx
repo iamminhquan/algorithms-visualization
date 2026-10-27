@@ -94,7 +94,7 @@ export function SortingVisualizer({
         />
       }
       description={event.description}
-      aside={
+      code={
         <CodePanel
           pseudocode={pseudocode.lines}
           sourceCode={sourceCode}

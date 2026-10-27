@@ -113,7 +113,7 @@ export function SearchingVisualizer<TEvent extends SearchingEvent>({
         </ArrayInputForm>
       }
       description={event.description}
-      aside={
+      code={
         <CodePanel
           pseudocode={pseudocode.lines}
           sourceCode={sourceCode}
