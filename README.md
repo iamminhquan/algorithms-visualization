@@ -5,13 +5,13 @@ Người xem nhập mảng đầu vào, rồi phát, tạm dừng, tua và đổ
 
 # Công nghệ sử dụng
 
-| Nhóm | Công nghệ |
-| --- | --- |
-| Framework | Next.js 16.4 (App Router, Cache Components, Partial Prefetching, React Compiler) |
-| Giao diện | React 19, Tailwind CSS v4, `motion` (hoạt ảnh), `lucide-react` (icon) |
-| Cơ sở dữ liệu | PostgreSQL, Drizzle ORM, `drizzle-kit` (migration) |
-| Công cụ | Bun (runtime, package manager, test), Biome (lint và format), TypeScript |
-| Hạ tầng cục bộ | Docker Compose |
+| Nhóm           | Công nghệ                                                                        |
+|----------------|----------------------------------------------------------------------------------|
+| Framework      | Next.js 16.4 (App Router, Cache Components, Partial Prefetching, React Compiler) |
+| Giao diện      | React 19, Tailwind CSS v4, `motion` (hoạt ảnh), `lucide-react` (icon)            |
+| Cơ sở dữ liệu  | PostgreSQL, Drizzle ORM, `drizzle-kit` (migration)                               |
+| Công cụ        | Bun (runtime, package manager, test), Biome (lint và format), TypeScript         |
+| Hạ tầng cục bộ | Docker Compose                                                                   |
 
 # Cấu trúc dự án
 
@@ -39,12 +39,12 @@ Mỗi event mang sẵn ảnh chụp trạng thái sau bước đó, nên giao di
 
 Route của website:
 
-| Đường dẫn | Nội dung |
-| --- | --- |
-| `/` | Trang chủ |
-| `/visualization` | Danh sách các danh mục |
-| `/visualization/[category]` | Danh sách thuật toán của một danh mục |
-| `/visualization/[category]/[algorithm]` | Trang mô phỏng một thuật toán |
+| Đường dẫn                               | Nội dung                              |
+|-----------------------------------------|---------------------------------------|
+| `/`                                     | Trang chủ                             |
+| `/visualization`                        | Danh sách các danh mục                |
+| `/visualization/[category]`             | Danh sách thuật toán của một danh mục |
+| `/visualization/[category]/[algorithm]` | Trang mô phỏng một thuật toán         |
 
 # Hướng dẫn cài đặt dự án
 
@@ -93,19 +93,19 @@ Route của website:
 
 ## Các lệnh thường dùng
 
-| Lệnh | Tác dụng |
-| --- | --- |
-| `bun run dev` | Chạy server phát triển |
-| `bun run build` | Build production (cần `DATABASE_URL` vì build đọc DB) |
-| `bun run start` | Chạy bản đã build |
-| `bun run lint` | Kiểm tra bằng Biome |
-| `bun run format` | Tự sửa định dạng |
-| `bunx tsc --noEmit` | Kiểm tra kiểu |
-| `bun test` | Chạy toàn bộ test |
-| `bun run db:generate` | Sinh migration sau khi sửa `db/schema.ts` |
-| `bun run db:migrate` | Áp migration |
-| `bun run db:seed` | Nạp lại danh mục và thuật toán từ `db/seed-data.ts` |
-| `bun run db:studio` | Mở Drizzle Studio để xem dữ liệu |
+| Lệnh                  | Tác dụng                                              |
+|-----------------------|-------------------------------------------------------|
+| `bun run dev`         | Chạy server phát triển                                |
+| `bun run build`       | Build production (cần `DATABASE_URL` vì build đọc DB) |
+| `bun run start`       | Chạy bản đã build                                     |
+| `bun run lint`        | Kiểm tra bằng Biome                                   |
+| `bun run format`      | Tự sửa định dạng                                      |
+| `bunx tsc --noEmit`   | Kiểm tra kiểu                                         |
+| `bun test`            | Chạy toàn bộ test                                     |
+| `bun run db:generate` | Sinh migration sau khi sửa `db/schema.ts`             |
+| `bun run db:migrate`  | Áp migration                                          |
+| `bun run db:seed`     | Nạp lại danh mục và thuật toán từ `db/seed-data.ts`   |
+| `bun run db:studio`   | Mở Drizzle Studio để xem dữ liệu                      |
 
 ## Thêm một thuật toán mới
 
