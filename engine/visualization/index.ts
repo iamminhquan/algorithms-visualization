@@ -1,6 +1,5 @@
 export {
   type ArrayInputParseResult,
-  createRandomArray,
   createRandomDistinctArray,
   DISPLAY_MAX_LENGTH,
   formatArrayInput,

@@ -70,32 +70,6 @@ export function formatArrayInput(values: readonly number[]): string {
   return values.join(" ");
 }
 
-/**
- * Sinh mảng số nguyên ngẫu nhiên. Chỉ gọi trong event handler, không gọi khi render.
- *
- * @param length Số phần tử, bị kẹp về `[1, maxLength]`.
- * @param maxLength Số phần tử tối đa mà trình mô phỏng nhận.
- * @param random Nguồn số ngẫu nhiên trong `[0, 1)`; truyền vào để test được.
- * @returns Mảng mới có giá trị trong `[RANDOM_MIN_VALUE, RANDOM_MAX_VALUE]`.
- */
-export function createRandomArray(
-  length: number,
-  maxLength: number,
-  random: () => number = Math.random,
-): readonly number[] {
-  const size = Math.min(Math.max(Math.trunc(length), 1), maxLength);
-  return Array.from({ length: size }, () => randomInteger(random));
-}
-
-/**
- * Sinh mảng số nguyên ngẫu nhiên không có hai phần tử bằng nhau, ví dụ cho tìm kiếm để mỗi
- * giá trị cần tìm chỉ ứng với một vị trí. Chỉ gọi trong event handler, không gọi khi render.
- *
- * @param length Số phần tử, bị kẹp về `[1, maxLength]` và không vượt quá số giá trị có thể chọn.
- * @param maxLength Số phần tử tối đa mà trình mô phỏng nhận.
- * @param random Nguồn số ngẫu nhiên trong `[0, 1)`; truyền vào để test được.
- * @returns Mảng mới gồm các giá trị khác nhau trong `[RANDOM_MIN_VALUE, RANDOM_MAX_VALUE]`.
- */
 export function createRandomDistinctArray(
   length: number,
   maxLength: number,
@@ -115,9 +89,4 @@ export function createRandomDistinctArray(
     [pool[i], pool[j]] = [pool[j], pool[i]];
   }
   return pool.slice(0, size);
-}
-
-function randomInteger(random: () => number): number {
-  const span = RANDOM_MAX_VALUE - RANDOM_MIN_VALUE + 1;
-  return RANDOM_MIN_VALUE + Math.floor(random() * span);
 }

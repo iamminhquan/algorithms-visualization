@@ -96,7 +96,6 @@ export function SearchingVisualizer<TEvent extends SearchingEvent>({
           maxLength={MAX_ARRAY_LENGTH}
           normalize={normalize}
           hint={inputHint}
-          distinctRandom
           onChange={(values, source) =>
             rerun(
               values,
