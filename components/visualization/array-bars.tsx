@@ -4,51 +4,19 @@ import { scaleBarHeights, type VisualTone } from "@/engine/visualization";
 import { cn } from "@/lib/cn";
 import { TONE_BACKGROUND, TONE_BORDER } from "./tones";
 
-/**
- * Mảng dài hơn thì cột quá hẹp để ghi giá trị bên dưới.
- */
 const MAX_LABELED_BARS = 20;
-
-/**
- * Lò xo không nảy: khi người xem bấm bước kế lúc cột còn đang trượt, cột đổi hướng mượt từ vị trí
- * hiện tại thay vì nhảy về đích rồi mới trượt tiếp.
- */
 const SLIDE_TRANSITION = { type: "spring", bounce: 0, duration: 0.3 } as const;
-
-/**
- * Cột đang hoán đổi phóng to rồi thu lại trong lúc trượt, cùng thời gian với `SLIDE_TRANSITION`,
- * trông như tiến lại gần người xem rồi lùi về; kèm `z-10` để nó nằm đè lên cột bên cạnh thay vì
- * chui xuyên qua.
- */
 const LIFT_KEYFRAMES = [1, 1.12, 1];
 const LIFT_TRANSITION = { duration: 0.3, ease: "easeInOut" } as const;
-
-/*
- * Các hằng dưới đây tính bằng rem và phải khớp với class Tailwind tương ứng
- * (`h-5` = 1,25rem, `gap-0.5` = 0.125rem) vì ngoặc cần biết huy hiệu cao bao nhiêu để nằm phía trên.
- */
 const MARKER_HEIGHT_REM = 1.25;
 const MARKER_GAP_REM = 0.125;
-
-/**
- * Chỗ trống phía trên cột cao nhất cho huy hiệu và ngoặc, đủ cho 2 huy hiệu chồng nhau (2,625rem)
- * cộng một ngoặc (nhãn `h-4`, khoảng cách và chân ngoặc `h-1.5`, tổng 1,5rem). Luôn chừa sẵn
- * thay vì tính theo bước, để cột không đổi chiều cao khi chú thích xuất hiện.
- */
 const HEADROOM_REM = 4.5;
 
-/**
- * Nhãn nhỏ đặt ngay trên đỉnh cột, ví dụ con trỏ `i`, `j` hay giá trị nhỏ nhất `min`.
- */
 export interface IBarMarker {
   readonly label: string;
   readonly tone: VisualTone;
 }
 
-/**
- * Cặp ngoặc vuông phủ các cột từ `from` tới `to` (theo vị trí, gồm cả hai đầu), kèm nhãn ngắn
- * phía trên, ví dụ kết quả so sánh `98 > 74` hoặc `Hoán đổi`.
- */
 export interface IBarBracket {
   readonly from: number;
   readonly to: number;
@@ -56,24 +24,11 @@ export interface IBarBracket {
   readonly tone: VisualTone;
 }
 
-/**
- * Khung nền bao các cột từ `from` tới `to` (theo vị trí, gồm cả hai đầu), ví dụ vùng `[low, high]`
- * còn đang tìm của tìm kiếm nhị phân. Khung trượt và co giãn mượt khi vùng đổi.
- */
 export interface IBarRange {
   readonly from: number;
   readonly to: number;
 }
 
-/**
- * Một cột trên hình.
- *
- * `id`: Định danh của phần tử, không phải vị trí; giữ nguyên khi phần tử bị đổi chỗ để React
- *   (và hiệu ứng trượt) biết đây vẫn là cột cũ.
- * `markers`: Các huy hiệu của vị trí này, xếp chồng từ đỉnh cột đi lên. Huy hiệu thuộc về vị trí
- *   chứ không theo phần tử, nên đứng yên khi cột trượt.
- * `caption`: Chú thích ngắn dưới giá trị của cột, kèm mũi tên chỉ lên cột, ví dụ `key`.
- */
 export interface IArrayBar {
   readonly id: number;
   readonly value: number;
@@ -82,12 +37,6 @@ export interface IArrayBar {
   readonly caption?: string;
 }
 
-/**
- * Props của `ArrayBars`.
- *
- * `captionRow`: Luôn chừa hàng chú thích dưới các cột kể cả khi không cột nào có `caption`, để
- *   cột không đổi chiều cao khi chú thích xuất hiện hay biến mất.
- */
 type ArrayBarsProps = {
   bars: readonly IArrayBar[];
   bracket?: IBarBracket;
@@ -96,17 +45,8 @@ type ArrayBarsProps = {
   className?: string;
 };
 
-/*
- * Khung vùng nhô ra hai bên cột ngoài cùng một chút để không dính sát mép cột. Đỉnh khung (`top-6`)
- * chừa chỗ cho hàng chỉ số đo mà `VisualizerFrame` đặt đè ở góc trên của hình, và vẫn cao hơn
- * ngoặc nằm trên cột cao nhất (ngoặc cách đỉnh vùng vẽ khoảng 1,6rem).
- */
 const RANGE_PADDING_REM = 0.25;
 
-/**
- * Vị trí ngang và bề rộng của khung bao cột `from` tới `to` trong dãy `count` cột cách nhau
- * `--bar-gap`, tính bằng CSS để khớp đúng với các cột co giãn theo khung.
- */
 function getRangeStyle(range: IBarRange, count: number) {
   const column = `((100% - ${count - 1} * var(--bar-gap)) / ${count})`;
   const span = range.to - range.from + 1;
@@ -122,9 +62,6 @@ function getMarkerStackRem(count: number): number {
     : count * MARKER_HEIGHT_REM + (count - 1) * MARKER_GAP_REM;
 }
 
-/**
- * Khoảng cách từ đáy vùng vẽ tới đỉnh của cột có chiều cao `percent`, kèm `extraRem` phía trên.
- */
 function getBarTop(percent: number, extraRem = 0): string {
   return `calc((100% - ${HEADROOM_REM}rem) * ${percent / 100} + ${extraRem}rem)`;
 }
@@ -157,10 +94,6 @@ export function ArrayBars({
     bracketBottom = getBarTop(tallest, tallestStack + MARKER_GAP_REM);
   }
 
-  /*
-   * `reducedMotion="user"` tắt hiệu ứng trượt khi người dùng bật giảm chuyển động trong hệ điều hành.
-   * `LazyMotion` + `m` chỉ nạp phần layout animation cần dùng thay vì toàn bộ `motion`.
-   */
   return (
     <MotionConfig reducedMotion="user">
       <LazyMotion features={domMax} strict>

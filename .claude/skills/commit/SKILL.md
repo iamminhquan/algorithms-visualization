@@ -1,6 +1,6 @@
 ---
 name: commit
-description: Tạo git commit cho dự án này theo đúng quy ước - Conventional Commits với mô tả tiếng Việt, tiêu đề tối đa 80 ký tự, tự tách thay đổi thành các commit nguyên tử (atomic commit - mỗi commit một mục đích, tự build được, revert độc lập), chạy lint/typecheck và chặn file nhạy cảm trước khi commit, luôn commit trên nhánh `dev` rồi push lên `origin/dev`. Dùng skill này bất cứ khi nào người dùng muốn commit, lưu thay đổi vào git, viết commit message, hoặc nói những câu như "commit đi", "commit giúp mình", "tạo commit", "lưu lại thay đổi", "commit code vừa sửa", "commit and push", "make a commit", kể cả khi họ chỉ nói ngắn gọn "commit" ở cuối một yêu cầu khác.
+description: Tạo git commit cho dự án này theo đúng quy ước - Conventional Commits với mô tả tiếng Việt, tiêu đề tối đa 80 ký tự, tự tách thay đổi thành các commit nguyên tử (atomic commit - mỗi commit một mục đích, tự build được, revert độc lập), chạy lint/typecheck và chặn file nhạy cảm trước khi commit, commit trên nhánh tính năng (`feature/*` cho feat, các type khác giữ nguyên prefix như `fix/*`, `refactor/*`) rồi merge vào `dev` và push lên `origin/dev`. Dùng skill này bất cứ khi nào người dùng muốn commit, lưu thay đổi vào git, viết commit message, hoặc nói những câu như "commit đi", "commit giúp mình", "tạo commit", "lưu lại thay đổi", "commit code vừa sửa", "commit and push", "make a commit", kể cả khi họ chỉ nói ngắn gọn "commit" ở cuối một yêu cầu khác.
 ---
 
 # Commit
@@ -12,8 +12,9 @@ rõ nó làm gì mà không phải mở diff ra xem.
 
 Các script hỗ trợ nằm ở `.claude/skills/commit/scripts/` (đường dẫn tính từ gốc repo).
 
-Dự án chỉ có một người làm, nên mọi commit đều nằm trên nhánh `dev` — không tạo nhánh `feat/...`,
-`fix/...` hay nhánh nào khác. Commit xong thì push luôn lên `origin/dev`.
+Mỗi việc được làm trên một nhánh tính năng tách từ `dev`, không commit thẳng lên `dev` hay `main`.
+Tên nhánh lấy prefix theo type chính của việc đó: `feat` dùng `feature/...`, các type khác giữ nguyên làm prefix (`fix/...`, `refactor/...`, `docs/...`, `chore/...`).
+Commit xong thì merge nhánh đó vào `dev` và push `origin/dev`; khi `dev` chạy ổn mới mở PR `dev` → `main` bằng skill `open-pr`.
 
 ## Quy trình
 
@@ -29,9 +30,20 @@ git diff --stat
 git log --oneline -10
 ```
 
-**Nếu đang không ở `dev`**: chuyển sang bằng `git switch dev` trước khi stage. Thay đổi chưa commit đi
-theo sang `dev`; nếu git từ chối vì xung đột, dừng và báo người dùng. Nếu nhánh hiện tại có commit
-chưa nằm trên `dev`, cũng dừng và hỏi — đừng tự cherry-pick hay rebase.
+**Chọn nhánh để commit:**
+
+- **Đang ở nhánh tính năng** (`feature/...`, `fix/...`, ...): commit luôn trên nhánh đó.
+- **Đang ở `dev` hoặc `main`**: tạo nhánh mới trước khi stage.
+  `dev` luôn được push ngay sau mỗi lần merge, nên lấy `origin/dev` làm gốc:
+
+  ```bash
+  git fetch origin dev
+  git switch -c <prefix>/<mo-ta> --no-track origin/dev
+  ```
+
+  `<mo-ta>` là vài từ tiếng Anh dạng kebab-case nói việc đang làm, vd: `feature/visualizer-layout`, `fix/playback-pause`.
+  Thay đổi chưa commit đi theo sang nhánh mới; nếu git từ chối vì xung đột, dừng và báo người dùng.
+- **Đang ở nhánh có prefix cũ `feat/...`**: nếu nhánh chưa có trên remote thì đổi tên thành `feature/...` (`git branch -m`), còn đã push rồi thì giữ nguyên và báo người dùng.
 
 Sau đó đọc diff thật (`git diff`, `git diff --cached`, và nội dung các file untracked) để hiểu thay
 đổi làm gì. Đừng viết message chỉ dựa vào tên file: tên file cho biết *ở đâu*, còn message cần nói
@@ -203,24 +215,33 @@ bằng mắt — dùng kết quả của script.
 
 Lặp lại bước 5–7 cho từng commit trong kế hoạch.
 
-### 8. Push lên `dev`
+### 8. Merge vào `dev` và push
 
-Sau khi tạo xong mọi commit trong lượt, push một lần:
+Sau khi tạo xong mọi commit trong lượt, merge nhánh tính năng vào `dev` một lần rồi quay lại nhánh tính năng để làm tiếp:
 
 ```bash
-git push -u origin dev
+git switch dev
+git pull --ff-only origin dev
+git merge --no-ff --no-edit <nhánh-tính-năng>
+git push origin dev
+git switch <nhánh-tính-năng>
 ```
 
-Nếu push bị từ chối vì `origin/dev` có commit mới, báo người dùng, đừng tự `pull --rebase` hay force.
+`--no-ff` giữ một merge commit cho mỗi lần đưa nhánh vào `dev`, để lịch sử thấy rõ các commit nào thuộc cùng một việc.
+Nhánh tính năng chỉ nằm ở local, không push lên remote trừ khi người dùng yêu cầu.
+
+- Còn thay đổi chưa commit làm `git switch` bị từ chối: dừng và báo người dùng, không tự stash.
+- `pull --ff-only` thất bại (`dev` local có commit chưa push và lệch với `origin/dev`): dừng và báo người dùng.
+- Merge bị xung đột: chạy `git merge --abort`, quay lại nhánh tính năng và báo người dùng các file xung đột.
+- Push bị từ chối: báo người dùng, đừng tự `pull --rebase` hay force.
 
 ### 9. Báo cáo
 
-Sau khi xong, chạy `git log --oneline -<số commit vừa tạo>` và `git status --short`, rồi báo ngắn
-gọn: các commit đã tạo và đã push lên `dev`, và còn thay đổi nào chưa commit (nếu có).
+Sau khi xong, chạy `git log --oneline -<số commit vừa tạo>` và `git status --short`, rồi báo ngắn gọn: các commit đã tạo trên nhánh nào, đã merge và push lên `dev` chưa, và còn thay đổi nào chưa commit (nếu có).
 
 ## Những điều không làm
 
-- Không tạo nhánh mới, không push lên nhánh nào khác ngoài `dev` (nhất là `main`).
+- Không commit thẳng lên `dev` hay `main`; không push lên `main`.
 - Không `push --force` (kể cả `--force-with-lease`) trừ khi người dùng yêu cầu rõ ràng.
 - Không dùng `--no-verify`, không `--amend` commit đã có, không `reset --hard`, không đổi git config.
   Nếu pre-commit hook thất bại, sửa nguyên nhân hoặc báo người dùng, rồi tạo commit mới.

@@ -1,9 +1,6 @@
 /**
- * Danh mục thuật toán. Trang chủ và footer đọc trực tiếp từ đây, còn `db/seed-data.ts` seed
- * chính danh sách này vào bảng `categories`, nên sửa tên/mô tả xong phải chạy lại `db:seed`.
- *
- * `slug`: Seed upsert theo slug, nên đổi slug sẽ tạo dòng mới; dòng cũ bị seed xoá nếu không còn
- *   thuật toán nào thuộc về nó.
+ * Danh mục thuật toán. Trang chủ và footer đọc trực tiếp từ đây.
+ * Sửa tên, mô tả xong nhớ chạy: bun run db:seed.
  */
 export interface ICategory {
   readonly slug: string;
@@ -19,16 +16,16 @@ export const CATEGORIES = [
       "Xem các thuật toán sắp xếp chạy từng bước: so sánh, hoán đổi và đặt phần tử vào đúng vị trí.",
   },
   {
-    slug: "data-structures",
-    name: "Cấu trúc dữ liệu",
-    description:
-      "Mô phỏng tương tác cách danh sách liên kết, stack, queue và array lưu trữ và sắp xếp lại dữ liệu.",
-  },
-  {
     slug: "searching",
     name: "Thuật toán tìm kiếm",
     description:
       "Theo dõi tìm kiếm tuyến tính và nhị phân truy tìm giá trị mục tiêu qua từng phép so sánh.",
+  },
+  {
+    slug: "data-structures",
+    name: "Cấu trúc dữ liệu",
+    description:
+      "Mô phỏng tương tác cách danh sách liên kết, stack, queue và array lưu trữ và sắp xếp lại dữ liệu.",
   },
   {
     slug: "core-concepts",

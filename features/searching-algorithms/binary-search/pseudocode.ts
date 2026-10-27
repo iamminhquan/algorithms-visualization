@@ -4,16 +4,16 @@ import type { BinarySearchStep } from "./types";
 export const BINARY_SEARCH_PSEUDOCODE: IPseudocode<BinarySearchStep> = {
   lines: [
     "low = 0, high = n - 1",
-    "while low <= high",
-    "  mid = floor((low + high) / 2)",
-    "  if a[mid] == key",
-    "    found at mid, stop",
-    "  if a[mid] < key",
+    "trong khi low <= high",
+    "  mid = ⌊(low + high) / 2⌋",
+    "  nếu a[mid] == key",
+    "    tìm thấy tại mid, dừng",
+    "  nếu a[mid] < key",
     "    low = mid + 1",
-    "  else",
+    "  ngược lại",
     "    high = mid - 1",
-    "not found",
-    "done",
+    "không tìm thấy",
+    "kết thúc",
   ],
   getActiveLine(step) {
     switch (step.type) {

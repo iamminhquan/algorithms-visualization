@@ -21,9 +21,9 @@ const SORTED_ARRAYS: readonly (readonly number[])[] = [
 const LINEAR_SEARCH_KEYWORDS: Readonly<
   Record<LinearSearchStep["type"], string>
 > = {
-  compare: "if a[i] == key",
-  found: "found",
-  "not-found": "not found",
+  compare: "nếu a[i] == key",
+  found: "tìm thấy tại",
+  "not-found": "không tìm thấy",
 };
 
 function getBinaryKeyword(step: BinarySearchStep): string {
@@ -33,13 +33,13 @@ function getBinaryKeyword(step: BinarySearchStep): string {
     case "pick-mid":
       return "mid =";
     case "compare":
-      return "if a[mid] == key";
+      return "nếu a[mid] == key";
     case "found":
-      return "found";
+      return "tìm thấy tại";
     case "narrow":
       return step.keep === "right" ? "low = mid + 1" : "high = mid - 1";
     case "not-found":
-      return "not found";
+      return "không tìm thấy";
     default: {
       const unreachable: never = step;
       throw new Error(`Bước không hợp lệ: ${JSON.stringify(unreachable)}`);
@@ -54,7 +54,7 @@ describe("mã giả tìm kiếm", () => {
       BINARY_SEARCH_PSEUDOCODE,
     ]) {
       expect(new Set(lines).size).toBe(lines.length);
-      expect(lines.at(-1)).toBe("done");
+      expect(lines.at(-1)).toBe("kết thúc");
     }
   });
 

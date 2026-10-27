@@ -1,6 +1,5 @@
 export {
   type ArrayInputParseResult,
-  createRandomArray,
   createRandomDistinctArray,
   DISPLAY_MAX_LENGTH,
   formatArrayInput,
@@ -16,6 +15,7 @@ export {
 export {
   BASE_STEP_INTERVAL_MS,
   createPlaybackState,
+  DEFAULT_PLAYBACK_SPEED,
   getStepInterval,
   type IPlaybackState,
   isAtEnd,
@@ -28,5 +28,10 @@ export {
 
 export type { IPseudocode } from "./pseudocode";
 export { MIN_BAR_HEIGHT_PERCENT, scaleBarHeights } from "./scale";
+export {
+  CODE_LANGUAGES,
+  type CodeLanguage,
+  type SourceCode,
+} from "./source-code";
 export { countPayloadTypes, type PayloadTypeCounts } from "./timeline";
 export type { VisualTone } from "./tones";

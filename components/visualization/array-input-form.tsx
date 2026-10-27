@@ -1,7 +1,6 @@
 import { CircleAlert, Shuffle } from "lucide-react";
 import { type ReactNode, useId, useState } from "react";
 import {
-  createRandomArray,
   createRandomDistinctArray,
   formatArrayInput,
   MIN_RANDOM_LENGTH,
@@ -31,7 +30,6 @@ type ArrayInputFormProps = {
   onChange: (values: readonly number[], source: ArrayInputSource) => void;
   normalize?: (values: readonly number[]) => readonly number[];
   hint?: string;
-  distinctRandom?: boolean;
   children?: ReactNode;
 };
 
@@ -41,12 +39,9 @@ export function ArrayInputForm({
   onChange,
   normalize = (values) => values,
   hint,
-  distinctRandom = false,
   children,
 }: ArrayInputFormProps) {
-  const createRandom = distinctRandom
-    ? createRandomDistinctArray
-    : createRandomArray;
+  const createRandom = createRandomDistinctArray;
   const textId = useId();
   const errorId = useId();
   const hintId = useId();

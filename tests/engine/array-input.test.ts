@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
 import {
-  createRandomArray,
   createRandomDistinctArray,
   formatArrayInput,
   parseArrayInput,
@@ -66,31 +65,6 @@ describe("parseIntegerInput", () => {
     for (const token of ["", "  ", "1.5", "0x1f", "abc", "1000", "1 2"]) {
       expect(parseIntegerInput(token).type).toBe("invalid");
     }
-  });
-});
-
-describe("createRandomArray", () => {
-  test("sinh đúng số phần tử, giá trị là số nguyên dương", () => {
-    const values = createRandomArray(12, MAX_LENGTH);
-    expect(values).toHaveLength(12);
-    for (const value of values) {
-      expect(Number.isInteger(value)).toBe(true);
-      expect(value).toBeGreaterThan(0);
-    }
-  });
-
-  test("giá trị nằm trong khoảng ở cả hai đầu của nguồn ngẫu nhiên", () => {
-    const [low] = createRandomArray(1, MAX_LENGTH, () => 0);
-    const [high] = createRandomArray(1, MAX_LENGTH, () => 0.999_999);
-    expect(low).toBe(RANDOM_MIN_VALUE);
-    expect(high).toBe(RANDOM_MAX_VALUE);
-  });
-
-  test("số phần tử bị kẹp về khoảng cho phép", () => {
-    expect(createRandomArray(0, MAX_LENGTH)).toHaveLength(1);
-    expect(createRandomArray(MAX_LENGTH + 50, MAX_LENGTH)).toHaveLength(
-      MAX_LENGTH,
-    );
   });
 });
 

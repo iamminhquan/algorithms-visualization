@@ -36,9 +36,9 @@ Nhờ vậy UI vẽ lại bất kỳ bước nào mà không cần phát lại t
 
 **Visualization Engine.** Thuật toán chạy một lần ở client khi input đổi, rồi UI phát lại `events` như tua video; server chỉ truyền `algorithm.key`.
 `engine/visualization/` là TypeScript thuần: `playbackReducer` (phát, tua, tốc độ), `countPayloadTypes` (bộ đếm theo bước), `scaleBarHeights`, kiểu `VisualTone` và `IPseudocode`.
-`components/visualization/` là React dùng chung, không biết thuật toán cụ thể: `usePlayback` (gọi `load` khi đổi vết), `usePlaybackShortcuts`, `PlaybackControls`, `VisualizerFrame`, `ArrayBars` (cột trượt bằng `motion`), `PseudocodePanel`.
-Feature chỉ chuyển event thành hình: chọn tone (`getBarTones`), giữ định danh phần tử khi hoán đổi (`trackElementIds`), khai báo mã giả.
-Mã giả viết bằng tiếng Anh, ngắn gọn kiểu Python nhưng không phải Python (thụt lề thay ngoặc, không `def`/`range`/`len`, mỗi dòng một thao tác, gán bằng `=`, kết thúc bằng `done`); xem `IPseudocode`.
+`components/visualization/` là React dùng chung, không biết thuật toán cụ thể: `usePlayback` (gọi `load` khi đổi vết), `usePlaybackShortcuts`, `PlaybackControls`, `VisualizerFrame`, `ArrayBars` (cột trượt bằng `motion`), `CodePanel` (mã giả tô dòng đang chạy, dropdown chuyển sang mã nguồn C++), `AiChatPanel` (khung chat AI, hiện chỉ có giao diện).
+Feature chỉ chuyển event thành hình: chọn tone (`getBarTones`), giữ định danh phần tử khi hoán đổi (`trackElementIds`), khai báo mã giả (`pseudocode.ts`) và mã nguồn theo ngôn ngữ (`source-code.ts`, kiểu `SourceCode`).
+Mã giả viết bằng tiếng Việt, ngắn gọn kiểu Python nhưng không phải Python (thụt lề thay ngoặc, không `def`/`range`/`len`, mỗi dòng một thao tác như `lặp i từ 0 đến n - 1`, `nếu ...`, `hoán đổi ...`, tên biến giữ dạng code, gán bằng `=`, kết thúc bằng `kết thúc`); xem `IPseudocode`.
 Mỗi feature export map key → trình mô phỏng tải lười (`SORTING_VISUALIZERS`); `features/catalog/visualizers.ts` ghép lại và `satisfies Record<AlgorithmKey, ...>`, `AlgorithmVisualizer` (client) tra theo key trong `<Suspense>`.
 Input mặc định phải cố định (không random khi render) để HTML server khớp lần render đầu ở client; mảng mặc định dùng chung là `DEFAULT_ARRAY` trong `engine/visualization/`.
 
@@ -49,7 +49,7 @@ Các feature danh mục không import lẫn nhau; thứ dùng chung đẩy xuố
 
 **Code ↔ DB.** Bảng `algorithms` nối với code qua cột `key` (không đổi sau khi tạo); cột `slug` dùng cho URL.
 Dòng DB không có cài đặt trong registry bị ẩn (`getAlgorithmCatalog`, `getCategoryCatalog`).
-Thêm một thuật toán gồm: cài đặt trong feature, thêm vào `*_ALGORITHMS`, thêm trình mô phỏng vào `*_VISUALIZERS` (kèm mã giả nếu có), thêm dòng vào `db/seed-data.ts` cùng `key`, rồi chạy `db:seed`.
+Thêm một thuật toán gồm: cài đặt trong feature, thêm vào `*_ALGORITHMS`, thêm trình mô phỏng vào `*_VISUALIZERS` (kèm mã giả và mã nguồn C++), thêm dòng vào `db/seed-data.ts` cùng `key`, rồi chạy `db:seed`.
 `tests/catalog/seed-data.test.ts` bắt chỗ lệch giữa registry và seed, `tests/catalog/visualizers.test.ts` bắt thuật toán thiếu trình mô phỏng.
 Danh mục chỉ khai báo một nơi là `CATEGORIES` trong `features/catalog/categories.ts`: trang chủ và footer đọc trực tiếp, `seedCategories` lấy lại chính nó, nên sửa xong phải chạy `db:seed`.
 
@@ -80,5 +80,5 @@ Dark mode bật bằng `data-theme="dark"` trên `<html>`: `lib/theme.ts` đặt
 Các skill trong `.claude/skills/` là quy ước của dự án, đọc trước khi làm việc tương ứng.
 `ui-component` dành cho component và trang.
 `typescript-convention` áp dụng cho mọi file .ts/.tsx: interface có tiền tố `I`, không dùng `any`/`enum`/`!`, tuyệt đối không viết comment trong code (chỉ giải thích khi người dùng hỏi).
-`commit` và `open-pr`: chỉ dùng một nhánh `dev`, PR `dev` → `main`, tiêu đề dạng `type: mô tả tiếng Việt`, không có dòng attribution.
+`commit` và `open-pr`: làm trên nhánh tính năng (`feature/*` cho feat, type khác giữ nguyên prefix như `fix/*`), merge `--no-ff` vào `dev` rồi push, `dev` ổn mới mở PR `dev` → `main`; tiêu đề dạng `type: mô tả tiếng Việt`, không có dòng attribution.
 Tiêu đề commit và tiêu đề PR đều tối đa 80 ký tự, kiểm bằng `.claude/skills/commit/scripts/check_commit_msg.py`.

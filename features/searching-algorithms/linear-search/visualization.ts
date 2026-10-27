@@ -14,13 +14,6 @@ export const LINEAR_SEARCH_LEGEND: readonly ILegendItem[] = [
   { tone: "found", label: "Tìm thấy" },
 ];
 
-/**
- * Hình của Linear Search ở một bước: huy hiệu `i` trên cột đang xét, ngoặc ghi `a[i] = key`
- * hay `≠`; khi tìm thấy thì cột đó tô `found`.
- *
- * @param event Sự kiện đang xem.
- * @returns Hình cần vẽ.
- */
 export function getLinearSearchFrame(
   event: LinearSearchEvent,
 ): ISearchingFrame {

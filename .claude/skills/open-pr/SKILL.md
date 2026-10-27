@@ -1,6 +1,6 @@
 ---
 name: open-pr
-description: Mở pull request trên GitHub cho dự án này theo đúng quy ước - luôn mở từ nhánh `dev` vào `main` (không tạo nhánh tính năng), push `dev`, viết tiêu đề `type: mô tả tiếng Việt` tối đa 80 ký tự, body tiếng Việt gồm tóm tắt và mục ảnh chụp màn hình khi đổi UI, không có dòng attribution. Dùng skill này bất cứ khi nào người dùng muốn mở/tạo PR, gửi code lên review, hoặc nói những câu như "mở PR", "tạo pull request", "đẩy lên và mở PR", "push rồi tạo PR", "gửi PR cho nhánh này", "open a PR", "create a pull request", kể cả khi chỉ nói "PR" ở cuối một yêu cầu khác.
+description: Mở pull request trên GitHub cho dự án này theo đúng quy ước - luôn mở từ nhánh `dev` vào `main` (nhánh tính năng được merge vào `dev` trước), push `dev`, viết tiêu đề `type: mô tả tiếng Việt` tối đa 80 ký tự, body tiếng Việt gồm tóm tắt và mục ảnh chụp màn hình khi đổi UI, không có dòng attribution. Dùng skill này bất cứ khi nào người dùng muốn mở/tạo PR, gửi code lên review, hoặc nói những câu như "mở PR", "tạo pull request", "đẩy lên và mở PR", "push rồi tạo PR", "gửi PR cho nhánh này", "open a PR", "create a pull request", kể cả khi chỉ nói "PR" ở cuối một yêu cầu khác.
 ---
 
 # Mở pull request
@@ -9,8 +9,8 @@ Skill này đưa các commit trên nhánh `dev` thành một pull request vào `
 `github.com/iamminhquan/algorithms-visualization`, dùng `gh` CLI (đã đăng nhập sẵn). PR là thứ người
 review đọc đầu tiên, nên tiêu đề và tóm tắt phải cho họ biết PR làm gì và vì sao mà chưa cần mở diff.
 
-Dự án chỉ có một người làm, nên mọi việc đều nằm trên một nhánh duy nhất là `dev` — không tạo nhánh
-`feat/...`, `fix/...` hay nhánh nào khác. PR luôn là `dev` → `main`.
+Mỗi việc được làm trên nhánh tính năng (`feature/...`, `fix/...`, ...) rồi merge vào `dev` bằng skill `commit`.
+PR luôn là `dev` → `main`, mở khi `dev` đã chạy ổn; không mở PR từ nhánh tính năng.
 
 Script hỗ trợ (đường dẫn tính từ gốc repo):
 
@@ -36,8 +36,8 @@ git log --oneline origin/main..dev
 git diff --stat origin/main...dev
 ```
 
-- **Đang không ở `dev`**: commit nằm ngoài `dev` sẽ không vào PR. Dừng và hỏi người dùng cách xử lý
-  (vd: đưa commit sang `dev`), đừng tự cherry-pick, rebase hay tạo nhánh mới.
+- **Đang ở nhánh tính năng có commit chưa vào `dev`** (`git log --oneline dev..HEAD` không rỗng): PR chỉ lấy commit trên `dev`, nên merge nhánh vào `dev` và push theo bước 8 của skill `commit` trước.
+  Đừng cherry-pick hay rebase.
 - **Không có commit nào so với `origin/main`**: báo người dùng là không có gì để mở PR, và dừng.
 - **Có thay đổi chưa commit**: chúng sẽ không có trong PR. Nếu người dùng nói kiểu "commit rồi mở PR",
   dùng skill `commit` để commit trước. Nếu không, hỏi ngắn gọn họ muốn commit luôn hay bỏ ngoài PR —
@@ -119,7 +119,7 @@ mục đó).
 
 ## Những điều không làm
 
-- Không tạo nhánh mới; chỉ dùng `dev`.
+- Không mở PR từ nhánh tính năng; head của PR luôn là `dev`, base luôn là `main`.
 - Không push thẳng lên `main`, không `push --force` (kể cả `--force-with-lease`) trừ khi người dùng yêu
   cầu rõ ràng.
 - Không merge, approve, hay đóng PR.

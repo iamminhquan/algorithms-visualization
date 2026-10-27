@@ -2,13 +2,6 @@ import { CircleAlert, Shuffle } from "lucide-react";
 import { useId, useState } from "react";
 import { parseIntegerInput } from "@/engine/visualization";
 
-/**
- * Props của `TargetInputForm`.
- *
- * `value`: Giá trị cần tìm đang dùng; đổi từ bên ngoài (ví dụ khi sinh mảng ngẫu nhiên) thì ô
- *   nhập hiện lại giá trị mới.
- * `onRandom`: Bấm nút chọn ngẫu nhiên; nơi gọi tự chọn giá trị vì nó biết mảng hiện tại.
- */
 type TargetInputFormProps = {
   value: number;
   onChange: (target: number) => void;
@@ -26,9 +19,6 @@ export function TargetInputForm({
   const [error, setError] = useState<string>();
   const [shownValue, setShownValue] = useState(value);
 
-  /*
-   * Đồng bộ ô nhập ngay trong lúc render thay vì dùng effect, để không có lần vẽ nào hiện giá trị cũ.
-   */
   if (value !== shownValue) {
     setShownValue(value);
     setText(String(value));

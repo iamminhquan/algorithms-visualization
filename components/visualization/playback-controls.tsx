@@ -1,5 +1,4 @@
 import {
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
   type LucideIcon,
@@ -8,6 +7,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { type ComponentProps, useId } from "react";
+import { Select } from "@/components/ui/select";
 import { isAtEnd, PLAYBACK_SPEEDS } from "@/engine/visualization";
 import { cn } from "@/lib/cn";
 import type { IPlaybackControls } from "./use-playback";
@@ -29,11 +29,11 @@ export function PlaybackControls({
   const speedId = useId();
   const { state } = controls;
   usePlaybackShortcuts(controls);
-  const lastIndex = Math.max(state.total - 1, 0);
+  const lastIndex = Math.max(state.totalEvents - 1, 0);
   const atStart = state.index === 0;
   const atEnd = isAtEnd(state);
   const playing = state.status === "playing";
-  const step = state.total === 0 ? 0 : state.index + 1;
+  const step = state.totalEvents === 0 ? 0 : state.index + 1;
 
   return (
     <div
@@ -60,11 +60,11 @@ export function PlaybackControls({
           />
         ) : (
           <ControlButton
-            icon={atEnd && state.total > 1 ? RotateCcw : Play}
-            label={atEnd && state.total > 1 ? "Phát lại" : "Phát"}
+            icon={atEnd && state.totalEvents > 1 ? RotateCcw : Play}
+            label={atEnd && state.totalEvents > 1 ? "Phát lại" : "Phát"}
             aria-keyshortcuts={PLAYBACK_SHORTCUTS.toggle}
             variant="primary"
-            disabled={state.total <= 1}
+            disabled={state.totalEvents <= 1}
             onClick={controls.play}
           />
         )}
@@ -87,13 +87,13 @@ export function PlaybackControls({
           min={0}
           max={lastIndex}
           value={state.index}
-          disabled={state.total <= 1}
-          aria-valuetext={`Bước ${step} trên ${state.total}`}
+          disabled={state.totalEvents <= 1}
+          aria-valuetext={`Bước ${step} trên ${state.totalEvents}`}
           onChange={(event) => controls.seek(event.currentTarget.valueAsNumber)}
           className="h-2 flex-1 cursor-pointer accent-accent-default disabled:cursor-not-allowed"
         />
         <span className="shrink-0 font-mono text-sm text-text-secondary tabular-nums">
-          {step}/{state.total}
+          {step}/{state.totalEvents}
         </span>
       </div>
 
@@ -101,31 +101,24 @@ export function PlaybackControls({
         <label htmlFor={speedId} className="text-sm text-text-secondary">
           Tốc độ
         </label>
-        <div className="relative">
-          <select
-            id={speedId}
-            value={state.speed}
-            onChange={(event) => {
-              const speed = PLAYBACK_SPEEDS.find(
-                (option) => option === Number(event.currentTarget.value),
-              );
-              if (speed !== undefined) {
-                controls.setSpeed(speed);
-              }
-            }}
-            className="h-9 cursor-pointer appearance-none rounded-lg border border-border-strong bg-bg-surface pr-8 pl-3 text-sm text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default"
-          >
-            {PLAYBACK_SPEEDS.map((speed) => (
-              <option key={speed} value={speed}>
-                {speed}×
-              </option>
-            ))}
-          </select>
-          <ChevronDown
-            aria-hidden="true"
-            className="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-text-secondary"
-          />
-        </div>
+        <Select
+          id={speedId}
+          value={state.speed}
+          onChange={(event) => {
+            const speed = PLAYBACK_SPEEDS.find(
+              (option) => option === Number(event.currentTarget.value),
+            );
+            if (speed !== undefined) {
+              controls.setSpeed(speed);
+            }
+          }}
+        >
+          {PLAYBACK_SPEEDS.map((speed) => (
+            <option key={speed} value={speed}>
+              {speed}×
+            </option>
+          ))}
+        </Select>
       </div>
     </div>
   );

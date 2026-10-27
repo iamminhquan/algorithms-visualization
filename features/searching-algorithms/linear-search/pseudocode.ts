@@ -3,11 +3,11 @@ import type { LinearSearchStep } from "./types";
 
 export const LINEAR_SEARCH_PSEUDOCODE: IPseudocode<LinearSearchStep> = {
   lines: [
-    "for i from 0 to n - 1",
-    "  if a[i] == key",
-    "    found at i, stop",
-    "not found",
-    "done",
+    "lặp i từ 0 đến n - 1",
+    "  nếu a[i] == key",
+    "    tìm thấy tại i, dừng",
+    "không tìm thấy",
+    "kết thúc",
   ],
   getActiveLine(step) {
     switch (step.type) {
