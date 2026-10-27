@@ -1,4 +1,5 @@
 export const PLAYBACK_SPEEDS = [0.5, 1, 2, 4] as const;
+export const DEFAULT_PLAYBACK_SPEED: PlaybackSpeed = 0.5;
 export const BASE_STEP_INTERVAL_MS = 600;
 
 export type PlaybackSpeed = (typeof PLAYBACK_SPEEDS)[number];
@@ -23,7 +24,7 @@ export interface IPlaybackState {
 
 export function createPlaybackState(
   totalEvents: number,
-  speed: PlaybackSpeed = 1,
+  speed: PlaybackSpeed = DEFAULT_PLAYBACK_SPEED,
 ): IPlaybackState {
   return {
     index: 0,

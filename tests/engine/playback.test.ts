@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import {
   BASE_STEP_INTERVAL_MS,
   createPlaybackState,
+  DEFAULT_PLAYBACK_SPEED,
   getStepInterval,
   type IPlaybackState,
   isAtEnd,
@@ -17,12 +18,12 @@ function applyAll(
 }
 
 describe("createPlaybackState", () => {
-  test("bắt đầu ở sự kiện đầu tiên, đang dừng, tốc độ 1×", () => {
+  test("bắt đầu ở sự kiện đầu tiên, đang dừng, tốc độ 0.5×", () => {
     expect(createPlaybackState(5)).toEqual({
       index: 0,
       totalEvents: 5,
       status: "paused",
-      speed: 1,
+      speed: 0.5,
     });
   });
 
@@ -105,7 +106,12 @@ describe("playbackReducer", () => {
     const state = createPlaybackState(3);
     expect(playbackReducer(state, { type: "pause" })).toBe(state);
     expect(playbackReducer(state, { type: "step-back" })).toBe(state);
-    expect(playbackReducer(state, { type: "set-speed", speed: 1 })).toBe(state);
+    expect(
+      playbackReducer(state, {
+        type: "set-speed",
+        speed: DEFAULT_PLAYBACK_SPEED,
+      }),
+    ).toBe(state);
   });
 
   test("nạp vết mới thì về đầu, dừng phát và giữ tốc độ đang chọn", () => {

@@ -16,6 +16,7 @@ export {
 export {
   BASE_STEP_INTERVAL_MS,
   createPlaybackState,
+  DEFAULT_PLAYBACK_SPEED,
   getStepInterval,
   type IPlaybackState,
   isAtEnd,
