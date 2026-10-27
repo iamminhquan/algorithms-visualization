@@ -1,16 +1,19 @@
-import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/db";
+import "server-only";
 import { findAlgorithm } from "./catalog";
+import { CATEGORIES } from "./categories";
 
 const CATALOG_CACHE_TAG = "catalog";
 
-/**
- * Danh sách thuật toán hiển thị cho người dùng, đọc từ bảng `algorithms` kèm danh mục.
- * Dòng nào chưa có cài đặt trong registry thì bị ẩn, vì không chạy được.
- *
- * @returns Các thuật toán chạy được, sắp theo id.
- */
+const CATEGORY_ORDER: ReadonlyMap<string, number> = new Map(
+  CATEGORIES.map((category, index) => [category.slug, index]),
+);
+
+function getCategoryOrder(slug: string): number {
+  return CATEGORY_ORDER.get(slug) ?? CATEGORIES.length;
+}
+
 export async function getAlgorithmCatalog() {
   "use cache";
   cacheLife("hours");
@@ -32,12 +35,14 @@ export async function getCategoryCatalog() {
     },
     orderBy: (categories, { asc }) => asc(categories.id),
   });
-  return rows.map((category) => ({
-    ...category,
-    algorithms: category.algorithms.filter(
-      (algorithm) => findAlgorithm(algorithm.key) !== undefined,
-    ),
-  }));
+  return rows
+    .map((category) => ({
+      ...category,
+      algorithms: category.algorithms.filter(
+        (algorithm) => findAlgorithm(algorithm.key) !== undefined,
+      ),
+    }))
+    .sort((a, b) => getCategoryOrder(a.slug) - getCategoryOrder(b.slug));
 }
 
 export type AlgorithmCatalogItem = Awaited<

@@ -16,16 +16,16 @@ export const CATEGORIES = [
       "Xem các thuật toán sắp xếp chạy từng bước: so sánh, hoán đổi và đặt phần tử vào đúng vị trí.",
   },
   {
-    slug: "data-structures",
-    name: "Cấu trúc dữ liệu",
-    description:
-      "Mô phỏng tương tác cách danh sách liên kết, stack, queue và array lưu trữ và sắp xếp lại dữ liệu.",
-  },
-  {
     slug: "searching",
     name: "Thuật toán tìm kiếm",
     description:
       "Theo dõi tìm kiếm tuyến tính và nhị phân truy tìm giá trị mục tiêu qua từng phép so sánh.",
+  },
+  {
+    slug: "data-structures",
+    name: "Cấu trúc dữ liệu",
+    description:
+      "Mô phỏng tương tác cách danh sách liên kết, stack, queue và array lưu trữ và sắp xếp lại dữ liệu.",
   },
   {
     slug: "core-concepts",
