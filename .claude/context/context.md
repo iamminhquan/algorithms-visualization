@@ -81,4 +81,4 @@ Các skill trong `.claude/skills/` là quy ước của dự án, đọc trướ
 `ui-component` dành cho component và trang.
 `typescript-convention` áp dụng cho mọi file .ts/.tsx: interface có tiền tố `I`, không dùng `any`/`enum`/`!`, comment chỉ khi cần và luôn dạng khối nhiều dòng.
 `commit` và `open-pr`: chỉ dùng một nhánh `dev`, PR `dev` → `main`, tiêu đề dạng `type: mô tả tiếng Việt`, không có dòng attribution.
-Tiêu đề commit tối đa 80 ký tự (kiểm bằng `.claude/skills/commit/scripts/check_commit_msg.py`); tiêu đề PR dài 80–100 ký tự.
+Tiêu đề commit và tiêu đề PR đều tối đa 80 ký tự, kiểm bằng `.claude/skills/commit/scripts/check_commit_msg.py`.

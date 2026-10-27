@@ -1,6 +1,6 @@
 ---
 name: open-pr
-description: Mở pull request trên GitHub cho dự án này theo đúng quy ước - luôn mở từ nhánh `dev` vào `main` (không tạo nhánh tính năng), push `dev`, viết tiêu đề `type: mô tả tiếng Việt` dài 80-100 ký tự, body tiếng Việt gồm tóm tắt và mục ảnh chụp màn hình khi đổi UI, không có dòng attribution. Dùng skill này bất cứ khi nào người dùng muốn mở/tạo PR, gửi code lên review, hoặc nói những câu như "mở PR", "tạo pull request", "đẩy lên và mở PR", "push rồi tạo PR", "gửi PR cho nhánh này", "open a PR", "create a pull request", kể cả khi chỉ nói "PR" ở cuối một yêu cầu khác.
+description: Mở pull request trên GitHub cho dự án này theo đúng quy ước - luôn mở từ nhánh `dev` vào `main` (không tạo nhánh tính năng), push `dev`, viết tiêu đề `type: mô tả tiếng Việt` tối đa 80 ký tự, body tiếng Việt gồm tóm tắt và mục ảnh chụp màn hình khi đổi UI, không có dòng attribution. Dùng skill này bất cứ khi nào người dùng muốn mở/tạo PR, gửi code lên review, hoặc nói những câu như "mở PR", "tạo pull request", "đẩy lên và mở PR", "push rồi tạo PR", "gửi PR cho nhánh này", "open a PR", "create a pull request", kể cả khi chỉ nói "PR" ở cuối một yêu cầu khác.
 ---
 
 # Mở pull request
@@ -47,17 +47,18 @@ git diff --stat origin/main...dev
 
 ### 2. Viết tiêu đề
 
-Cùng quy tắc với commit message: `type: mô tả bằng tiếng Việt`, **80–100 ký tự**, type viết thường,
+Cùng quy tắc với commit message: `type: mô tả bằng tiếng Việt`, **tối đa 80 ký tự**, type viết thường,
 không scope, không dấu chấm cuối, mô tả bắt đầu bằng động từ.
 
 - PR chỉ có **một commit**: dùng lại tiêu đề commit đó.
 - PR có **nhiều commit**: viết tiêu đề bao quát mục đích chung, type theo thay đổi chính (vd: commit
   `feat` + commit `chore` cập nhật dependency cho nó → `feat`).
 
-Lấp đủ 80 ký tự bằng thông tin thật (thay đổi gì, ở đâu, để làm gì), không bằng chữ đệm.
+Trong 80 ký tự đó, dành chỗ cho thông tin thật (thay đổi gì, ở đâu, để làm gì), bỏ chữ đệm. PR nhiều
+commit không cần nhồi hết vào tiêu đề — chi tiết đã có trong mục Tóm tắt của body.
 
 ```bash
-printf '%s\n' "feat: thêm cấu hình Drizzle ORM kết nối PostgreSQL cùng các script generate và migrate schema" \
+printf '%s\n' "feat: thêm cấu hình Drizzle ORM cho PostgreSQL cùng script generate và migrate" \
   > "$(git rev-parse --git-dir)/PR_TITLE"
 python3 .claude/skills/commit/scripts/check_commit_msg.py "$(git rev-parse --git-dir)/PR_TITLE"
 ```
