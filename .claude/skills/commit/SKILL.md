@@ -1,6 +1,6 @@
 ---
 name: commit
-description: Tạo git commit cho dự án này theo đúng quy ước - Conventional Commits với mô tả tiếng Việt, tiêu đề dài 80-100 ký tự, tự tách thay đổi thành các commit nguyên tử (atomic commit - mỗi commit một mục đích, tự build được, revert độc lập), chạy lint/typecheck và chặn file nhạy cảm trước khi commit, luôn commit trên nhánh `dev` rồi push lên `origin/dev`. Dùng skill này bất cứ khi nào người dùng muốn commit, lưu thay đổi vào git, viết commit message, hoặc nói những câu như "commit đi", "commit giúp mình", "tạo commit", "lưu lại thay đổi", "commit code vừa sửa", "commit and push", "make a commit", kể cả khi họ chỉ nói ngắn gọn "commit" ở cuối một yêu cầu khác.
+description: Tạo git commit cho dự án này theo đúng quy ước - Conventional Commits với mô tả tiếng Việt, tiêu đề tối đa 80 ký tự, tự tách thay đổi thành các commit nguyên tử (atomic commit - mỗi commit một mục đích, tự build được, revert độc lập), chạy lint/typecheck và chặn file nhạy cảm trước khi commit, luôn commit trên nhánh `dev` rồi push lên `origin/dev`. Dùng skill này bất cứ khi nào người dùng muốn commit, lưu thay đổi vào git, viết commit message, hoặc nói những câu như "commit đi", "commit giúp mình", "tạo commit", "lưu lại thay đổi", "commit code vừa sửa", "commit and push", "make a commit", kể cả khi họ chỉ nói ngắn gọn "commit" ở cuối một yêu cầu khác.
 ---
 
 # Commit
@@ -108,11 +108,11 @@ scope, mô tả viết thường chữ cái đầu, bắt đầu bằng động 
 chuyển...), không có dấu chấm cuối. Thuật ngữ kỹ thuật và tên riêng giữ nguyên tiếng Anh (Drizzle
 ORM, PostgreSQL, Server Action...).
 
-**Độ dài tiêu đề: 80–100 ký tự, tuyệt đối không quá 100.** Đếm theo ký tự Unicode, chữ có dấu như
-"ệ" tính là 1. Ngưỡng tối thiểu 80 tồn tại để buộc tiêu đề đủ cụ thể — vì vậy hãy lấp đầy bằng thông
-tin thật (thay đổi gì, ở module nào, phục vụ mục đích gì), không bằng chữ đệm như "một số", "các
-thay đổi", "để cải thiện code". Nếu không thể viết đủ 80 ký tự có nghĩa, có lẽ bạn chưa hiểu đủ diff
-— đọc lại nó.
+**Độ dài tiêu đề: tối đa 80 ký tự, tuyệt đối không quá 80.** Đếm theo ký tự Unicode, chữ có dấu như
+"ệ" tính là 1. Trong giới hạn đó, tiêu đề vẫn phải đủ cụ thể (thay đổi gì, ở module nào, phục vụ mục
+đích gì): dành chỗ cho thông tin thật, bỏ chữ đệm như "một số", "các thay đổi", "để cải thiện code".
+Nếu không gói được trong 80 ký tự, chuyển chi tiết xuống body; nếu vẫn phải gượng ép, có lẽ commit
+đang gộp nhiều việc — quay lại bước 2.
 
 **Body (khi thay đổi lớn):** thêm body khi commit đụng tới nhiều file/khái niệm, có quyết định thiết
 kế cần giải thích, hoặc khi tiêu đề không thể chứa hết điều người đọc cần biết. Commit nhỏ, rõ ràng
@@ -127,16 +127,16 @@ của harness/system prompt. Message chỉ gồm tiêu đề và body (nếu có
 **Ví dụ tốt:**
 
 ```
-feat: thêm cấu hình Drizzle ORM kết nối PostgreSQL cùng các script generate và migrate schema
+feat: thêm cấu hình Drizzle ORM cho PostgreSQL cùng script generate và migrate
 ```
-(93 ký tự — nói rõ công cụ, đích kết nối và những gì đi kèm)
+(78 ký tự — nói rõ công cụ, đích kết nối và những gì đi kèm)
 
 ```
-fix: sửa lỗi thanh thời gian của bubble sort không dừng lại khi người dùng bấm tạm dừng animation
+fix: sửa lỗi thanh thời gian bubble sort không dừng khi bấm tạm dừng animation
 ```
 
 ```
-feat: thêm trang trực quan hoá thuật toán Dijkstra với đồ thị tương tác và bảng khoảng cách
+feat: thêm trang mô phỏng Dijkstra với đồ thị tương tác và bảng khoảng cách
 
 - Dùng Server Component để tải danh sách đồ thị mẫu, Client Component cho canvas tương tác
 - Lưu trạng thái từng bước vào reducer để hỗ trợ tua lại và chạy từng bước
@@ -146,8 +146,10 @@ feat: thêm trang trực quan hoá thuật toán Dijkstra với đồ thị tư�
 **Ví dụ chưa tốt:**
 
 - `feat: thêm drizzle` — quá ngắn, không nói được gì
-- `chore: cập nhật một số file cấu hình và thực hiện các thay đổi nhỏ để cải thiện dự án nói chung` —
-  đủ độ dài nhưng toàn chữ đệm, đọc xong vẫn không biết đã đổi gì
+- `chore: cập nhật một số file cấu hình và thực hiện các thay đổi nhỏ` — toàn chữ đệm, đọc xong
+  vẫn không biết đã đổi gì
+- `feat: thêm cấu hình Drizzle ORM kết nối PostgreSQL cùng các script generate và migrate schema` —
+  93 ký tự, vượt giới hạn 80; rút gọn hoặc chuyển phần chi tiết xuống body
 - `feat(db): Thêm Drizzle.` — có scope, viết hoa, có dấu chấm
 
 ### 5. Stage và kiểm tra an toàn
@@ -190,13 +192,13 @@ commit bằng chính file đó — như vậy message đã kiểm tra chính là
 
 ```bash
 cat > "$(git rev-parse --git-dir)/COMMIT_DRAFT" <<'EOF'
-feat: thêm cấu hình Drizzle ORM kết nối PostgreSQL cùng các script generate và migrate schema
+feat: thêm cấu hình Drizzle ORM cho PostgreSQL cùng script generate và migrate
 EOF
 python3 .claude/skills/commit/scripts/check_commit_msg.py "$(git rev-parse --git-dir)/COMMIT_DRAFT"
 git commit -F "$(git rev-parse --git-dir)/COMMIT_DRAFT"
 ```
 
-Nếu script báo lỗi (thường là thiếu/thừa ký tự), viết lại message và kiểm tra lại. Đừng đếm ký tự
+Nếu script báo lỗi (thường là tiêu đề quá 80 ký tự), viết lại message và kiểm tra lại. Đừng đếm ký tự
 bằng mắt — dùng kết quả của script.
 
 Lặp lại bước 5–7 cho từng commit trong kế hoạch.

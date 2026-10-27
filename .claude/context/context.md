@@ -1,20 +1,20 @@
 # Ngữ cảnh dự án
 
 Website mô phỏng thuật toán (đồ án tốt nghiệp): Next.js 16.4 (App Router, `cacheComponents`, `partialPrefetching`, `reactCompiler`), React 19, Tailwind CSS v4, Drizzle ORM + PostgreSQL, Bun, Biome.
-Chữ trên giao diện, comment và commit message viết tiếng Việt; route và slug viết tiếng Anh.
+Chữ trên giao diện và commit message viết tiếng Việt; route và slug viết tiếng Anh.
 
 ## Lệnh
 
 ```bash
 bun run dev                    # next dev
 bun run build                  # next build — cần DATABASE_URL vì generateStaticParams đọc DB
-bun run lint                   # biome check (bun run format để tự sửa định dạng)
+bun run lint                   # biome check (bun run format để tự sửa định dạng và thứ tự import)
 bunx tsc --noEmit              # typecheck; nếu thiếu kiểu PageProps/LayoutProps thì chạy `bunx next typegen` trước
 bun test                       # toàn bộ test trong tests/
 bun test tests/sorting-algorithms/bubble-sort.test.ts   # một file
 bun test -t "tên test"         # lọc theo tên
 
-docker compose up -d postgres  # Postgres local (compose còn có redis, rabbitmq — code chưa dùng)
+docker compose up -d postgres  # Postgres local
 bun run db:generate            # sinh migration vào drizzle/ sau khi sửa db/schema.ts
 bun run db:migrate             # áp migration
 bun run db:seed                # upsert danh mục + thuật toán từ db/seed-data.ts
@@ -22,6 +22,7 @@ bun run db:push                # đẩy thẳng schema lên DB, không tạo mig
 bun run db:studio              # Drizzle Studio để xem dữ liệu trong DB
 ```
 
+CI (`.github/workflows/ci.yml`) chạy khi push `dev` và khi mở PR vào `main`: một job lint, `next typegen`, typecheck, test; một job dựng Postgres rồi `db:migrate`, `db:seed`, `build` (lỗi Cache Components chỉ lộ ra lúc build).
 `db/index.ts` có `import "server-only"`, nên script Bun nào import code đọc DB phải chạy với `--conditions=react-server` (như `db:seed`).
 Biến môi trường: xem `.env.example`.
 
@@ -39,9 +40,10 @@ Nhờ vậy UI vẽ lại bất kỳ bước nào mà không cần phát lại t
 Feature chỉ chuyển event thành hình: chọn tone (`getBarTones`), giữ định danh phần tử khi hoán đổi (`trackElementIds`), khai báo mã giả.
 Mã giả viết bằng tiếng Anh, ngắn gọn kiểu Python nhưng không phải Python (thụt lề thay ngoặc, không `def`/`range`/`len`, mỗi dòng một thao tác, gán bằng `=`, kết thúc bằng `done`); xem `IPseudocode`.
 Mỗi feature export map key → trình mô phỏng tải lười (`SORTING_VISUALIZERS`); `features/catalog/visualizers.ts` ghép lại và `satisfies Record<AlgorithmKey, ...>`, `AlgorithmVisualizer` (client) tra theo key trong `<Suspense>`.
-Input mặc định phải cố định (không random khi render) để HTML server khớp lần render đầu ở client.
+Input mặc định phải cố định (không random khi render) để HTML server khớp lần render đầu ở client; mảng mặc định dùng chung là `DEFAULT_ARRAY` trong `engine/visualization/`.
 
-**Feature theo danh mục.** `features/sorting-algorithms/` chứa `bubble-sort/` và `selection-sort/`, export `SORTING_ALGORITHMS`; danh mục mới theo cùng khuôn (hiện chưa có, ví dụ `features/searching-algorithms/`).
+**Feature theo danh mục.** `features/sorting-algorithms/` chứa `bubble-sort/` và `selection-sort/`, export `SORTING_ALGORITHMS`; `features/searching-algorithms/` chứa `linear-search/` và `binary-search/`, export `SEARCHING_ALGORITHMS`; danh mục mới theo cùng khuôn.
+Phần dùng chung trong một danh mục nằm ở gốc feature đó, ví dụ `features/sorting-algorithms/shared.ts` (`assertSortInput`, `range`).
 `features/catalog/` là phần dùng chung: `catalog.ts` ghép registry từ mọi feature, `queries.ts` đọc DB, `routes.ts` dựng link, `categories.ts` và `components/` phục vụ trang chủ và `/visualization`.
 Các feature danh mục không import lẫn nhau; thứ dùng chung đẩy xuống `engine/` hoặc `components/`.
 
@@ -52,6 +54,7 @@ Thêm một thuật toán gồm: cài đặt trong feature, thêm vào `*_ALGORI
 Danh mục chỉ khai báo một nơi là `CATEGORIES` trong `features/catalog/categories.ts`: trang chủ và footer đọc trực tiếp, `seedCategories` lấy lại chính nó, nên sửa xong phải chạy `db:seed`.
 
 **Route.** `/` là trang chủ, `/visualization` liệt kê mọi danh mục, `/visualization/[category]` là trang danh mục, `/visualization/[category]/[algorithm]` là trang thuật toán.
+`/learn` liệt kê các lộ trình học (chưa có bài, đều "Sắp ra mắt"); `/login` và `/register` nằm trong route group `app/(auth)/`, hiện chỉ có giao diện, form chưa gửi đi đâu.
 Thuật toán phải đúng danh mục của nó (`getAlgorithmBySlug(category, algorithm)`), sai danh mục thì `notFound()`.
 Dựng link bằng `getCategoryHref()` / `getAlgorithmHref()` trong `features/catalog/routes.ts`.
 Root layout có `title.template`, trang chỉ đặt tên riêng của nó; `app/not-found.tsx`, `app/error.tsx`, `app/global-error.tsx` lo trang 404 và trang lỗi.
@@ -63,16 +66,19 @@ Hiện repo chưa có `proxy.ts` (hay `middleware.ts`) nên không có chỗ ki�
 
 **Đặt file.** `components/ui/` chứa primitive không biết nghiệp vụ (không import `features/`, `db/`).
 Header, footer, logo chỉ root layout dùng nên nằm ở `app/_components/`; khi có route group thì chuyển theo layout của group đó.
+Header tách thành nhiều file trong `app/_components/header/`: `site-header.tsx` (Server Component đọc danh mục từ DB, DB lỗi vẫn hiện danh mục), `nav-items.ts` (mục menu), menu danh mục, bảng tìm kiếm Ctrl K (`command-palette.tsx`), nút đổi theme và menu trượt mobile.
+Component dùng chung cho các trang trong một route group đặt ở `_components/` của group đó (ví dụ `app/(auth)/_components/`).
 Component chỉ một route dùng thì đặt ở `app/<route>/_components/`; component dùng chung cho cả `/visualization` và `/visualization/[category]` nằm ở `app/visualization/_components/` (ví dụ `algorithm-grid.tsx`).
 `lib/` chứa tiện ích dùng chung không gắn nghiệp vụ (`cn.ts`, `site.ts`).
 
 **Style.** Chỉ dùng token ngữ nghĩa khai báo trong `app/globals.css` (`bg-bg-surface`, `text-text-secondary`, `border-border-strong`, `bg-accent-default`...), không dùng hex hay palette mặc định (`slate-*`, `indigo-*`).
 `accent/*` dành cho tương tác; `state/*` (compare, swap, pivot, pointer, sorted) chỉ dùng trong hình mô phỏng.
-Dark mode theo `prefers-color-scheme` qua biến CSS, nên thường không cần `dark:`.
+Dark mode bật bằng `data-theme="dark"` trên `<html>`: `lib/theme.ts` đặt thuộc tính này trước khi hydrate (theo lựa chọn đã lưu, chưa lưu thì theo hệ điều hành) và biến CSS đổi theo, nên thường không cần `dark:`.
 
 ## Quy ước
 
 Các skill trong `.claude/skills/` là quy ước của dự án, đọc trước khi làm việc tương ứng.
 `ui-component` dành cho component và trang.
-`typescript-convention` áp dụng cho mọi file .ts/.tsx: interface có tiền tố `I`, không dùng `any`/`enum`/`!`, comment chỉ khi cần và luôn dạng khối nhiều dòng.
-`commit` và `open-pr`: chỉ dùng một nhánh `dev`, PR `dev` → `main`, message dạng `type: mô tả tiếng Việt` dài 80–100 ký tự, không có dòng attribution.
+`typescript-convention` áp dụng cho mọi file .ts/.tsx: interface có tiền tố `I`, không dùng `any`/`enum`/`!`, tuyệt đối không viết comment trong code (chỉ giải thích khi người dùng hỏi).
+`commit` và `open-pr`: chỉ dùng một nhánh `dev`, PR `dev` → `main`, tiêu đề dạng `type: mô tả tiếng Việt`, không có dòng attribution.
+Tiêu đề commit và tiêu đề PR đều tối đa 80 ký tự, kiểm bằng `.claude/skills/commit/scripts/check_commit_msg.py`.
