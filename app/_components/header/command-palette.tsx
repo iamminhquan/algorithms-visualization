@@ -33,7 +33,7 @@ interface ISearchGroup {
 function normalize(text: string) {
   return text
     .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
+    .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .replace(/đ/g, "d");
 }
@@ -113,6 +113,13 @@ export function CommandPalette({ categories }: CommandPaletteProps) {
   };
   const close = () => dialogRef.current?.close();
 
+  const closeForNavigation = () => {
+    close();
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+  };
+
   useEffect(() => {
     const toggleOnShortcut = (event: globalThis.KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
@@ -142,6 +149,9 @@ export function CommandPalette({ categories }: CommandPaletteProps) {
   };
 
   const handleInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.nativeEvent.isComposing) {
+      return;
+    }
     const currentIndex = Math.min(activeIndex, results.length - 1);
     if (event.key === "ArrowDown") {
       event.preventDefault();
@@ -152,7 +162,7 @@ export function CommandPalette({ categories }: CommandPaletteProps) {
     } else if (event.key === "Enter" && activeResult) {
       event.preventDefault();
       router.push(activeResult.href);
-      close();
+      closeForNavigation();
     }
   };
 
@@ -252,7 +262,7 @@ export function CommandPalette({ categories }: CommandPaletteProps) {
                       role="option"
                       aria-selected={isActive}
                       tabIndex={-1}
-                      onClick={close}
+                      onClick={closeForNavigation}
                       onPointerMove={() =>
                         setActiveIndex(results.indexOf(result))
                       }
