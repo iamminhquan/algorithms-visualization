@@ -1,5 +1,4 @@
 import {
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
   type LucideIcon,
@@ -8,6 +7,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { type ComponentProps, useId } from "react";
+import { Select } from "@/components/ui/select";
 import { isAtEnd, PLAYBACK_SPEEDS } from "@/engine/visualization";
 import { cn } from "@/lib/cn";
 import type { IPlaybackControls } from "./use-playback";
@@ -101,31 +101,24 @@ export function PlaybackControls({
         <label htmlFor={speedId} className="text-sm text-text-secondary">
           Tốc độ
         </label>
-        <div className="relative">
-          <select
-            id={speedId}
-            value={state.speed}
-            onChange={(event) => {
-              const speed = PLAYBACK_SPEEDS.find(
-                (option) => option === Number(event.currentTarget.value),
-              );
-              if (speed !== undefined) {
-                controls.setSpeed(speed);
-              }
-            }}
-            className="h-9 cursor-pointer appearance-none rounded-lg border border-border-strong bg-bg-surface pr-8 pl-3 text-sm text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default"
-          >
-            {PLAYBACK_SPEEDS.map((speed) => (
-              <option key={speed} value={speed}>
-                {speed}×
-              </option>
-            ))}
-          </select>
-          <ChevronDown
-            aria-hidden="true"
-            className="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-text-secondary"
-          />
-        </div>
+        <Select
+          id={speedId}
+          value={state.speed}
+          onChange={(event) => {
+            const speed = PLAYBACK_SPEEDS.find(
+              (option) => option === Number(event.currentTarget.value),
+            );
+            if (speed !== undefined) {
+              controls.setSpeed(speed);
+            }
+          }}
+        >
+          {PLAYBACK_SPEEDS.map((speed) => (
+            <option key={speed} value={speed}>
+              {speed}×
+            </option>
+          ))}
+        </Select>
       </div>
     </div>
   );
