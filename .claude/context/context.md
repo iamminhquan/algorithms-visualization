@@ -1,7 +1,7 @@
 # Ngữ cảnh dự án
 
 Website mô phỏng thuật toán (đồ án tốt nghiệp): Next.js 16.4 (App Router, `cacheComponents`, `partialPrefetching`, `reactCompiler`), React 19, Tailwind CSS v4, Drizzle ORM + PostgreSQL, Bun, Biome.
-Chữ trên giao diện, comment và commit message viết tiếng Việt; route và slug viết tiếng Anh.
+Chữ trên giao diện và commit message viết tiếng Việt; route và slug viết tiếng Anh.
 
 ## Lệnh
 
@@ -79,6 +79,6 @@ Dark mode bật bằng `data-theme="dark"` trên `<html>`: `lib/theme.ts` đặt
 
 Các skill trong `.claude/skills/` là quy ước của dự án, đọc trước khi làm việc tương ứng.
 `ui-component` dành cho component và trang.
-`typescript-convention` áp dụng cho mọi file .ts/.tsx: interface có tiền tố `I`, không dùng `any`/`enum`/`!`, comment chỉ khi cần và luôn dạng khối nhiều dòng.
+`typescript-convention` áp dụng cho mọi file .ts/.tsx: interface có tiền tố `I`, không dùng `any`/`enum`/`!`, tuyệt đối không viết comment trong code (chỉ giải thích khi người dùng hỏi).
 `commit` và `open-pr`: chỉ dùng một nhánh `dev`, PR `dev` → `main`, tiêu đề dạng `type: mô tả tiếng Việt`, không có dòng attribution.
 Tiêu đề commit và tiêu đề PR đều tối đa 80 ký tự, kiểm bằng `.claude/skills/commit/scripts/check_commit_msg.py`.
