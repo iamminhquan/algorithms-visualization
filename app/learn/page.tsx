@@ -13,10 +13,6 @@ export const metadata: Metadata = {
   title: "Học tập",
 };
 
-/**
- * Một lộ trình học trên trang `/learn`. Chưa có nội dung bài học nên mọi lộ trình đều hiện
- * "Sắp ra mắt".
- */
 interface ILearningTrack {
   readonly title: string;
   readonly description: string;

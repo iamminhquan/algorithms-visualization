@@ -12,10 +12,6 @@ import {
 export async function generateStaticParams() {
   const algorithms = await getAlgorithmCatalog();
   if (algorithms.length === 0) {
-    /*
-     * Cache Components báo lỗi build khi mảng rỗng (DB chưa seed), nên trả tham số giữ chỗ;
-     * slug này không có trong DB nên trang gọi `notFound()`.
-     */
     return [{ category: "placeholder", algorithm: "placeholder" }];
   }
   return algorithms.map((algorithm) => ({
