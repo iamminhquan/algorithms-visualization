@@ -8,23 +8,13 @@ import {
  * Xác suất chọn target có trong mảng; phần còn lại chọn số không có, để người xem gặp cả
  * trường hợp không tìm thấy.
  */
-export const MAX_ARRAY_LENGTH = DISPLAY_MAX_LENGTH;
+const PRESENT_TARGET_PROBABILITY = 0.7;
 
-/**
- * Input mặc định khi mở trang. Cố định thay vì ngẫu nhiên, để HTML render ở server khớp với
- * lần render đầu ở trình duyệt. `DEFAULT_TARGET` có trong mảng, nằm ở nửa sau để Linear Search
- * cần nhiều lần so sánh còn Binary Search chỉ cần vài lần.
- */
+export const MAX_ARRAY_LENGTH = DISPLAY_MAX_LENGTH;
+export const DEFAULT_TARGET = 55;
 export const DEFAULT_ARRAY: readonly number[] = Object.freeze([
   38, 27, 43, 3, 9, 82, 10, 55, 19, 64,
 ]);
-export const DEFAULT_TARGET = 55;
-
-/**
- * Xác suất chọn target có trong mảng; phần còn lại chọn số không có, để người xem gặp cả
- * trường hợp không tìm thấy.
- */
-const PRESENT_TARGET_PROBABILITY = 0.7;
 
 /**
  * Sắp xếp tăng dần trên bản sao, dùng cho Binary Search.
