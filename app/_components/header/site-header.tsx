@@ -11,11 +11,6 @@ import { CATEGORY_TAGLINES, type IHeaderCategory } from "./nav-items";
 import { CurrentNavLinks, NavLinks } from "./nav-links";
 import { ThemeToggle } from "./theme-toggle";
 
-/**
- * Danh mục theo thứ tự của `CATEGORIES`, kèm thuật toán chạy được đọc từ DB (đã cache).
- * Header nằm trong root layout nên lỗi DB ở đây sẽ làm hỏng mọi trang, kể cả trang đăng nhập;
- * vì vậy khi DB lỗi header vẫn hiện danh mục, chỉ thiếu thuật toán và nhãn "Sắp ra mắt".
- */
 async function getHeaderCategories(): Promise<IHeaderCategory[]> {
   const catalog = await getCategoryCatalog().catch((error: unknown) => {
     console.error("Không đọc được danh mục cho header", error);
@@ -40,9 +35,6 @@ async function getHeaderCategories(): Promise<IHeaderCategory[]> {
   });
 }
 
-/*
- * Lề ngang và `max-w-310` trùng với lưới card bên dưới để mép logo và mép nút thẳng hàng với card.
- */
 export async function SiteHeader() {
   const categories = await getHeaderCategories();
 

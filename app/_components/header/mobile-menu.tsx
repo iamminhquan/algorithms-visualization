@@ -15,9 +15,6 @@ import {
   NAV_ITEMS,
 } from "./nav-items";
 
-/*
- * Trùng breakpoint `md` của Tailwind, nơi thanh điều hướng đầy đủ hiện ra.
- */
 const DESKTOP_QUERY = "(min-width: 48rem)";
 
 const ICON_BUTTON_CLASS_NAME = cn(
@@ -30,20 +27,11 @@ type MobileMenuProps = {
   pathname: string | null;
 };
 
-/**
- * Nút hamburger và menu trượt từ cạnh phải trên màn hình dưới `md`, gồm các mục điều hướng,
- * danh mục mô phỏng và nút đăng nhập. Menu là `<dialog>` modal nên trình duyệt lo giữ focus,
- * Esc để đóng và chặn tương tác với trang phía sau.
- */
 export function MobileMenu({ categories, pathname }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const close = () => dialogRef.current?.close();
 
-  /*
-   * Xoay ngang máy tính bảng có thể vượt qua `md` khi menu đang mở; lúc đó nút hamburger bị ẩn
-   * nhưng dialog vẫn chặn cả trang, nên đóng luôn.
-   */
   useEffect(() => {
     if (!isOpen) {
       return;

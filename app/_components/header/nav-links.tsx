@@ -25,10 +25,6 @@ type NavPillProps = {
   isHovered: boolean;
 };
 
-/*
- * Hai lớp nền trượt giữa các mục nhờ `layoutId`: pill indigo theo trang hiện tại (trượt khi đổi
- * trang), pill xám theo mục đang hover. Mục đang là trang hiện tại thì không hiện pill hover.
- */
 function NavPill({ isCurrent, isHovered }: NavPillProps) {
   if (isCurrent) {
     return (
@@ -56,11 +52,6 @@ type NavLinksProps = {
   pathname: string | null;
 };
 
-/**
- * Thanh điều hướng trên màn hình từ `md` trở lên; mục "Mô phỏng" mở bảng danh mục.
- * `pathname` là `null` khi chưa biết trang hiện tại (fallback của Suspense), lúc đó chưa mục nào
- * được đánh dấu.
- */
 export function NavLinks({ categories, pathname }: NavLinksProps) {
   const [hoveredHref, setHoveredHref] = useState<string | null>(null);
 

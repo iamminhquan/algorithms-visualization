@@ -19,9 +19,6 @@ import { cn } from "@/lib/cn";
 import { ComingSoonBadge } from "./coming-soon-badge";
 import { FOCUS_RING_CLASS_NAME, type IHeaderCategory } from "./nav-items";
 
-/*
- * Rời chuột khỏi nút hoặc bảng thì đợi một chút mới đóng, để kịp di chuột chéo từ nút xuống bảng.
- */
 const CLOSE_DELAY_MS = 150;
 
 type SimulationMenuProps = {
@@ -32,12 +29,6 @@ type SimulationMenuProps = {
   triggerClassName: string;
 };
 
-/**
- * Mục "Mô phỏng" trên thanh điều hướng: nút mở bảng lưới hai cột liệt kê các danh mục. `pill` là
- * lớp nền nằm dưới chữ của nút, do thanh điều hướng quyết định.
- * Mở khi hover (chuột) hoặc bấm; mũi tên lên/xuống di chuyển giữa các link, Esc đóng và trả focus
- * về nút. Bảng là danh sách link thường (mẫu disclosure), không phải `role="menu"`.
- */
 export function SimulationMenu({
   categories,
   label,

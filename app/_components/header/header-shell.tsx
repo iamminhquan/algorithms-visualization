@@ -7,7 +7,7 @@ type HeaderShellProps = {
 };
 
 /**
- * Thẻ `<header>` dính trên cùng, nền trắng mờ; khi trang đã cuộn thì hiện viền dưới và bóng nhẹ.
+ * Header với hiệu ứng kính mờ và dính vào phần đầu trang khi cuộn (sticky).
  */
 export function HeaderShell({ children }: HeaderShellProps) {
   const [isScrolled, setIsScrolled] = useState(false);
