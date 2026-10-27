@@ -2,14 +2,10 @@ import Link from "next/link";
 import { cn } from "@/lib/cn";
 
 type LoginLinkProps = {
-  /** Kiểu hiển thị (display), chiều cao và độ rộng do nơi dùng quyết định vì mỗi nơi một khác. */
   className: string;
   onNavigate?: () => void;
 };
 
-/**
- * Nút "Đăng nhập" dùng chung cho header (màn hình rộng) và menu trượt (màn hình hẹp).
- */
 export function LoginLink({ className, onNavigate }: LoginLinkProps) {
   return (
     <Link

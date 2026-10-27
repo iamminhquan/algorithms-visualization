@@ -5,11 +5,6 @@ import { getCategoryHref } from "@/features/catalog/routes";
 import { SITE_NAME } from "@/lib/site";
 import { Logo } from "./logo";
 
-/**
- * Một cột link trong footer.
- *
- * `id`: Dùng làm id cho tiêu đề cột để `<nav>` tham chiếu qua `aria-labelledby`.
- */
 interface IFooterColumn {
   readonly id: string;
   readonly title: string;
@@ -50,10 +45,6 @@ const LEGAL_LINKS = [
   { label: "Chính sách bảo mật", href: "#" },
 ];
 
-/*
- * Light: nền bg-inverse (tối). Dark: bg-inverse thành sáng nên đổi sang bg-surface để footer
- * vẫn tối, kéo theo màu chữ/viền cũng đổi sang bộ token thường.
- */
 const LINK_CLASS_NAME =
   "rounded-sm text-text-muted transition-colors hover:text-text-inverse focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default dark:text-text-secondary dark:hover:text-text-primary";
 
@@ -120,9 +111,6 @@ export function SiteFooter() {
   );
 }
 
-/*
- * lucide-react 1.x đã bỏ icon thương hiệu nên GitHub vẽ lại từ path trong Figma.
- */
 function GithubIcon() {
   return (
     <svg

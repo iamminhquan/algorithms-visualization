@@ -17,11 +17,6 @@ import { cn } from "@/lib/cn";
 import { ComingSoonBadge } from "./coming-soon-badge";
 import { FOCUS_RING_CLASS_NAME, type IHeaderCategory } from "./nav-items";
 
-/**
- * Một kết quả trong bảng tìm kiếm.
- *
- * `slug`: Danh mục của kết quả, để chọn icon.
- */
 interface ISearchResult {
   readonly id: string;
   readonly label: string;
@@ -35,9 +30,6 @@ interface ISearchGroup {
   readonly results: readonly ISearchResult[];
 }
 
-/*
- * Bỏ dấu tiếng Việt để gõ "sap xep" vẫn khớp "sắp xếp"; "đ" không phải dấu ghép nên đổi riêng.
- */
 function normalize(text: string) {
   return text
     .normalize("NFD")
@@ -53,10 +45,6 @@ function matches(query: string, haystack: string) {
     .every((word) => normalizedHaystack.includes(word));
 }
 
-/**
- * Nhóm kết quả: nhóm "Danh mục" trước, sau đó mỗi danh mục một nhóm chứa các thuật toán của nó.
- * Thuật toán khớp theo cả tên danh mục, nên gõ "tìm kiếm" hiện đủ các thuật toán tìm kiếm.
- */
 function searchCatalog(
   categories: readonly IHeaderCategory[],
   query: string,
@@ -94,10 +82,6 @@ function searchCatalog(
 
 const subscribeToNothing = () => () => {};
 
-/*
- * Server không biết hệ điều hành nên render "Ctrl" rồi client đổi sang "⌘" trên Mac, không lệch
- * hydration vì `useSyncExternalStore` dùng snapshot của server cho lần render đầu.
- */
 function useIsApplePlatform() {
   return useSyncExternalStore(
     subscribeToNothing,
@@ -110,11 +94,6 @@ type CommandPaletteProps = {
   categories: readonly IHeaderCategory[];
 };
 
-/**
- * Nút tìm kiếm trên header và bảng tìm kiếm dạng command palette mở bằng nút đó hoặc ⌘K / Ctrl K.
- * Bảng là `<dialog>` modal nên trình duyệt lo giữ focus bên trong, Esc để đóng và chặn tương tác
- * với phần còn lại của trang.
- */
 export function CommandPalette({ categories }: CommandPaletteProps) {
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);

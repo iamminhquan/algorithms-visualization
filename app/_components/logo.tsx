@@ -2,11 +2,6 @@ import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { SITE_NAME } from "@/lib/site";
 
-/*
- * Bốn cột chưa sắp xếp trong ô vuông bo góc; cột cao nhất tô màu "đang so sánh" như trên hình mô phỏng.
- * Giữ cùng hình với `app/icon.svg`. Khi hover, các cột trượt về đúng thứ tự tăng dần (8, 13, 17, 21):
- * `sortClassName` là quãng dịch tới vị trí đã sắp xếp, tính bằng đơn vị của viewBox.
- */
 const MARK_BARS = [
   {
     x: 6,
@@ -69,10 +64,6 @@ type LogoProps = {
   showWordmark?: boolean;
 };
 
-/**
- * Biểu tượng của site, có thể kèm chữ; link có `aria-label` nên người dùng trình đọc màn hình
- * vẫn nghe đủ tên.
- */
 export function Logo({ className, showWordmark = false }: LogoProps) {
   return (
     <Link

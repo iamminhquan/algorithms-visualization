@@ -1,13 +1,6 @@
 import type { CategorySlug } from "@/features/catalog/categories";
 import { VISUALIZATION_PATH } from "@/features/catalog/routes";
 
-/**
- * Một mục trên thanh điều hướng.
- *
- * `href`: Link tới một phần của trang (có `#`) không bao giờ được đánh dấu là trang hiện tại,
- *   vì `usePathname()` không chứa phần `#`.
- * `matchPrefix`: Coi mọi đường dẫn con (vd: `/visualization/sorting`) cũng là đang ở mục này.
- */
 export interface INavItem {
   readonly label: string;
   readonly href: string;
@@ -21,12 +14,6 @@ export const NAV_ITEMS: readonly INavItem[] = [
   { label: "Giới thiệu", href: "/#about" },
 ];
 
-/**
- * Danh mục kèm thuật toán, đã rút gọn còn đúng những trường header cần để truyền xuống client.
- *
- * `tagline`: Mô tả ngắn vừa một dòng trong menu, khác `description` dài trên card trang chủ.
- * `isComingSoon`: Danh mục chưa có thuật toán nào chạy được.
- */
 export interface IHeaderCategory {
   readonly slug: CategorySlug;
   readonly name: string;
@@ -50,11 +37,6 @@ export const CATEGORY_TAGLINES = {
   trees: "Cây tìm kiếm và cây cân bằng",
 } satisfies Record<CategorySlug, string>;
 
-/**
- * Mục có đang là trang hiện tại không.
- *
- * @param pathname `null` khi chưa biết trang hiện tại (fallback của Suspense), lúc đó luôn là `false`.
- */
 export function isCurrentPage(item: INavItem, pathname: string | null) {
   if (pathname === null || item.href.includes("#")) {
     return false;
