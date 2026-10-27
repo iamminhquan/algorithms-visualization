@@ -7,7 +7,7 @@ Cách dùng:
 
 Quy tắc:
 - Dòng tiêu đề: `type: mô tả`, type thuộc danh sách cho phép.
-- Dòng tiêu đề dài từ 80 đến 100 ký tự (đếm theo ký tự Unicode, không phải byte).
+- Dòng tiêu đề dài tối đa 80 ký tự (đếm theo ký tự Unicode, không phải byte).
 - Nếu có body: dòng thứ 2 phải để trống, mỗi dòng body không quá 100 ký tự.
 - Không có trailer attribution (Co-Authored-By:, Signed-off-by:, "Generated with ...").
 
@@ -19,8 +19,7 @@ import sys
 import unicodedata
 
 TYPES = ("feat", "fix", "refactor", "perf", "style", "docs", "test", "build", "ci", "chore", "revert")
-SUBJECT_MIN = 80
-SUBJECT_MAX = 100
+SUBJECT_MAX = 80
 BODY_MAX = 100
 
 SUBJECT_RE = re.compile(rf"^({'|'.join(TYPES)})(!)?: \S.*$")
@@ -54,11 +53,6 @@ def main() -> int:
         errors.append("Tiêu đề có khoảng trắng thừa ở đầu hoặc cuối.")
     if subject.rstrip().endswith("."):
         errors.append("Tiêu đề không kết thúc bằng dấu chấm.")
-    if n < SUBJECT_MIN:
-        errors.append(
-            f"Tiêu đề có {n} ký tự, thiếu {SUBJECT_MIN - n} so với tối thiểu {SUBJECT_MIN}. "
-            "Thêm thông tin cụ thể (thay đổi gì, ở đâu, để làm gì), không thêm chữ đệm."
-        )
     if n > SUBJECT_MAX:
         errors.append(
             f"Tiêu đề có {n} ký tự, vượt {n - SUBJECT_MAX} so với tối đa {SUBJECT_MAX}. "
@@ -74,7 +68,7 @@ def main() -> int:
             if len(line) > BODY_MAX:
                 errors.append(f"Dòng {i} có {len(line)} ký tự, vượt tối đa {BODY_MAX}: {line[:40]}...")
 
-    print(f"Tiêu đề: {n} ký tự (yêu cầu {SUBJECT_MIN}-{SUBJECT_MAX})")
+    print(f"Tiêu đề: {n} ký tự (tối đa {SUBJECT_MAX})")
     if errors:
         for e in errors:
             print(f"LỖI: {e}")
