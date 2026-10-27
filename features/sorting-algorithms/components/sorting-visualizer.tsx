@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { ArrayBars } from "@/components/visualization/array-bars";
 import { ArrayInputForm } from "@/components/visualization/array-input-form";
+import { CodePanel } from "@/components/visualization/code-panel";
 import { PlaybackControls } from "@/components/visualization/playback-controls";
-import { PseudocodePanel } from "@/components/visualization/pseudocode-panel";
 import { usePlayback } from "@/components/visualization/use-playback";
 import {
   type ILegendItem,
@@ -12,6 +12,7 @@ import {
   countPayloadTypes,
   type IPseudocode,
   type PayloadTypeCounts,
+  type SourceCode,
 } from "@/engine/visualization";
 import { DEFAULT_ARRAY, MAX_ARRAY_LENGTH } from "../array-input";
 import type { SortingAlgorithm } from "../index";
@@ -56,6 +57,7 @@ function createRun(
 type SortingVisualizerProps = {
   algorithm: SortingAlgorithm;
   pseudocode: IPseudocode<SortingEvent["payload"]>;
+  sourceCode: SourceCode;
   getFrame: (event: SortingEvent) => ISortingFrame;
   legend: readonly ILegendItem[];
 };
@@ -66,6 +68,7 @@ type SortingVisualizerProps = {
 export function SortingVisualizer({
   algorithm,
   pseudocode,
+  sourceCode,
   getFrame,
   legend,
 }: SortingVisualizerProps) {
@@ -92,8 +95,9 @@ export function SortingVisualizer({
       }
       description={event.description}
       aside={
-        <PseudocodePanel
-          lines={pseudocode.lines}
+        <CodePanel
+          pseudocode={pseudocode.lines}
+          sourceCode={sourceCode}
           activeLine={pseudocode.getActiveLine(event.payload)}
         />
       }

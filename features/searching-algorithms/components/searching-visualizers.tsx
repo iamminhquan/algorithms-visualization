@@ -1,6 +1,7 @@
 import {
   BINARY_SEARCH_LEGEND,
   BINARY_SEARCH_PSEUDOCODE,
+  BINARY_SEARCH_SOURCE_CODE,
   binarySearch,
   getBinarySearchFrame,
 } from "../binary-search";
@@ -8,6 +9,7 @@ import {
   getLinearSearchFrame,
   LINEAR_SEARCH_LEGEND,
   LINEAR_SEARCH_PSEUDOCODE,
+  LINEAR_SEARCH_SOURCE_CODE,
   linearSearch,
 } from "../linear-search";
 import { sortAscending } from "../search-input";
@@ -18,6 +20,7 @@ export function LinearSearchVisualizer() {
     <SearchingVisualizer
       algorithm={linearSearch}
       pseudocode={LINEAR_SEARCH_PSEUDOCODE}
+      sourceCode={LINEAR_SEARCH_SOURCE_CODE}
       getFrame={getLinearSearchFrame}
       legend={LINEAR_SEARCH_LEGEND}
     />
@@ -29,6 +32,7 @@ export function BinarySearchVisualizer() {
     <SearchingVisualizer
       algorithm={binarySearch}
       pseudocode={BINARY_SEARCH_PSEUDOCODE}
+      sourceCode={BINARY_SEARCH_SOURCE_CODE}
       getFrame={getBinarySearchFrame}
       legend={BINARY_SEARCH_LEGEND}
       normalize={sortAscending}

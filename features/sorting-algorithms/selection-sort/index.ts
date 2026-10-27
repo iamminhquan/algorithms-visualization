@@ -4,6 +4,7 @@ export {
   SELECTION_SORT_KEY,
   selectionSort,
 } from "./selection-sort";
+export { SELECTION_SORT_SOURCE_CODE } from "./source-code";
 export type {
   ISelectionSortMetrics,
   ISelectionSortState,

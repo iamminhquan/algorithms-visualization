@@ -3,6 +3,7 @@ import {
   BUBBLE_SORT_KEY,
   BUBBLE_SORT_LEGEND,
   BUBBLE_SORT_PSEUDOCODE,
+  BUBBLE_SORT_SOURCE_CODE,
   bubbleSort,
   getBubbleSortFrame,
 } from "./bubble-sort";
@@ -12,6 +13,7 @@ import {
   SELECTION_SORT_KEY,
   SELECTION_SORT_LEGEND,
   SELECTION_SORT_PSEUDOCODE,
+  SELECTION_SORT_SOURCE_CODE,
   selectionSort,
 } from "./selection-sort";
 
@@ -26,6 +28,7 @@ function BubbleSortVisualizer() {
     <SortingVisualizer
       algorithm={bubbleSort}
       pseudocode={BUBBLE_SORT_PSEUDOCODE}
+      sourceCode={BUBBLE_SORT_SOURCE_CODE}
       getFrame={getBubbleSortFrame}
       legend={BUBBLE_SORT_LEGEND}
     />
@@ -37,6 +40,7 @@ function SelectionSortVisualizer() {
     <SortingVisualizer
       algorithm={selectionSort}
       pseudocode={SELECTION_SORT_PSEUDOCODE}
+      sourceCode={SELECTION_SORT_SOURCE_CODE}
       getFrame={getSelectionSortFrame}
       legend={SELECTION_SORT_LEGEND}
     />

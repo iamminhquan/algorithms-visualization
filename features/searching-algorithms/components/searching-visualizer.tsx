@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { ArrayBars } from "@/components/visualization/array-bars";
 import { ArrayInputForm } from "@/components/visualization/array-input-form";
+import { CodePanel } from "@/components/visualization/code-panel";
 import { PlaybackControls } from "@/components/visualization/playback-controls";
-import { PseudocodePanel } from "@/components/visualization/pseudocode-panel";
 import { usePlayback } from "@/components/visualization/use-playback";
 import {
   type ILegendItem,
@@ -12,7 +12,7 @@ import type {
   IAlgorithmDefinition,
   IExecutionResult,
 } from "@/engine/algorithm";
-import type { IPseudocode } from "@/engine/visualization";
+import type { IPseudocode, SourceCode } from "@/engine/visualization";
 import {
   DEFAULT_ARRAY,
   DEFAULT_TARGET,
@@ -60,6 +60,7 @@ function createRun<TEvent extends SearchingEvent>(
 type SearchingVisualizerProps<TEvent extends SearchingEvent> = {
   algorithm: SearchingAlgorithmDefinition<TEvent>;
   pseudocode: IPseudocode<TEvent["payload"]>;
+  sourceCode: SourceCode;
   getFrame: (event: TEvent) => ISearchingFrame;
   legend: readonly ILegendItem[];
   normalize?: (values: readonly number[]) => readonly number[];
@@ -69,6 +70,7 @@ type SearchingVisualizerProps<TEvent extends SearchingEvent> = {
 export function SearchingVisualizer<TEvent extends SearchingEvent>({
   algorithm,
   pseudocode,
+  sourceCode,
   getFrame,
   legend,
   normalize = (values) => values,
@@ -112,8 +114,9 @@ export function SearchingVisualizer<TEvent extends SearchingEvent>({
       }
       description={event.description}
       aside={
-        <PseudocodePanel
-          lines={pseudocode.lines}
+        <CodePanel
+          pseudocode={pseudocode.lines}
+          sourceCode={sourceCode}
           activeLine={pseudocode.getActiveLine(event.payload)}
         />
       }
