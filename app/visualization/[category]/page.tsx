@@ -12,10 +12,6 @@ import {
 export async function generateStaticParams() {
   const categories = await getCategoryCatalog();
   if (categories.length === 0) {
-    /*
-     * Cache Components báo lỗi build khi mảng rỗng (DB chưa seed), nên trả tham số giữ chỗ;
-     * slug này không có trong DB nên trang gọi `notFound()`.
-     */
     return [{ category: "placeholder" }];
   }
   return categories.map((category) => ({ category: category.slug }));
