@@ -24,19 +24,19 @@ const SAMPLE_INPUTS: readonly (readonly number[])[] = [
 ];
 
 const BUBBLE_SORT_KEYWORDS: Readonly<Record<BubbleSortStep["type"], string>> = {
-  compare: "if a[i] > a[i + 1]",
-  swap: "swap",
-  "mark-sorted": "sorted",
-  complete: "done",
+  compare: "nếu a[i] > a[i + 1]",
+  swap: "hoán đổi",
+  "mark-sorted": "đúng",
+  complete: "kết thúc",
 };
 
 const SELECTION_SORT_KEYWORDS: Readonly<
   Record<SelectionSortStep["type"], string>
 > = {
-  compare: "if a[j] < a[min]",
-  swap: "swap",
-  "mark-sorted": "sorted",
-  complete: "done",
+  compare: "nếu a[j] < a[min]",
+  swap: "hoán đổi",
+  "mark-sorted": "đúng vị trí",
+  complete: "kết thúc",
 };
 
 /**

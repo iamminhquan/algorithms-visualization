@@ -3,13 +3,13 @@ import type { SelectionSortStep } from "./types";
 
 export const SELECTION_SORT_PSEUDOCODE: IPseudocode<SelectionSortStep> = {
   lines: [
-    "for i from 0 to n - 2",
+    "lặp i từ 0 đến n - 2",
     "  min = i",
-    "  for j from i + 1 to n - 1",
-    "    if a[j] < a[min]: min = j",
-    "  if min != i: swap a[i], a[min]",
-    "  a[i] is sorted",
-    "done",
+    "  lặp j từ i + 1 đến n - 1",
+    "    nếu a[j] < a[min]: min = j",
+    "  nếu min != i: hoán đổi a[i], a[min]",
+    "  a[i] đã đúng vị trí",
+    "kết thúc",
   ],
   getActiveLine(step) {
     switch (step.type) {
