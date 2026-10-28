@@ -1,9 +1,12 @@
 import { describe, expect, test } from "bun:test";
-import { RANDOM_MAX_VALUE, RANDOM_MIN_VALUE } from "@/engine/visualization";
+import {
+  DEFAULT_ARRAY,
+  RANDOM_MAX_VALUE,
+  RANDOM_MIN_VALUE,
+} from "@/engine/visualization";
 import { binarySearch } from "@/features/searching-algorithms/binary-search";
 import { linearSearch } from "@/features/searching-algorithms/linear-search";
 import {
-  DEFAULT_ARRAY,
   DEFAULT_TARGET,
   pickRandomTarget,
   sortAscending,

@@ -4,6 +4,9 @@ export const MIN_ARRAY_VALUE = -999;
 export const MAX_ARRAY_VALUE = 999;
 export const RANDOM_MIN_VALUE = 5;
 export const RANDOM_MAX_VALUE = 99;
+export const DEFAULT_ARRAY: readonly number[] = Object.freeze([
+  38, 27, 43, 3, 9, 82, 10, 55, 19, 64,
+]);
 
 export type ArrayInputParseResult =
   | { readonly type: "valid"; readonly values: readonly number[] }

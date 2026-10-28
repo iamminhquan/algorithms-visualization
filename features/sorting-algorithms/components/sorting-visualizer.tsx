@@ -10,11 +10,12 @@ import {
 } from "@/components/visualization/visualizer-frame";
 import {
   countPayloadTypes,
+  DEFAULT_ARRAY,
   type IPseudocode,
   type PayloadTypeCounts,
   type SourceCode,
 } from "@/engine/visualization";
-import { DEFAULT_ARRAY, MAX_ARRAY_LENGTH } from "../array-input";
+import { MAX_ARRAY_LENGTH } from "../array-input";
 import type { SortingAlgorithm } from "../index";
 import {
   type ISortingFrame,
@@ -65,6 +66,7 @@ type SortingVisualizerProps = {
 /**
  * Trình mô phỏng dùng chung cho các thuật toán sắp xếp, vì chúng có cùng dạng bước và ảnh chụp.
  */
+// review
 export function SortingVisualizer({
   algorithm,
   pseudocode,
