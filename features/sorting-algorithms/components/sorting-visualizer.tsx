@@ -66,6 +66,7 @@ type SortingVisualizerProps = {
 /**
  * Trình mô phỏng dùng chung cho các thuật toán sắp xếp, vì chúng có cùng dạng bước và ảnh chụp.
  */
+// review
 export function SortingVisualizer({
   algorithm,
   pseudocode,

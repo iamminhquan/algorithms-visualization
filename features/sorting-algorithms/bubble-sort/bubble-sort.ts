@@ -46,6 +46,7 @@ function executeBubbleSort(input: BubbleSortInput): BubbleSortResult {
     );
   };
 
+  // sua phan nay thanh vong for
   let unsortedLength = array.length;
   while (unsortedLength > 1) {
     let swapped = false;
