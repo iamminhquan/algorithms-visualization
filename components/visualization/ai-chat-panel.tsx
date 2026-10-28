@@ -20,6 +20,7 @@ import {
   MAX_QUESTION_LENGTH,
 } from "@/engine/assistant";
 import { cn } from "@/lib/cn";
+import { AssistantMarkdown } from "./assistant-markdown";
 import { useAssistantChat } from "./use-assistant-chat";
 
 export const DEFAULT_SUGGESTED_QUESTIONS: readonly string[] = [
@@ -336,9 +337,10 @@ function AssistantMessage({ message, onRetry }: AssistantMessageProps) {
           </p>
         )}
         {message.content !== "" && (
-          <div className="rounded-xl rounded-tl-sm bg-bg-subtle px-3 py-2 text-sm leading-6 break-words whitespace-pre-wrap text-text-primary">
-            {message.content}
-          </div>
+          <AssistantMarkdown
+            content={message.content}
+            className="rounded-xl rounded-tl-sm bg-bg-subtle px-3 py-2 text-sm leading-6 text-text-primary"
+          />
         )}
         {emptyReplyText !== undefined && (
           <p className="rounded-xl rounded-tl-sm bg-bg-subtle px-3 py-2 text-sm leading-6 text-text-secondary">

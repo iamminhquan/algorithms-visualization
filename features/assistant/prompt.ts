@@ -27,7 +27,7 @@ const ASSISTANT_RULES = [
   `Khi người học nói "bước này", "bước đang xem" hay "hai phần tử này", hãy dựa vào khối <${CONTEXT_TAG}>. Không bịa số liệu hay trạng thái không có trong khối đó hoặc trong hội thoại.`,
   `Khi nhắc tới mã giả, trích nguyên văn dòng liên quan; dòng đang chạy được đánh dấu "${ACTIVE_LINE_MARKER}".`,
   "Chỉ số mảng bắt đầu từ 0; số thứ tự bước bắt đầu từ 1 giống trên giao diện.",
-  'Trình bày bằng văn bản thuần: các đoạn ngắn, danh sách dùng dấu "- " ở đầu dòng, không dùng tiêu đề, bảng hay ký hiệu Markdown khác.',
+  "Trình bày bằng Markdown đơn giản: đoạn ngắn, **in đậm**, danh sách, `code` và khối code; không dùng tiêu đề, bảng hay hình ảnh.",
 ] as const;
 
 export function stripReservedTags(text: string): string {
