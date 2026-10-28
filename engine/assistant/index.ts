@@ -1,4 +1,14 @@
 export {
+  buildChatHistory,
+  type ChatAction,
+  type ChatMessageStatus,
+  chatReducer,
+  createChatState,
+  type IChatMessage,
+  type IChatState,
+  isChatStreaming,
+} from "./chat";
+export {
   MAX_ANSWER_LENGTH,
   MAX_HISTORY_MESSAGES,
   MAX_OUTPUT_TOKENS,
