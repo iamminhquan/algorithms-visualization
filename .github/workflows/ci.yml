@@ -44,3 +44,46 @@ jobs:
 
       - name: Test
         run: bun test
+
+  # Cache Components và Partial Prefetching chỉ báo lỗi khi build, nên lint, typecheck và test không bắt được.
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/algorithms_visualization
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: algorithms_visualization
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+
+      - name: Cài dependency
+        run: bun install --frozen-lockfile
+
+      - name: Áp migration
+        run: bun run db:migrate
+
+      - name: Nạp dữ liệu danh mục và thuật toán
+        run: bun run db:seed
+
+      - name: Build
+        run: bun run build
