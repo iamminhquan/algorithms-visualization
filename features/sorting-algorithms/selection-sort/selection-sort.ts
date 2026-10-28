@@ -2,6 +2,7 @@ import type {
   IAlgorithmDefinition,
   IAlgorithmMetadata,
 } from "@/engine/algorithm";
+import { assertSortInput, range } from "../shared";
 import type {
   SelectionSortEvent,
   SelectionSortInput,
@@ -21,19 +22,7 @@ const metadata: IAlgorithmMetadata<typeof SELECTION_SORT_KEY> = Object.freeze({
 });
 
 function executeSelectionSort(input: SelectionSortInput): SelectionSortResult {
-  if (input.length > MAX_INPUT_LENGTH) {
-    throw new RangeError(
-      `Dữ liệu đầu vào có ${input.length} phần tử, vượt quá giới hạn ${MAX_INPUT_LENGTH}`,
-    );
-  }
-
-  for (const [index, value] of input.entries()) {
-    if (Number.isNaN(value)) {
-      throw new RangeError(
-        `Phần tử tại vị trí ${index} không phải là số (NaN)`,
-      );
-    }
-  }
+  assertSortInput(input, MAX_INPUT_LENGTH);
 
   const array = [...input];
   const events: SelectionSortEvent[] = [];
@@ -115,10 +104,6 @@ function executeSelectionSort(input: SelectionSortInput): SelectionSortResult {
     events,
     metrics: { comparisons, swaps, writes: swaps * 2 },
   };
-}
-
-function range(start: number, end: number): number[] {
-  return Array.from({ length: end - start }, (_, offset) => start + offset);
 }
 
 export const selectionSort: IAlgorithmDefinition<
