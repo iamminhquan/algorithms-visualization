@@ -4,6 +4,7 @@ import {
   buildChatHistory,
   chatReducer,
   createChatState,
+  type IAssistantContext,
   type IChatMessage,
   isChatStreaming,
 } from "@/engine/assistant";
@@ -13,7 +14,7 @@ export interface IAssistantChat {
   readonly provider: AssistantProviderId;
   readonly messages: readonly IChatMessage[];
   readonly isStreaming: boolean;
-  readonly send: (question: string) => void;
+  readonly send: (question: string, context?: IAssistantContext) => void;
   readonly stop: () => void;
   readonly retry: () => void;
   readonly reset: () => void;
@@ -33,11 +34,19 @@ export function useAssistantChat(): IAssistantChat {
 
   useEffect(() => () => abortRef.current?.abort(), []);
 
-  const run = async (assistantId: string, history: readonly IChatMessage[]) => {
+  const run = async (
+    assistantId: string,
+    history: readonly IChatMessage[],
+    context: IAssistantContext | undefined,
+  ) => {
     const controller = new AbortController();
     abortRef.current = controller;
     const outcome = await requestAssistantReply(
-      { provider: state.provider, messages: buildChatHistory(history) },
+      {
+        provider: state.provider,
+        messages: buildChatHistory(history),
+        context,
+      },
       {
         signal: controller.signal,
         onStart: (provider, fallbackFrom) =>
@@ -65,7 +74,7 @@ export function useAssistantChat(): IAssistantChat {
     }
   };
 
-  const send = (question: string) => {
+  const send = (question: string, context?: IAssistantContext) => {
     const content = question.trim();
     if (content === "" || isStreaming) {
       return;
@@ -75,6 +84,7 @@ export function useAssistantChat(): IAssistantChat {
       role: "user",
       content,
       status: "done",
+      context,
     };
     const assistantId = createMessageId();
     dispatch({
@@ -82,8 +92,9 @@ export function useAssistantChat(): IAssistantChat {
       userId: userMessage.id,
       assistantId,
       question: content,
+      context,
     });
-    void run(assistantId, [...state.messages, userMessage]);
+    void run(assistantId, [...state.messages, userMessage], context);
   };
 
   const retry = () => {
@@ -91,9 +102,11 @@ export function useAssistantChat(): IAssistantChat {
     if (failed?.status !== "error" || isStreaming) {
       return;
     }
+    const history = state.messages.slice(0, -1);
+    const question = history.findLast((message) => message.role === "user");
     const assistantId = createMessageId();
     dispatch({ type: "retry", failedId: failed.id, assistantId });
-    void run(assistantId, state.messages.slice(0, -1));
+    void run(assistantId, history, question?.context);
   };
 
   return {

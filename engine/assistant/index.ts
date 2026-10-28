@@ -9,9 +9,22 @@ export {
   isChatStreaming,
 } from "./chat";
 export {
+  createStepContext,
+  formatStepLabel,
+  type IStepContextOptions,
+} from "./context";
+export {
+  MAX_ALGORITHM_KEY_LENGTH,
   MAX_ANSWER_LENGTH,
+  MAX_CONTEXT_LENGTH,
+  MAX_DESCRIPTION_LENGTH,
   MAX_HISTORY_MESSAGES,
+  MAX_METRIC_TEXT_LENGTH,
+  MAX_METRICS,
   MAX_OUTPUT_TOKENS,
+  MAX_PAYLOAD_TYPE_LENGTH,
+  MAX_PSEUDOCODE_LINE_LENGTH,
+  MAX_PSEUDOCODE_LINES,
   MAX_QUESTION_LENGTH,
   MAX_REQUEST_BYTES,
 } from "./limits";
@@ -36,7 +49,10 @@ export {
   type AssistantProviderId,
   type AssistantRole,
   DEFAULT_ASSISTANT_PROVIDER,
+  type IAssistantContext,
   type IAssistantMessage,
+  type IAssistantMetric,
   type IAssistantRequest,
+  type IAssistantStep,
   isAssistantProviderId,
 } from "./types";

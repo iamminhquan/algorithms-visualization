@@ -7,6 +7,8 @@ import {
   MAX_HISTORY_MESSAGES,
   MAX_QUESTION_LENGTH,
 } from "@/engine/assistant";
+import { isRecord } from "./guards";
+import { parseAssistantContext } from "./validate-context";
 
 export type AssistantRequestParseResult =
   | { readonly type: "valid"; readonly request: IAssistantRequest }
@@ -20,10 +22,6 @@ const MAX_CONTENT_LENGTH: Readonly<Record<AssistantRole, number>> = {
   user: MAX_QUESTION_LENGTH,
   assistant: MAX_ANSWER_LENGTH,
 };
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
 
 function isRole(value: unknown): value is AssistantRole {
   return value === "user" || value === "assistant";
@@ -86,5 +84,15 @@ export function parseAssistantRequest(
     return invalid("Tin nhắn cuối cùng phải là câu hỏi của người dùng.");
   }
 
-  return { type: "valid", request: { provider: body.provider, messages } };
+  if (body.context === undefined) {
+    return { type: "valid", request: { provider: body.provider, messages } };
+  }
+  const context = parseAssistantContext(body.context);
+  if (context.type === "invalid") {
+    return context;
+  }
+  return {
+    type: "valid",
+    request: { provider: body.provider, messages, context: context.context },
+  };
 }

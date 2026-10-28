@@ -4,6 +4,7 @@ import {
   type AssistantProviderId,
   type AssistantRole,
   DEFAULT_ASSISTANT_PROVIDER,
+  type IAssistantContext,
   type IAssistantMessage,
 } from "./types";
 
@@ -18,6 +19,7 @@ export interface IChatMessage {
   readonly fallbackFrom?: AssistantProviderId;
   readonly finish?: AssistantFinishReason;
   readonly error?: string;
+  readonly context?: IAssistantContext;
 }
 
 export interface IChatState {
@@ -32,6 +34,7 @@ export type ChatAction =
       readonly userId: string;
       readonly assistantId: string;
       readonly question: string;
+      readonly context?: IAssistantContext;
     }
   | {
       readonly type: "retry";
@@ -102,6 +105,7 @@ export function chatReducer(state: IChatState, action: ChatAction): IChatState {
             role: "user",
             content: question,
             status: "done",
+            context: action.context,
           },
           createPlaceholder(action.assistantId),
         ],

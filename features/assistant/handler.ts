@@ -14,7 +14,11 @@ import {
   NoProviderConfiguredError,
   openProviderStream,
 } from "./fallback";
-import { buildSystemPrompt } from "./prompt";
+import {
+  attachContext,
+  buildSystemPrompt,
+  type IAssistantAlgorithmInfo,
+} from "./prompt";
 import {
   AssistantProviderError,
   type IAssistantProvider,
@@ -23,7 +27,14 @@ import { parseAssistantRequest } from "./validate";
 
 export interface IAssistantDependencies {
   readonly providers: readonly IAssistantProvider[];
+  readonly lookupAlgorithm: (
+    key: string,
+  ) => Promise<IAssistantAlgorithmInfo | undefined>;
 }
+
+type AlgorithmLookupResult =
+  | { readonly type: "found"; readonly algorithm?: IAssistantAlgorithmInfo }
+  | { readonly type: "unknown" };
 
 type BodyReadResult =
   | { readonly type: "valid"; readonly body: unknown }
@@ -52,6 +63,7 @@ const MESSAGES = {
   unavailable:
     "Trợ lý AI tạm thời không trả lời được, bạn thử lại sau ít phút nhé.",
   interrupted: "Câu trả lời bị gián đoạn giữa chừng, bạn thử hỏi lại nhé.",
+  unknownAlgorithm: "Không tìm thấy thuật toán trong ngữ cảnh gửi lên.",
 } as const;
 
 function errorResponse(
@@ -106,6 +118,24 @@ function logFailure(error: unknown): void {
     return;
   }
   console.error("[assistant]", error);
+}
+
+async function lookupContextAlgorithm(
+  key: string | undefined,
+  lookupAlgorithm: IAssistantDependencies["lookupAlgorithm"],
+): Promise<AlgorithmLookupResult> {
+  if (key === undefined) {
+    return { type: "found" };
+  }
+  try {
+    const algorithm = await lookupAlgorithm(key);
+    return algorithm === undefined
+      ? { type: "unknown" }
+      : { type: "found", algorithm };
+  } catch (error) {
+    console.error("[assistant] Không đọc được thông tin thuật toán", error);
+    return { type: "found" };
+  }
 }
 
 function failureResponse(error: unknown): Response {
@@ -180,7 +210,7 @@ function toReadableStream(
 
 export async function handleAssistantRequest(
   request: Request,
-  { providers }: IAssistantDependencies,
+  { providers, lookupAlgorithm }: IAssistantDependencies,
 ): Promise<Response> {
   const body = await readJsonBody(request);
   if (body.type === "invalid") {
@@ -189,6 +219,14 @@ export async function handleAssistantRequest(
   const parsed = parseAssistantRequest(body.body);
   if (parsed.type === "invalid") {
     return errorResponse(400, "invalid-request", parsed.message);
+  }
+  const { provider, messages, context } = parsed.request;
+  const lookup = await lookupContextAlgorithm(
+    context?.algorithmKey,
+    lookupAlgorithm,
+  );
+  if (lookup.type === "unknown") {
+    return errorResponse(400, "invalid-request", MESSAGES.unknownAlgorithm);
   }
 
   const abortController = new AbortController();
@@ -201,9 +239,9 @@ export async function handleAssistantRequest(
 
   let opened: IOpenedProviderStream;
   try {
-    opened = await openProviderStream(providers, parsed.request.provider, {
-      system: buildSystemPrompt(),
-      messages: normalizeConversation(parsed.request.messages),
+    opened = await openProviderStream(providers, provider, {
+      system: buildSystemPrompt(lookup.algorithm),
+      messages: attachContext(normalizeConversation(messages), context),
       maxOutputTokens: MAX_OUTPUT_TOKENS,
       signal: abortController.signal,
     });

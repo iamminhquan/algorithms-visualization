@@ -2,7 +2,9 @@ import {
   type AssistantProviderId,
   type AssistantStreamEvent,
   createStreamEventParser,
+  type IAssistantContext,
 } from "@/engine/assistant";
+import type { IAssistantAlgorithmInfo } from "@/features/assistant/prompt";
 import {
   AssistantProviderError,
   type IAssistantProvider,
@@ -111,3 +113,36 @@ export function createAssistantHttpRequest(
     ...init,
   });
 }
+
+export const BUBBLE_SORT_INFO: IAssistantAlgorithmInfo = {
+  key: "bubble-sort",
+  name: "Sắp xếp nổi bọt (Bubble Sort)",
+  categoryName: "Thuật toán sắp xếp",
+  description: "So sánh và đổi chỗ hai phần tử kề nhau.",
+  timeComplexity: "O(n²)",
+  spaceComplexity: "O(1)",
+};
+
+const COMPARE_PAYLOAD = { type: "compare", indices: [0, 1] } as const;
+
+export const BUBBLE_SORT_CONTEXT: IAssistantContext = {
+  algorithmKey: "bubble-sort",
+  input: [38, 27, 43],
+  step: {
+    index: 1,
+    total: 9,
+    description: "Đang so sánh 38 và 27",
+    payload: COMPARE_PAYLOAD,
+    state: { array: [38, 27, 43], sortedIndices: [] },
+  },
+  pseudocode: [
+    "lặp end từ n - 1 giảm về 1",
+    "  lặp j từ 0 đến end - 1",
+    "    nếu a[j] > a[j + 1]",
+  ],
+  activeLine: 2,
+  metrics: [
+    { label: "So sánh", value: 1 },
+    { label: "Hoán đổi", value: 0 },
+  ],
+};

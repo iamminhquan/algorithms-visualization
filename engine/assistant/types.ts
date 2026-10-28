@@ -1,3 +1,5 @@
+import type { IEventPayload } from "@/engine/algorithm";
+
 export const ASSISTANT_PROVIDERS = ["deepseek", "gemini"] as const;
 
 export type AssistantProviderId = (typeof ASSISTANT_PROVIDERS)[number];
@@ -18,9 +20,32 @@ export interface IAssistantMessage {
   readonly content: string;
 }
 
+export interface IAssistantMetric {
+  readonly label: string;
+  readonly value: number | string;
+}
+
+export interface IAssistantStep {
+  readonly index: number;
+  readonly total: number;
+  readonly description: string;
+  readonly payload: IEventPayload;
+  readonly state: unknown;
+}
+
+export interface IAssistantContext {
+  readonly algorithmKey: string;
+  readonly input: unknown;
+  readonly step: IAssistantStep;
+  readonly pseudocode: readonly string[];
+  readonly activeLine?: number;
+  readonly metrics: readonly IAssistantMetric[];
+}
+
 export interface IAssistantRequest {
   readonly provider: AssistantProviderId;
   readonly messages: readonly IAssistantMessage[];
+  readonly context?: IAssistantContext;
 }
 
 export function isAssistantProviderId(

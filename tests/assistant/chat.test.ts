@@ -10,6 +10,7 @@ import {
   MAX_ANSWER_LENGTH,
   MAX_HISTORY_MESSAGES,
 } from "@/engine/assistant";
+import { BUBBLE_SORT_CONTEXT } from "./helpers";
 
 function applyAll(
   state: IChatState,
@@ -37,6 +38,17 @@ describe("chatReducer", () => {
       { id: "a1", role: "assistant", content: "", status: "streaming" },
     ]);
     expect(isChatStreaming(state)).toBe(true);
+  });
+
+  test("lưu ngữ cảnh lúc hỏi vào tin nhắn của người dùng, không đưa vào lịch sử", () => {
+    const state = chatReducer(createChatState(), {
+      ...SEND,
+      context: BUBBLE_SORT_CONTEXT,
+    });
+    expect(state.messages[0]?.context).toBe(BUBBLE_SORT_CONTEXT);
+    expect(buildChatHistory(state.messages.slice(0, 1))).toEqual([
+      { role: "user", content: "Bubble Sort là gì?" },
+    ]);
   });
 
   test("bỏ qua câu hỏi rỗng và câu hỏi mới khi đang trả lời", () => {

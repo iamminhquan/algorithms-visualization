@@ -13,6 +13,8 @@ import { Select } from "@/components/ui/select";
 import {
   ASSISTANT_PROVIDER_LABELS,
   ASSISTANT_PROVIDERS,
+  formatStepLabel,
+  type IAssistantContext,
   type IChatMessage,
   isAssistantProviderId,
   MAX_QUESTION_LENGTH,
@@ -20,24 +22,31 @@ import {
 import { cn } from "@/lib/cn";
 import { useAssistantChat } from "./use-assistant-chat";
 
-export const DEFAULT_SUGGESTED_QUESTIONS = [
+export const DEFAULT_SUGGESTED_QUESTIONS: readonly string[] = [
   "Giải thích bước đang xem",
   "Độ phức tạp của thuật toán là bao nhiêu?",
   "Khi nào nên dùng thuật toán này?",
-] as const;
+];
 
 const STICK_TO_BOTTOM_THRESHOLD_PX = 48;
 
 const ICON_BUTTON_CLASS =
   "flex size-9 shrink-0 items-center justify-center rounded-lg transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default disabled:pointer-events-none disabled:opacity-40";
 
-type AiChatPanelProps = {
-  suggestions?: readonly string[];
+export interface IAiChatOptions {
+  readonly context?: IAssistantContext;
+  readonly suggestions?: readonly string[];
+  readonly onAsk?: () => void;
+}
+
+type AiChatPanelProps = IAiChatOptions & {
   className?: string;
 };
 
 export function AiChatPanel({
+  context,
   suggestions = DEFAULT_SUGGESTED_QUESTIONS,
+  onAsk,
   className,
 }: AiChatPanelProps) {
   const headingId = useId();
@@ -70,7 +79,8 @@ export function AiChatPanel({
       return;
     }
     stickToBottomRef.current = true;
-    chat.send(question);
+    onAsk?.();
+    chat.send(question, context);
     setDraft("");
   };
 
@@ -263,6 +273,11 @@ function UserMessage({ message }: UserMessageProps) {
       <p className="max-w-[85%] rounded-xl rounded-tr-sm bg-accent-default px-3 py-2 text-sm leading-6 break-words whitespace-pre-wrap text-accent-on">
         {message.content}
       </p>
+      {message.context !== undefined && (
+        <p className="text-xs text-text-muted">
+          Hỏi ở {formatStepLabel(message.context).toLowerCase()}
+        </p>
+      )}
     </li>
   );
 }
