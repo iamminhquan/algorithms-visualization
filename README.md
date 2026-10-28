@@ -2,6 +2,7 @@
 
 Website mô phỏng từng bước chạy của các thuật toán, được xây dựng cho đồ án tốt nghiệp.
 Người xem nhập mảng đầu vào, rồi phát, tạm dừng, tua và đổi tốc độ để theo dõi từng phép so sánh, hoán đổi cùng đoạn mã giả đang chạy.
+Khung trợ lý AI (DeepSeek hoặc Gemini) bên cạnh hình mô phỏng giải thích đúng bước đang xem.
 
 # Công nghệ sử dụng
 
@@ -10,6 +11,8 @@ Người xem nhập mảng đầu vào, rồi phát, tạm dừng, tua và đổ
 | Framework      | Next.js 16.4 (App Router, Cache Components, Partial Prefetching, React Compiler) |
 | Giao diện      | React 19, Tailwind CSS v4, `motion` (hoạt ảnh), `lucide-react` (icon)            |
 | Cơ sở dữ liệu  | PostgreSQL, Drizzle ORM, `drizzle-kit` (migration)                               |
+| Trợ lý AI      | DeepSeek qua `@anthropic-ai/sdk`, Gemini qua `@google/genai`, `react-markdown`   |
+| Bộ nhớ đệm     | Redis (đếm lượt hỏi AI theo IP)                                                  |
 | Công cụ        | Bun (runtime, package manager, test), Biome (lint và format), TypeScript         |
 | Hạ tầng cục bộ | Docker Compose                                                                   |
 
@@ -19,17 +22,22 @@ Người xem nhập mảng đầu vào, rồi phát, tạm dừng, tua và đổ
 app/                       Route, layout, trang lỗi; component riêng của từng route nằm trong _components/
 components/
   ui/                      Primitive dùng chung, không biết nghiệp vụ
-  visualization/           Khối mô phỏng dùng chung: điều khiển phát, khung, dãy cột, mã giả
+  visualization/           Khối mô phỏng dùng chung: điều khiển phát, khung, dãy cột, mã giả, khung chat AI
 engine/
   algorithm/               Hợp đồng chung của mọi thuật toán và registry (TypeScript thuần)
+  assistant/               Kiểu, giới hạn, giao thức stream và reducer hội thoại của trợ lý AI
   visualization/           Bộ điều khiển phát, bộ đếm theo bước, thang chiều cao (TypeScript thuần)
 features/
+  assistant/               Phần máy chủ của trợ lý AI: kiểm tra dữ liệu, prompt, DeepSeek, Gemini, giới hạn lượt hỏi
   catalog/                 Danh mục, ghép registry, truy vấn DB, dựng link, component trang chủ
+  searching-algorithms/    Linear Search, Binary Search và trình mô phỏng
   sorting-algorithms/      Bubble Sort, Selection Sort, trình mô phỏng và ô nhập mảng
 db/                        Schema Drizzle, dữ liệu seed, kết nối DB
+docs/                      Tài liệu chi tiết, ví dụ ai-assistant.md
 drizzle/                   Migration do drizzle-kit sinh ra
 lib/                       Tiện ích thuần như cn.ts, site.ts
-tests/                     Test của engine, catalog và các thuật toán sắp xếp
+scripts/                   Script phát triển, ví dụ server giả lập mô hình AI
+tests/                     Test của engine, catalog, các thuật toán và trợ lý AI
 ```
 
 Chiều phụ thuộc đi một hướng: `engine/` không import `features/`, `components/` hay React, còn các feature danh mục không import lẫn nhau.
@@ -45,6 +53,7 @@ Route của website:
 | `/visualization`                        | Danh sách các danh mục                |
 | `/visualization/[category]`             | Danh sách thuật toán của một danh mục |
 | `/visualization/[category]/[algorithm]` | Trang mô phỏng một thuật toán         |
+| `/api/assistant`                        | API chat với trợ lý AI (POST, stream) |
 
 # Hướng dẫn cài đặt dự án
 
@@ -71,6 +80,7 @@ Route của website:
 
    Biến bắt buộc là `DATABASE_URL`, ví dụ `postgresql://postgres:postgres@localhost:5432/algorithms_visualization`.
    Các biến `POSTGRES_*` dùng cho Docker Compose và cần khớp với `DATABASE_URL`.
+   Muốn dùng trợ lý AI thì đặt thêm `DEEPSEEK_API_KEY` và/hoặc `GEMINI_API_KEY`; xem [docs/ai-assistant.md](docs/ai-assistant.md).
 
 3. Khởi động PostgreSQL.
 
@@ -93,19 +103,20 @@ Route của website:
 
 ## Các lệnh thường dùng
 
-| Lệnh                  | Tác dụng                                              |
-|-----------------------|-------------------------------------------------------|
-| `bun run dev`         | Chạy server phát triển                                |
-| `bun run build`       | Build production (cần `DATABASE_URL` vì build đọc DB) |
-| `bun run start`       | Chạy bản đã build                                     |
-| `bun run lint`        | Kiểm tra bằng Biome                                   |
-| `bun run format`      | Tự sửa định dạng                                      |
-| `bunx tsc --noEmit`   | Kiểm tra kiểu                                         |
-| `bun test`            | Chạy toàn bộ test                                     |
-| `bun run db:generate` | Sinh migration sau khi sửa `db/schema.ts`             |
-| `bun run db:migrate`  | Áp migration                                          |
-| `bun run db:seed`     | Nạp lại danh mục và thuật toán từ `db/seed-data.ts`   |
-| `bun run db:studio`   | Mở Drizzle Studio để xem dữ liệu                      |
+| Lệnh                     | Tác dụng                                              |
+|--------------------------|-------------------------------------------------------|
+| `bun run dev`            | Chạy server phát triển                                |
+| `bun run build`          | Build production (cần `DATABASE_URL` vì build đọc DB) |
+| `bun run start`          | Chạy bản đã build                                     |
+| `bun run lint`           | Kiểm tra bằng Biome                                   |
+| `bun run format`         | Tự sửa định dạng                                      |
+| `bunx tsc --noEmit`      | Kiểm tra kiểu                                         |
+| `bun test`               | Chạy toàn bộ test                                     |
+| `bun run db:generate`    | Sinh migration sau khi sửa `db/schema.ts`             |
+| `bun run db:migrate`     | Áp migration                                          |
+| `bun run db:seed`        | Nạp lại danh mục và thuật toán từ `db/seed-data.ts`   |
+| `bun run db:studio`      | Mở Drizzle Studio để xem dữ liệu                      |
+| `bun run assistant:mock` | Chạy server giả lập DeepSeek và Gemini ở cổng 4010    |
 
 ## Thêm một thuật toán mới
 
@@ -113,6 +124,10 @@ Route của website:
 2. Thêm vào `*_ALGORITHMS` và thêm trình mô phỏng (kèm mã giả) vào `*_VISUALIZERS`.
 3. Thêm một dòng vào `db/seed-data.ts` với cùng `key`.
 4. Chạy `bun run db:seed`, rồi chạy `bun test` để kiểm tra registry và seed không lệch nhau.
+
+## Trợ lý AI
+
+Kiến trúc, biến môi trường, cách chạy khi chưa có API key và cách test nằm ở [docs/ai-assistant.md](docs/ai-assistant.md).
 
 ## Giấy phép
 
