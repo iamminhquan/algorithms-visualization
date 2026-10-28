@@ -10,6 +10,7 @@ export interface IProviderConfig {
 export interface IAssistantConfig {
   readonly deepseek?: IProviderConfig;
   readonly gemini?: IProviderConfig;
+  readonly redisUrl?: string;
 }
 
 type EnvironmentVariables = Readonly<Record<string, string | undefined>>;
@@ -44,5 +45,6 @@ export function readAssistantConfig(
   return {
     deepseek: readProviderConfig(env, "DEEPSEEK", DEEPSEEK_DEFAULT_MODEL),
     gemini: readProviderConfig(env, "GEMINI", GEMINI_DEFAULT_MODEL),
+    redisUrl: readValue(env, "REDIS_URL"),
   };
 }

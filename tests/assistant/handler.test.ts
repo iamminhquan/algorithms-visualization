@@ -36,6 +36,7 @@ function handle(
     Partial<IAssistantDependencies>,
 ): Promise<Response> {
   return handleAssistantRequest(request, {
+    rateLimiter: { check: async () => ({ type: "allowed", remaining: 19 }) },
     lookupAlgorithm: async (key) =>
       key === BUBBLE_SORT_INFO.key ? BUBBLE_SORT_INFO : undefined,
     ...dependencies,
@@ -338,5 +339,50 @@ describe("handleAssistantRequest: ngữ cảnh bước đang xem", () => {
       })
     ).text();
     expect(lookups).toBe(0);
+  });
+});
+
+describe("handleAssistantRequest: giới hạn số câu hỏi", () => {
+  test("vượt giới hạn thì trả 429 kèm Retry-After và không gọi mô hình", async () => {
+    const provider = createFakeProvider("deepseek");
+    const clients: string[] = [];
+    const response = await handle(
+      createAssistantHttpRequest(VALID_BODY, {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Forwarded-For": "203.0.113.9, 10.0.0.2",
+        },
+      }),
+      {
+        providers: [provider],
+        rateLimiter: {
+          check: async (clientId) => {
+            clients.push(clientId);
+            return { type: "limited", retryAfterSeconds: 125 };
+          },
+        },
+      },
+    );
+    expect(response.status).toBe(429);
+    expect(response.headers.get("retry-after")).toBe("125");
+    const error = parseErrorBody(await response.json());
+    expect(error?.code).toBe("rate-limited");
+    expect(error?.message).toContain("3 phút");
+    expect(clients).toEqual(["203.0.113.9"]);
+    expect(provider.requests).toHaveLength(0);
+  });
+
+  test("yêu cầu sai định dạng không bị tính vào giới hạn", async () => {
+    let checks = 0;
+    await handle(createAssistantHttpRequest({ provider: "gpt" }), {
+      providers: [createFakeProvider("deepseek")],
+      rateLimiter: {
+        check: async () => {
+          checks += 1;
+          return { type: "allowed", remaining: 1 };
+        },
+      },
+    });
+    expect(checks).toBe(0);
   });
 });

@@ -4,6 +4,12 @@ import { readAssistantConfig } from "./config";
 import type { IAssistantDependencies } from "./handler";
 import type { IAssistantAlgorithmInfo } from "./prompt";
 import { createAssistantProviders } from "./providers";
+import {
+  createMemoryRateLimitStore,
+  createRateLimiter,
+  type IRateLimiter,
+} from "./rate-limit";
+import { createRedisRateLimitStore } from "./redis-rate-limit-store";
 
 let dependencies: IAssistantDependencies | undefined;
 
@@ -25,10 +31,26 @@ async function lookupAlgorithm(
       };
 }
 
+function createAssistantRateLimiter(
+  redisUrl: string | undefined,
+): IRateLimiter {
+  const memoryStore = createMemoryRateLimitStore();
+  return redisUrl === undefined
+    ? createRateLimiter({ store: memoryStore })
+    : createRateLimiter({
+        store: createRedisRateLimitStore(redisUrl),
+        fallback: memoryStore,
+      });
+}
+
 export function getAssistantDependencies(): IAssistantDependencies {
-  dependencies ??= {
-    providers: createAssistantProviders(readAssistantConfig(process.env)),
-    lookupAlgorithm,
-  };
+  if (dependencies === undefined) {
+    const config = readAssistantConfig(process.env);
+    dependencies = {
+      providers: createAssistantProviders(config),
+      rateLimiter: createAssistantRateLimiter(config.redisUrl),
+      lookupAlgorithm,
+    };
+  }
   return dependencies;
 }

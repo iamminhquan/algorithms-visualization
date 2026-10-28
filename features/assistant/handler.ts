@@ -23,10 +23,12 @@ import {
   AssistantProviderError,
   type IAssistantProvider,
 } from "./providers/types";
+import { formatRetryAfter, getClientId, type IRateLimiter } from "./rate-limit";
 import { parseAssistantRequest } from "./validate";
 
 export interface IAssistantDependencies {
   readonly providers: readonly IAssistantProvider[];
+  readonly rateLimiter: IRateLimiter;
   readonly lookupAlgorithm: (
     key: string,
   ) => Promise<IAssistantAlgorithmInfo | undefined>;
@@ -70,11 +72,21 @@ function errorResponse(
   status: number,
   code: AssistantErrorCode,
   message: string,
+  headers: Record<string, string> = {},
 ): Response {
   return Response.json(createErrorBody({ code, message }), {
     status,
-    headers: NO_STORE_HEADERS,
+    headers: { ...NO_STORE_HEADERS, ...headers },
   });
+}
+
+function rateLimitedResponse(retryAfterSeconds: number): Response {
+  return errorResponse(
+    429,
+    "rate-limited",
+    `Bạn hỏi hơi nhiều trong thời gian ngắn, đợi khoảng ${formatRetryAfter(retryAfterSeconds)} rồi hỏi tiếp nhé.`,
+    { "Retry-After": String(retryAfterSeconds) },
+  );
 }
 
 async function readJsonBody(request: Request): Promise<BodyReadResult> {
@@ -210,7 +222,7 @@ function toReadableStream(
 
 export async function handleAssistantRequest(
   request: Request,
-  { providers, lookupAlgorithm }: IAssistantDependencies,
+  { providers, rateLimiter, lookupAlgorithm }: IAssistantDependencies,
 ): Promise<Response> {
   const body = await readJsonBody(request);
   if (body.type === "invalid") {
@@ -219,6 +231,10 @@ export async function handleAssistantRequest(
   const parsed = parseAssistantRequest(body.body);
   if (parsed.type === "invalid") {
     return errorResponse(400, "invalid-request", parsed.message);
+  }
+  const decision = await rateLimiter.check(getClientId(request.headers));
+  if (decision.type === "limited") {
+    return rateLimitedResponse(decision.retryAfterSeconds);
   }
   const { provider, messages, context } = parsed.request;
   const lookup = await lookupContextAlgorithm(

@@ -9,13 +9,14 @@ describe("readAssistantConfig", () => {
     expect(readAssistantConfig({})).toEqual({
       deepseek: undefined,
       gemini: undefined,
+      redisUrl: undefined,
     });
   });
 
   test("API key rỗng hoặc toàn khoảng trắng coi như chưa đặt", () => {
     expect(
       readAssistantConfig({ DEEPSEEK_API_KEY: "  ", GEMINI_API_KEY: "" }),
-    ).toEqual({ deepseek: undefined, gemini: undefined });
+    ).toEqual({ deepseek: undefined, gemini: undefined, redisUrl: undefined });
   });
 
   test("dùng model mặc định khi chỉ có API key", () => {
@@ -28,7 +29,15 @@ describe("readAssistantConfig", () => {
         baseURL: undefined,
       },
       gemini: { apiKey: "gm", model: GEMINI_DEFAULT_MODEL, baseURL: undefined },
+      redisUrl: undefined,
     });
+  });
+
+  test("đọc REDIS_URL để đếm lượt hỏi bằng Redis", () => {
+    expect(
+      readAssistantConfig({ REDIS_URL: " redis://:pw@localhost:6379 " })
+        .redisUrl,
+    ).toBe("redis://:pw@localhost:6379");
   });
 
   test("đọc model và base URL tuỳ chỉnh, cắt khoảng trắng", () => {
