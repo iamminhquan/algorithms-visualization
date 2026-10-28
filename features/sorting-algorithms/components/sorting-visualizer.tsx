@@ -10,11 +10,12 @@ import {
 } from "@/components/visualization/visualizer-frame";
 import {
   countPayloadTypes,
+  DEFAULT_ARRAY,
   type IPseudocode,
   type PayloadTypeCounts,
   type SourceCode,
 } from "@/engine/visualization";
-import { DEFAULT_ARRAY, MAX_ARRAY_LENGTH } from "../array-input";
+import { MAX_ARRAY_LENGTH } from "../array-input";
 import type { SortingAlgorithm } from "../index";
 import {
   type ISortingFrame,

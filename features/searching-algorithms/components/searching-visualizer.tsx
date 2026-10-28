@@ -12,9 +12,12 @@ import type {
   IAlgorithmDefinition,
   IExecutionResult,
 } from "@/engine/algorithm";
-import type { IPseudocode, SourceCode } from "@/engine/visualization";
 import {
   DEFAULT_ARRAY,
+  type IPseudocode,
+  type SourceCode,
+} from "@/engine/visualization";
+import {
   DEFAULT_TARGET,
   MAX_ARRAY_LENGTH,
   pickRandomTarget,

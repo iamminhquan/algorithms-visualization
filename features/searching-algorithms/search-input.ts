@@ -12,9 +12,6 @@ const PRESENT_TARGET_PROBABILITY = 0.7;
 
 export const MAX_ARRAY_LENGTH = DISPLAY_MAX_LENGTH;
 export const DEFAULT_TARGET = 55;
-export const DEFAULT_ARRAY: readonly number[] = Object.freeze([
-  38, 27, 43, 3, 9, 82, 10, 55, 19, 64,
-]);
 
 /**
  * Sắp xếp tăng dần trên bản sao, dùng cho Binary Search.
