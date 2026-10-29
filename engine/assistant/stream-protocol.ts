@@ -43,6 +43,9 @@ export const ASSISTANT_STREAM_CONTENT_TYPE = "application/x-ndjson";
 
 const LINE_SEPARATOR = "\n";
 
+/*
+ * Kiểm tra bản ghi này có đúng định dạng NDJSON hay không?
+ */
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -66,6 +69,9 @@ function toAssistantError(value: unknown): IAssistantError | undefined {
   return { code: value.code, message: value.message };
 }
 
+/*
+ * Mã hóa từng event thành định dạng NDJSON.
+ */
 export function encodeStreamEvent(event: AssistantStreamEvent): string {
   return `${JSON.stringify(event)}${LINE_SEPARATOR}`;
 }
