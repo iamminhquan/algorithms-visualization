@@ -11,7 +11,7 @@ import {
   type ProviderChunk,
 } from "./types";
 
-export const GEMINI_DEFAULT_MODEL = "gemini-flash-latest";
+export const GEMINI_DEFAULT_MODEL = "gemini-3.5-flash";
 
 const REQUEST_TIMEOUT_MS = 60_000;
 

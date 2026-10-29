@@ -158,7 +158,7 @@ Lỗi trước khi stream trả JSON `{"error":{"code":"...","message":"..."}}`:
 
 **DeepSeek** dùng Anthropic SDK (`@anthropic-ai/sdk`) gọi tới endpoint tương thích Anthropic của DeepSeek (`https://api.deepseek.com/anthropic`). SDK 1.x gửi key qua `Authorization: Bearer`, code gửi thêm `x-api-key` cho chắc. Key luôn được truyền rõ ràng, nên SDK không tự lấy `ANTHROPIC_API_KEY` hay `ANTHROPIC_BASE_URL` có sẵn trên máy. Model mặc định `deepseek-v4-flash`, đổi bằng `DEEPSEEK_MODEL`.
 
-**Gemini** dùng SDK chính thức `@google/genai`. Tại thời điểm làm, Google không cung cấp endpoint tương thích Anthropic. Muốn dùng Anthropic SDK cho Gemini thì phải dựng thêm một gateway trung gian (LiteLLM...), tức thêm một dịch vụ phải vận hành, nên dùng SDK của Google là đơn giản và ổn định hơn. Model mặc định `gemini-flash-latest`, là alias Google tự trỏ tới bản Flash mới nhất, nên không bị lỗi khi một bản cụ thể ngừng hoạt động. Đổi bằng `GEMINI_MODEL`, ví dụ ghim một bản cố định.
+**Gemini** dùng SDK chính thức `@google/genai`. Tại thời điểm làm, Google không cung cấp endpoint tương thích Anthropic. Muốn dùng Anthropic SDK cho Gemini thì phải dựng thêm một gateway trung gian (LiteLLM...), tức thêm một dịch vụ phải vận hành, nên dùng SDK của Google là đơn giản và ổn định hơn. Model mặc định ghim bản cố định `gemini-3.5-flash`, không dùng alias `gemini-flash-latest`: alias này trỏ tới bản Flash mới nhất, thường bị quá tải (trả 503 "high demand" hoặc treo tới hết thời gian chờ 60 giây rồi mới chuyển sang DeepSeek). Đổi bằng `GEMINI_MODEL`.
 
 Cả hai đều dùng chung giao diện `IAssistantProvider`. Muốn thêm nhà cung cấp khác chỉ cần viết thêm một file trong `providers/`.
 
@@ -191,7 +191,7 @@ Cả hai đều dùng chung giao diện `IAssistantProvider`. Muốn thêm nhà 
 | `DEEPSEEK_API_KEY`        | Một trong hai | API key DeepSeek                                                                      |
 | `GEMINI_API_KEY`          | Một trong hai | API key Gemini (Google AI Studio)                                                     |
 | `DEEPSEEK_MODEL`          | Không         | Mặc định `deepseek-v4-flash`                                                          |
-| `GEMINI_MODEL`            | Không         | Mặc định `gemini-flash-latest`                                                        |
+| `GEMINI_MODEL`            | Không         | Mặc định `gemini-3.5-flash`                                                           |
 | `DEEPSEEK_BASE_URL`       | Không         | Mặc định `https://api.deepseek.com/anthropic`; đổi khi dùng server giả lập hoặc proxy |
 | `GEMINI_BASE_URL`         | Không         | Mặc định của SDK; đổi khi dùng server giả lập hoặc proxy                              |
 | `REDIS_URL`               | Không         | Có thì đếm lượt hỏi bằng Redis, không có thì đếm trong bộ nhớ                         |
@@ -273,7 +273,7 @@ RabbitMQ nên dùng khi có việc không cần trả kết quả ngay, ví dụ
 
 # 12. Việc còn lại
 
-1. **Cấu hình API key** cho DeepSeek và/hoặc Gemini trong `.env.local` (và trên môi trường deploy), rồi thử với key thật. Tên model mặc định (`deepseek-v4-flash`, `gemini-flash-latest`) lấy theo tài liệu của nhà cung cấp lúc làm; nhà cung cấp đổi tên thì đặt `DEEPSEEK_MODEL` hoặc `GEMINI_MODEL`.
+1. **Cấu hình API key** cho DeepSeek và/hoặc Gemini trong `.env.local` (và trên môi trường deploy), rồi thử với key thật. Tên model mặc định (`deepseek-v4-flash`, `gemini-3.5-flash`) lấy theo tài liệu của nhà cung cấp lúc làm; nhà cung cấp đổi tên thì đặt `DEEPSEEK_MODEL` hoặc `GEMINI_MODEL`.
 2. **Kiểm tra chất lượng câu trả lời thật**: soạn khoảng 20 câu hỏi mẫu cho mỗi thuật toán, chạy với từng mô hình và chỉnh quy tắc trong `features/assistant/prompt.ts` nếu cần.
 3. **Merge nhánh**: `feature/assistant` mới được push lên GitHub, chưa merge vào `dev`. Theo quy trình của dự án thì merge `--no-ff` vào `dev` rồi mở PR `dev` → `main`.
 4. **Sau khi có đăng nhập** (hiện `/login` và `/register` mới có giao diện):
