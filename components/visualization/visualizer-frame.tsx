@@ -2,7 +2,7 @@ import { Info, Maximize } from "lucide-react";
 import type { ReactNode } from "react";
 import type { VisualTone } from "@/engine/visualization";
 import { cn } from "@/lib/cn";
-import { AiChatPanel } from "./ai-chat-panel";
+import { AiChatPanel, type IAiChatOptions } from "./ai-chat-panel";
 import { TONE_BACKGROUND } from "./tones";
 
 export interface ILegendItem {
@@ -23,6 +23,7 @@ type VisualizerFrameProps = {
   code?: ReactNode;
   legend?: readonly ILegendItem[];
   metrics?: readonly IMetricItem[];
+  assistant?: IAiChatOptions;
   className?: string;
 };
 
@@ -34,6 +35,7 @@ export function VisualizerFrame({
   code,
   legend = [],
   metrics = [],
+  assistant,
   className,
 }: VisualizerFrameProps) {
   return (
@@ -79,7 +81,10 @@ export function VisualizerFrame({
           </p>
         </div>
         <div className="relative order-last h-112 lg:order-none lg:h-auto">
-          <AiChatPanel className="h-full lg:absolute lg:inset-0" />
+          <AiChatPanel
+            {...assistant}
+            className="h-full lg:absolute lg:inset-0"
+          />
         </div>
         <div className="flex min-w-0 flex-col gap-4 lg:col-span-2">
           {controls}

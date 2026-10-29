@@ -12,6 +12,7 @@ import type {
   IAlgorithmDefinition,
   IExecutionResult,
 } from "@/engine/algorithm";
+import { createStepContext } from "@/engine/assistant";
 import {
   DEFAULT_ARRAY,
   type IPseudocode,
@@ -29,6 +30,12 @@ import {
   type SearchingEvent,
 } from "../visualization";
 import { TargetInputForm } from "./target-input-form";
+
+const SEARCHING_ASSISTANT_SUGGESTIONS: readonly string[] = [
+  "Giải thích bước đang xem",
+  "Khi nào thuật toán dừng tìm?",
+  "Độ phức tạp của thuật toán là bao nhiêu?",
+];
 
 interface ISearchingRun<TEvent extends SearchingEvent> {
   readonly values: readonly number[];
@@ -86,6 +93,11 @@ export function SearchingVisualizer<TEvent extends SearchingEvent>({
   const { index } = controls.state;
   const event = run.events[index];
   const frame = getFrame(event);
+  const metrics = [
+    { label: "Key", value: run.target },
+    { label: "So sánh", value: run.comparisons[index] },
+    { label: "Còn lại", value: getRemainingCount(event.state) },
+  ];
 
   const rerun = (values: readonly number[], target: number) => {
     const next = createRun(algorithm, values, target);
@@ -125,11 +137,19 @@ export function SearchingVisualizer<TEvent extends SearchingEvent>({
       }
       controls={<PlaybackControls controls={controls} />}
       legend={legend}
-      metrics={[
-        { label: "Key", value: run.target },
-        { label: "So sánh", value: run.comparisons[index] },
-        { label: "Còn lại", value: getRemainingCount(event.state) },
-      ]}
+      metrics={metrics}
+      assistant={{
+        context: createStepContext({
+          algorithmKey: algorithm.metadata.key,
+          input: { array: run.values, target: run.target },
+          events: run.events,
+          index,
+          pseudocode,
+          metrics,
+        }),
+        suggestions: SEARCHING_ASSISTANT_SUGGESTIONS,
+        onAsk: controls.pause,
+      }}
     >
       <ArrayBars
         className="h-full"

@@ -20,11 +20,12 @@ bun run db:migrate             # áp migration
 bun run db:seed                # upsert danh mục + thuật toán từ db/seed-data.ts
 bun run db:push                # đẩy thẳng schema lên DB, không tạo migration (chỉ dùng khi thử nghiệm)
 bun run db:studio              # Drizzle Studio để xem dữ liệu trong DB
+bun run assistant:mock         # server giả lập DeepSeek và Gemini ở cổng 4010 khi chưa có API key
 ```
 
 CI (`.github/workflows/ci.yml`) chạy khi push `dev` và khi mở PR vào `main`: một job lint, `next typegen`, typecheck, test; một job dựng Postgres rồi `db:migrate`, `db:seed`, `build` (lỗi Cache Components chỉ lộ ra lúc build).
 `db/index.ts` có `import "server-only"`, nên script Bun nào import code đọc DB phải chạy với `--conditions=react-server` (như `db:seed`).
-Biến môi trường: xem `.env.example`.
+Biến môi trường: xem `.env.example`; trợ lý AI cần `DEEPSEEK_API_KEY` và/hoặc `GEMINI_API_KEY`, `REDIS_URL` là tuỳ chọn.
 
 ## Kiến trúc
 
@@ -36,11 +37,19 @@ Nhờ vậy UI vẽ lại bất kỳ bước nào mà không cần phát lại t
 
 **Visualization Engine.** Thuật toán chạy một lần ở client khi input đổi, rồi UI phát lại `events` như tua video; server chỉ truyền `algorithm.key`.
 `engine/visualization/` là TypeScript thuần: `playbackReducer` (phát, tua, tốc độ), `countPayloadTypes` (bộ đếm theo bước), `scaleBarHeights`, kiểu `VisualTone` và `IPseudocode`.
-`components/visualization/` là React dùng chung, không biết thuật toán cụ thể: `usePlayback` (gọi `load` khi đổi vết), `usePlaybackShortcuts`, `PlaybackControls`, `VisualizerFrame`, `ArrayBars` (cột trượt bằng `motion`), `CodePanel` (mã giả tô dòng đang chạy, dropdown chuyển sang mã nguồn C++), `AiChatPanel` (khung chat AI, hiện chỉ có giao diện).
+`components/visualization/` là React dùng chung, không biết thuật toán cụ thể: `usePlayback` (gọi `load` khi đổi vết), `usePlaybackShortcuts`, `PlaybackControls`, `VisualizerFrame`, `ArrayBars` (cột trượt bằng `motion`), `CodePanel` (mã giả tô dòng đang chạy, dropdown chuyển sang mã nguồn C++), `AiChatPanel` (khung chat AI, Client Component vì `algorithm-view` là Server Component có import `VisualizerSkeleton`).
 Feature chỉ chuyển event thành hình: chọn tone (`getBarTones`), giữ định danh phần tử khi hoán đổi (`trackElementIds`), khai báo mã giả (`pseudocode.ts`) và mã nguồn theo ngôn ngữ (`source-code.ts`, kiểu `SourceCode`).
 Mã giả viết bằng tiếng Việt, ngắn gọn kiểu Python nhưng không phải Python (thụt lề thay ngoặc, không `def`/`range`/`len`, mỗi dòng một thao tác như `lặp i từ 0 đến n - 1`, `nếu ...`, `hoán đổi ...`, tên biến giữ dạng code, gán bằng `=`, kết thúc bằng `kết thúc`); xem `IPseudocode`.
 Mỗi feature export map key → trình mô phỏng tải lười (`SORTING_VISUALIZERS`); `features/catalog/visualizers.ts` ghép lại và `satisfies Record<AlgorithmKey, ...>`, `AlgorithmVisualizer` (client) tra theo key trong `<Suspense>`.
 Input mặc định phải cố định (không random khi render) để HTML server khớp lần render đầu ở client; mảng mặc định dùng chung là `DEFAULT_ARRAY` trong `engine/visualization/`.
+
+**Trợ lý AI** (chi tiết ở `docs/ai-assistant.md`).
+`engine/assistant/` là TypeScript thuần dùng chung client và server: kiểu, giới hạn (`limits.ts`), giao thức stream NDJSON, `chatReducer`, `createStepContext`.
+Visualizer truyền `assistant={{ context, suggestions, onAsk }}` vào `VisualizerFrame`; ngữ cảnh là ảnh chụp bước đang xem (đầu vào, payload, state, mã giả, dòng đang chạy, chỉ số).
+`POST /api/assistant` (`app/api/assistant/route.ts`) gọi `handleAssistantRequest` trong `features/assistant/`: kiểm tra body, giới hạn 20 câu hỏi/10 phút theo IP (Redis, Redis lỗi thì đếm trong bộ nhớ), tra thông tin thuật toán qua `getAlgorithmCatalog`, rồi stream từ mô hình được chọn và tự chuyển sang mô hình còn lại nếu lỗi trước khi có chữ.
+DeepSeek gọi qua Anthropic SDK tới endpoint tương thích Anthropic, Gemini qua `@google/genai` (Google không có endpoint kiểu Anthropic); cả hai cài `IAssistantProvider` trong `features/assistant/providers/`.
+Chỉ `features/assistant/server.ts` đọc `process.env` và DB (`server-only`); các file khác nhận cấu hình qua tham số nên test bằng provider giả và server SSE giả trong `tests/assistant/`, không gọi API thật.
+Chưa dùng RabbitMQ vì chat là luồng hỏi–đáp đồng bộ stream thẳng về trình duyệt, chưa có việc chạy nền.
 
 **Feature theo danh mục.** `features/sorting-algorithms/` chứa `bubble-sort/` và `selection-sort/`, export `SORTING_ALGORITHMS`; `features/searching-algorithms/` chứa `linear-search/` và `binary-search/`, export `SEARCHING_ALGORITHMS`; danh mục mới theo cùng khuôn.
 Phần dùng chung trong một danh mục nằm ở gốc feature đó, ví dụ `features/sorting-algorithms/shared.ts` (`assertSortInput`, `range`).

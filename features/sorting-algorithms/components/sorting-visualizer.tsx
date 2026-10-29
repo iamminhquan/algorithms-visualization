@@ -8,6 +8,7 @@ import {
   type ILegendItem,
   VisualizerFrame,
 } from "@/components/visualization/visualizer-frame";
+import { createStepContext } from "@/engine/assistant";
 import {
   countPayloadTypes,
   DEFAULT_ARRAY,
@@ -29,6 +30,12 @@ import {
  * `ids`: Định danh phần tử ở từng vị trí sau mỗi sự kiện, xem `trackElementIds`.
  * `counts`: Số lần so sánh, hoán đổi dồn tới mỗi sự kiện.
  */
+const SORTING_ASSISTANT_SUGGESTIONS: readonly string[] = [
+  "Giải thích bước đang xem",
+  "Vì sao hai phần tử này đổi chỗ?",
+  "Độ phức tạp của thuật toán là bao nhiêu?",
+];
+
 interface ISortingRun {
   readonly values: readonly number[];
   readonly events: readonly SortingEvent[];
@@ -81,6 +88,10 @@ export function SortingVisualizer({
   const frame = getFrame(event);
   const ids = run.ids[index];
   const counts = run.counts[index];
+  const metrics = [
+    { label: "So sánh", value: counts.compare },
+    { label: "Hoán đổi", value: counts.swap },
+  ];
 
   return (
     <VisualizerFrame
@@ -105,10 +116,19 @@ export function SortingVisualizer({
       }
       controls={<PlaybackControls controls={controls} />}
       legend={legend}
-      metrics={[
-        { label: "So sánh", value: counts.compare },
-        { label: "Hoán đổi", value: counts.swap },
-      ]}
+      metrics={metrics}
+      assistant={{
+        context: createStepContext({
+          algorithmKey: algorithm.metadata.key,
+          input: run.values,
+          events: run.events,
+          index,
+          pseudocode,
+          metrics,
+        }),
+        suggestions: SORTING_ASSISTANT_SUGGESTIONS,
+        onAsk: controls.pause,
+      }}
     >
       <ArrayBars
         className="h-full"

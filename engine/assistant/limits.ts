@@ -1,0 +1,13 @@
+export const MAX_QUESTION_LENGTH = 1000;
+export const MAX_ANSWER_LENGTH = 8000;
+export const MAX_HISTORY_MESSAGES = 12;
+export const MAX_REQUEST_BYTES = 64 * 1024;
+export const MAX_OUTPUT_TOKENS = 4096;
+export const MAX_CONTEXT_LENGTH = 16_000;
+export const MAX_ALGORITHM_KEY_LENGTH = 64;
+export const MAX_DESCRIPTION_LENGTH = 500;
+export const MAX_PAYLOAD_TYPE_LENGTH = 40;
+export const MAX_PSEUDOCODE_LINES = 80;
+export const MAX_PSEUDOCODE_LINE_LENGTH = 200;
+export const MAX_METRICS = 8;
+export const MAX_METRIC_TEXT_LENGTH = 40;
