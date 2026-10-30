@@ -36,9 +36,10 @@ Nhờ vậy UI vẽ lại bất kỳ bước nào mà không cần phát lại t
 `createAlgorithmRegistry` nhận tuple `const` để giữ key literal: `getAlgorithm("bubble-sort")` trả đúng kiểu, còn `findAlgorithm(string)` dùng cho key đọc từ DB.
 
 **Visualization Engine.** Thuật toán chạy một lần ở client khi input đổi, rồi UI phát lại `events` như tua video; server chỉ truyền `algorithm.key`.
-`engine/visualization/` là TypeScript thuần: `playbackReducer` (phát, tua, tốc độ), `countPayloadTypes` (bộ đếm theo bước), `scaleBarHeights`, kiểu `VisualTone` và `IPseudocode`.
-`components/visualization/` là React dùng chung, không biết thuật toán cụ thể: `usePlayback` (gọi `load` khi đổi vết), `usePlaybackShortcuts`, `PlaybackControls`, `VisualizerFrame` (nút toàn màn hình qua `useFullscreen`: dùng Fullscreen API, trình duyệt không hỗ trợ như Safari iPhone thì phủ `fixed` lên khung nhìn; khi toàn màn hình chỉ ẩn form nhập và chat bằng CSS để giữ state), `ArrayBars` (cột trượt bằng `motion`), `CodePanel` (mã giả tô dòng đang chạy, dropdown chuyển sang mã nguồn C++), `AiChatPanel` (khung chat AI).
+`engine/visualization/` là TypeScript thuần: `playbackReducer` (phát, tua, tốc độ), `countPayloadTypes` (bộ đếm theo bước), `scaleBarHeights`, `elementAt` (đọc `a[i]` an toàn khi `i` chưa có), kiểu `VisualTone`, `IPseudocode` và `IVariable`.
+`components/visualization/` là React dùng chung, không biết thuật toán cụ thể: `usePlayback` (gọi `load` khi đổi vết), `usePlaybackShortcuts`, `PlaybackControls`, `VisualizerFrame` (nút toàn màn hình qua `useFullscreen`: dùng Fullscreen API, trình duyệt không hỗ trợ như Safari iPhone thì phủ `fixed` lên khung nhìn; khi toàn màn hình chỉ ẩn form nhập và chat bằng CSS để giữ state), `ArrayBars` (cột trượt bằng `motion`), `CodePanel` (mã giả tô dòng đang chạy, dropdown chuyển sang mã nguồn C++), `VariablesPanel` (khung "Biến" cạnh mã giả, khi toàn màn hình nằm dưới mã giả), `AiChatPanel` (khung chat AI).
 Feature chỉ chuyển event thành hình: chọn tone (`getBarTones`), giữ định danh phần tử khi hoán đổi (`trackElementIds`), khai báo mã giả (`pseudocode.ts`) và mã nguồn theo ngôn ngữ (`source-code.ts`, kiểu `SourceCode`).
+Mỗi thuật toán có `getXxxVariables(event)` trong `visualization.ts`, suy giá trị biến từ `payload` và `state`; tên và thứ tự biến khớp mã giả, biến chưa có hoặc đã hết phạm vi thì `value` là `undefined` (hiện `—`).
 Mã giả viết bằng tiếng Việt, ngắn gọn kiểu Python nhưng không phải Python (thụt lề thay ngoặc, không `def`/`range`/`len`, mỗi dòng một thao tác như `lặp i từ 0 đến n - 1`, `nếu ...`, `hoán đổi ...`, tên biến giữ dạng code, gán bằng `=`, kết thúc bằng `kết thúc`); xem `IPseudocode`.
 Mỗi feature export map key → trình mô phỏng tải lười (`SORTING_VISUALIZERS`); `features/catalog/visualizers.ts` ghép lại và `satisfies Record<AlgorithmKey, ...>`, `AlgorithmVisualizer` (client) tra theo key trong `<Suspense>`.
 Input mặc định phải cố định (không random khi render) để HTML server khớp lần render đầu ở client; mảng mặc định dùng chung là `DEFAULT_ARRAY` trong `engine/visualization/`.
@@ -58,7 +59,7 @@ Các feature danh mục không import lẫn nhau; thứ dùng chung đẩy xuố
 
 **Code ↔ DB.** Bảng `algorithms` nối với code qua cột `key` (không đổi sau khi tạo); cột `slug` dùng cho URL.
 Dòng DB không có cài đặt trong registry bị ẩn (`getAlgorithmCatalog`, `getCategoryCatalog`).
-Thêm một thuật toán gồm: cài đặt trong feature, thêm vào `*_ALGORITHMS`, thêm trình mô phỏng vào `*_VISUALIZERS` (kèm mã giả và mã nguồn C++), thêm dòng vào `db/seed-data.ts` cùng `key`, rồi chạy `db:seed`.
+Thêm một thuật toán gồm: cài đặt trong feature, thêm vào `*_ALGORITHMS`, thêm trình mô phỏng vào `*_VISUALIZERS` (kèm mã giả, mã nguồn C++ và `getXxxVariables`), thêm dòng vào `db/seed-data.ts` cùng `key`, rồi chạy `db:seed`.
 `tests/catalog/seed-data.test.ts` bắt chỗ lệch giữa registry và seed, `tests/catalog/visualizers.test.ts` bắt thuật toán thiếu trình mô phỏng.
 Danh mục chỉ khai báo một nơi là `CATEGORIES` trong `features/catalog/categories.ts`: trang chủ và footer đọc trực tiếp, `seedCategories` lấy lại chính nó, nên sửa xong phải chạy `db:seed`.
 
