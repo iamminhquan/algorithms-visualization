@@ -24,6 +24,7 @@ type VisualizerFrameProps = {
   controls: ReactNode;
   toolbar?: ReactNode;
   code?: ReactNode;
+  variables?: ReactNode;
   legend?: readonly ILegendItem[];
   metrics?: readonly IMetricItem[];
   assistant?: IAiChatOptions;
@@ -36,6 +37,7 @@ export function VisualizerFrame({
   controls,
   toolbar,
   code,
+  variables,
   legend = [],
   metrics = [],
   assistant,
@@ -155,13 +157,17 @@ export function VisualizerFrame({
         {code !== undefined && (
           <div
             className={cn(
-              "min-w-0",
+              "grid min-w-0 grid-cols-1 gap-4",
               isFullscreen
-                ? "lg:col-start-2 lg:row-start-1 lg:overflow-y-auto lg:*:min-h-full"
+                ? "lg:col-start-2 lg:row-start-1 lg:grid-rows-[1fr_auto] lg:overflow-y-auto"
                 : "lg:col-span-2",
+              !isFullscreen &&
+                variables !== undefined &&
+                "lg:grid-cols-[minmax(0,1fr)_22rem]",
             )}
           >
             {code}
+            {variables}
           </div>
         )}
       </div>

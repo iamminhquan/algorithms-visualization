@@ -4,6 +4,7 @@ import { ArrayInputForm } from "@/components/visualization/array-input-form";
 import { CodePanel } from "@/components/visualization/code-panel";
 import { PlaybackControls } from "@/components/visualization/playback-controls";
 import { usePlayback } from "@/components/visualization/use-playback";
+import { VariablesPanel } from "@/components/visualization/variables-panel";
 import {
   type ILegendItem,
   VisualizerFrame,
@@ -13,6 +14,7 @@ import {
   countPayloadTypes,
   DEFAULT_ARRAY,
   type IPseudocode,
+  type IVariable,
   type PayloadTypeCounts,
   type SourceCode,
 } from "@/engine/visualization";
@@ -67,6 +69,7 @@ type SortingVisualizerProps = {
   pseudocode: IPseudocode<SortingEvent["payload"]>;
   sourceCode: SourceCode;
   getFrame: (event: SortingEvent) => ISortingFrame;
+  getVariables: (event: SortingEvent) => readonly IVariable[];
   legend: readonly ILegendItem[];
 };
 
@@ -79,6 +82,7 @@ export function SortingVisualizer({
   pseudocode,
   sourceCode,
   getFrame,
+  getVariables,
   legend,
 }: SortingVisualizerProps) {
   const [run, setRun] = useState(() => createRun(algorithm, DEFAULT_ARRAY));
@@ -114,6 +118,7 @@ export function SortingVisualizer({
           activeLine={pseudocode.getActiveLine(event.payload)}
         />
       }
+      variables={<VariablesPanel variables={getVariables(event)} />}
       controls={<PlaybackControls controls={controls} />}
       legend={legend}
       metrics={metrics}

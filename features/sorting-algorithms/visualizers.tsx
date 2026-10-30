@@ -6,10 +6,12 @@ import {
   BUBBLE_SORT_SOURCE_CODE,
   bubbleSort,
   getBubbleSortFrame,
+  getBubbleSortVariables,
 } from "./bubble-sort";
 import type { SortingAlgorithm } from "./index";
 import {
   getSelectionSortFrame,
+  getSelectionSortVariables,
   SELECTION_SORT_KEY,
   SELECTION_SORT_LEGEND,
   SELECTION_SORT_PSEUDOCODE,
@@ -30,6 +32,7 @@ function BubbleSortVisualizer() {
       pseudocode={BUBBLE_SORT_PSEUDOCODE}
       sourceCode={BUBBLE_SORT_SOURCE_CODE}
       getFrame={getBubbleSortFrame}
+      getVariables={getBubbleSortVariables}
       legend={BUBBLE_SORT_LEGEND}
     />
   );
@@ -42,6 +45,7 @@ function SelectionSortVisualizer() {
       pseudocode={SELECTION_SORT_PSEUDOCODE}
       sourceCode={SELECTION_SORT_SOURCE_CODE}
       getFrame={getSelectionSortFrame}
+      getVariables={getSelectionSortVariables}
       legend={SELECTION_SORT_LEGEND}
     />
   );
