@@ -1,9 +1,12 @@
-import { Info, Maximize } from "lucide-react";
-import type { ReactNode } from "react";
+"use client";
+
+import { Info, Maximize, Minimize } from "lucide-react";
+import { type ReactNode, useRef } from "react";
 import type { VisualTone } from "@/engine/visualization";
 import { cn } from "@/lib/cn";
 import { AiChatPanel, type IAiChatOptions } from "./ai-chat-panel";
 import { TONE_BACKGROUND } from "./tones";
+import { useFullscreen } from "./use-fullscreen";
 
 export interface ILegendItem {
   readonly tone: VisualTone;
@@ -38,15 +41,37 @@ export function VisualizerFrame({
   assistant,
   className,
 }: VisualizerFrameProps) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const { isFullscreen, toggle } = useFullscreen(sectionRef);
+  const hasTwoColumns = !isFullscreen || code !== undefined;
+  const fullscreenLabel = isFullscreen
+    ? "Thoát toàn màn hình"
+    : "Toàn màn hình";
+  const FullscreenIcon = isFullscreen ? Minimize : Maximize;
+
   return (
     <section
+      ref={sectionRef}
       aria-label="Mô phỏng"
-      className={cn("flex flex-col gap-4", className)}
+      className={cn(
+        "flex flex-col gap-4",
+        isFullscreen &&
+          "fixed inset-0 z-50 overflow-y-auto bg-bg-page p-4 sm:p-6",
+        className,
+      )}
     >
-      {toolbar}
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_22rem]">
+      {toolbar !== undefined && (
+        <div className={cn(isFullscreen && "hidden")}>{toolbar}</div>
+      )}
+      <div
+        className={cn(
+          "grid gap-4",
+          hasTwoColumns && "lg:grid-cols-[minmax(0,1fr)_22rem]",
+          isFullscreen && "flex-1 lg:grid-rows-[1fr_auto]",
+        )}
+      >
         <div className="relative flex flex-col gap-4 rounded-xl border border-border-default bg-bg-surface p-4 sm:p-6">
-          <div className="absolute top-3 right-3 flex items-center gap-x-4 sm:top-5 sm:right-5 sm:gap-x-6">
+          <div className="absolute top-3 right-3 z-10 flex items-center gap-x-4 sm:top-5 sm:right-5 sm:gap-x-6">
             {metrics.length > 0 && (
               <dl className="flex gap-x-4 text-sm sm:gap-x-6">
                 {metrics.map((metric) => (
@@ -61,14 +86,23 @@ export function VisualizerFrame({
             )}
             <button
               type="button"
-              aria-label="Toàn màn hình"
-              title="Toàn màn hình"
+              aria-label={fullscreenLabel}
+              title={fullscreenLabel}
+              onClick={toggle}
               className="flex size-8 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-subtle hover:text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default"
             >
-              <Maximize aria-hidden="true" className="size-4" />
+              <FullscreenIcon aria-hidden="true" className="size-4" />
             </button>
           </div>
-          <div className="h-64 sm:h-80">{children}</div>
+          <div
+            className={
+              isFullscreen
+                ? "isolate h-[60dvh] min-h-64 lg:h-auto lg:flex-1"
+                : "isolate h-64 sm:h-80"
+            }
+          >
+            {children}
+          </div>
           <p
             aria-live="polite"
             className="flex min-h-17 items-start gap-2.5 rounded-lg border border-border-default bg-bg-subtle px-3 py-2.5 text-sm leading-6 text-text-primary sm:min-h-11"
@@ -80,13 +114,23 @@ export function VisualizerFrame({
             <span>{description}</span>
           </p>
         </div>
-        <div className="relative order-last h-112 lg:order-none lg:h-auto">
+        <div
+          className={cn(
+            "relative order-last h-112 lg:order-none lg:h-auto",
+            isFullscreen && "hidden",
+          )}
+        >
           <AiChatPanel
             {...assistant}
             className="h-full lg:absolute lg:inset-0"
           />
         </div>
-        <div className="flex min-w-0 flex-col gap-4 lg:col-span-2">
+        <div
+          className={cn(
+            "flex min-w-0 flex-col gap-4",
+            hasTwoColumns && "lg:col-span-2",
+          )}
+        >
           {controls}
           {legend.length > 0 && (
             <ul
@@ -107,8 +151,19 @@ export function VisualizerFrame({
               ))}
             </ul>
           )}
-          {code}
         </div>
+        {code !== undefined && (
+          <div
+            className={cn(
+              "min-w-0",
+              isFullscreen
+                ? "lg:col-start-2 lg:row-start-1 lg:overflow-y-auto lg:*:min-h-full"
+                : "lg:col-span-2",
+            )}
+          >
+            {code}
+          </div>
+        )}
       </div>
     </section>
   );
