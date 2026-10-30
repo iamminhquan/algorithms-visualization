@@ -36,3 +36,4 @@ export {
 } from "./source-code";
 export { countPayloadTypes, type PayloadTypeCounts } from "./timeline";
 export type { VisualTone } from "./tones";
+export { elementAt, type IVariable } from "./variables";

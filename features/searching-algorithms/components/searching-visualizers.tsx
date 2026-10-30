@@ -4,9 +4,11 @@ import {
   BINARY_SEARCH_SOURCE_CODE,
   binarySearch,
   getBinarySearchFrame,
+  getBinarySearchVariables,
 } from "../binary-search";
 import {
   getLinearSearchFrame,
+  getLinearSearchVariables,
   LINEAR_SEARCH_LEGEND,
   LINEAR_SEARCH_PSEUDOCODE,
   LINEAR_SEARCH_SOURCE_CODE,
@@ -22,6 +24,7 @@ export function LinearSearchVisualizer() {
       pseudocode={LINEAR_SEARCH_PSEUDOCODE}
       sourceCode={LINEAR_SEARCH_SOURCE_CODE}
       getFrame={getLinearSearchFrame}
+      getVariables={getLinearSearchVariables}
       legend={LINEAR_SEARCH_LEGEND}
     />
   );
@@ -34,6 +37,7 @@ export function BinarySearchVisualizer() {
       pseudocode={BINARY_SEARCH_PSEUDOCODE}
       sourceCode={BINARY_SEARCH_SOURCE_CODE}
       getFrame={getBinarySearchFrame}
+      getVariables={getBinarySearchVariables}
       legend={BINARY_SEARCH_LEGEND}
       normalize={sortAscending}
       inputHint="Tìm kiếm nhị phân chỉ chạy trên mảng tăng dần, nên dữ liệu nhập vào được tự sắp xếp."

@@ -4,6 +4,7 @@ import { ArrayInputForm } from "@/components/visualization/array-input-form";
 import { CodePanel } from "@/components/visualization/code-panel";
 import { PlaybackControls } from "@/components/visualization/playback-controls";
 import { usePlayback } from "@/components/visualization/use-playback";
+import { VariablesPanel } from "@/components/visualization/variables-panel";
 import {
   type ILegendItem,
   VisualizerFrame,
@@ -16,6 +17,7 @@ import { createStepContext } from "@/engine/assistant";
 import {
   DEFAULT_ARRAY,
   type IPseudocode,
+  type IVariable,
   type SourceCode,
 } from "@/engine/visualization";
 import {
@@ -72,6 +74,7 @@ type SearchingVisualizerProps<TEvent extends SearchingEvent> = {
   pseudocode: IPseudocode<TEvent["payload"]>;
   sourceCode: SourceCode;
   getFrame: (event: TEvent) => ISearchingFrame;
+  getVariables: (event: TEvent) => readonly IVariable[];
   legend: readonly ILegendItem[];
   normalize?: (values: readonly number[]) => readonly number[];
   inputHint?: string;
@@ -82,6 +85,7 @@ export function SearchingVisualizer<TEvent extends SearchingEvent>({
   pseudocode,
   sourceCode,
   getFrame,
+  getVariables,
   legend,
   normalize = (values) => values,
   inputHint,
@@ -135,6 +139,7 @@ export function SearchingVisualizer<TEvent extends SearchingEvent>({
           activeLine={pseudocode.getActiveLine(event.payload)}
         />
       }
+      variables={<VariablesPanel variables={getVariables(event)} />}
       controls={<PlaybackControls controls={controls} />}
       legend={legend}
       metrics={metrics}

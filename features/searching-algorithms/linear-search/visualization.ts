@@ -1,5 +1,9 @@
 import type { ILegendItem } from "@/components/visualization/visualizer-frame";
-import type { VisualTone } from "@/engine/visualization";
+import {
+  elementAt,
+  type IVariable,
+  type VisualTone,
+} from "@/engine/visualization";
 import {
   createPointerMarkers,
   getBaseFrame,
@@ -53,4 +57,17 @@ export function getLinearSearchFrame(
       throw new Error(`Bước không hợp lệ: ${JSON.stringify(unreachable)}`);
     }
   }
+}
+
+export function getLinearSearchVariables(
+  event: LinearSearchEvent,
+): readonly IVariable[] {
+  const { payload, state } = event;
+  const i = payload.type === "not-found" ? undefined : payload.index;
+  return [
+    { name: "n", value: state.array.length },
+    { name: "key", value: state.target },
+    { name: "i", value: i },
+    { name: "a[i]", value: elementAt(state.array, i) },
+  ];
 }
