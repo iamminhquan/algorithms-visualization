@@ -7,4 +7,8 @@ export type {
   BinarySearchResult,
   BinarySearchStep,
 } from "./types";
-export { BINARY_SEARCH_LEGEND, getBinarySearchFrame } from "./visualization";
+export {
+  BINARY_SEARCH_LEGEND,
+  getBinarySearchFrame,
+  getBinarySearchVariables,
+} from "./visualization";

@@ -1,6 +1,10 @@
 import type { IBarMarker } from "@/components/visualization/array-bars";
 import type { ILegendItem } from "@/components/visualization/visualizer-frame";
-import type { VisualTone } from "@/engine/visualization";
+import {
+  elementAt,
+  type IVariable,
+  type VisualTone,
+} from "@/engine/visualization";
 import { getBaseFrame, type ISortingFrame } from "../visualization";
 import type { SelectionSortEvent } from "./types";
 
@@ -69,4 +73,41 @@ export function getSelectionSortFrame(
       throw new Error(`Bước không hợp lệ: ${JSON.stringify(unreachable)}`);
     }
   }
+}
+
+export function getSelectionSortVariables(
+  event: SelectionSortEvent,
+): readonly IVariable[] {
+  const { payload, state } = event;
+  let i: number | undefined;
+  let min: number | undefined;
+  let j: number | undefined;
+
+  switch (payload.type) {
+    case "compare":
+      i = state.sortedIndices.length;
+      [min, j] = payload.indices;
+      break;
+    case "swap":
+      [i, min] = payload.indices;
+      break;
+    case "mark-sorted":
+      i = payload.indices[0];
+      break;
+    case "complete":
+      break;
+    default: {
+      const unreachable: never = payload;
+      throw new Error(`Bước không hợp lệ: ${JSON.stringify(unreachable)}`);
+    }
+  }
+
+  return [
+    { name: "n", value: state.array.length },
+    { name: "i", value: i },
+    { name: "min", value: min },
+    { name: "j", value: j },
+    { name: "a[j]", value: elementAt(state.array, j) },
+    { name: "a[min]", value: elementAt(state.array, min) },
+  ];
 }

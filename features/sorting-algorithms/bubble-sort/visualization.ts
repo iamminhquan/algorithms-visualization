@@ -1,4 +1,5 @@
 import type { ILegendItem } from "@/components/visualization/visualizer-frame";
+import { elementAt, type IVariable } from "@/engine/visualization";
 import { getBaseFrame, type ISortingFrame } from "../visualization";
 import type { BubbleSortEvent } from "./types";
 
@@ -45,4 +46,41 @@ export function getBubbleSortFrame(event: BubbleSortEvent): ISortingFrame {
       throw new Error(`Bước không hợp lệ: ${JSON.stringify(unreachable)}`);
     }
   }
+}
+
+export function getBubbleSortVariables(
+  event: BubbleSortEvent,
+): readonly IVariable[] {
+  const { payload, state } = event;
+  const n = state.array.length;
+  let end: number | undefined;
+  let i: number | undefined;
+
+  switch (payload.type) {
+    case "compare":
+    case "swap":
+      end = n - state.sortedIndices.length - 1;
+      i = payload.indices[0];
+      break;
+    case "mark-sorted":
+      end = payload.indices.at(-1);
+      break;
+    case "complete":
+      break;
+    default: {
+      const unreachable: never = payload;
+      throw new Error(`Bước không hợp lệ: ${JSON.stringify(unreachable)}`);
+    }
+  }
+
+  return [
+    { name: "n", value: n },
+    { name: "end", value: end },
+    { name: "i", value: i },
+    { name: "a[i]", value: elementAt(state.array, i) },
+    {
+      name: "a[i + 1]",
+      value: elementAt(state.array, i === undefined ? undefined : i + 1),
+    },
+  ];
 }

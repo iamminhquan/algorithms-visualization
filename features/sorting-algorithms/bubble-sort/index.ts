@@ -9,4 +9,8 @@ export type {
   IBubbleSortMetrics,
   IBubbleSortState,
 } from "./types";
-export { BUBBLE_SORT_LEGEND, getBubbleSortFrame } from "./visualization";
+export {
+  BUBBLE_SORT_LEGEND,
+  getBubbleSortFrame,
+  getBubbleSortVariables,
+} from "./visualization";

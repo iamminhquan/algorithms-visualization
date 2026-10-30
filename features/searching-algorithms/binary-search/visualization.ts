@@ -1,5 +1,9 @@
 import type { ILegendItem } from "@/components/visualization/visualizer-frame";
-import type { VisualTone } from "@/engine/visualization";
+import {
+  elementAt,
+  type IVariable,
+  type VisualTone,
+} from "@/engine/visualization";
 import {
   createPointerMarkers,
   getBaseFrame,
@@ -86,4 +90,38 @@ export function getBinarySearchFrame(
       throw new Error(`Bước không hợp lệ: ${JSON.stringify(unreachable)}`);
     }
   }
+}
+
+export function getBinarySearchVariables(
+  event: BinarySearchEvent,
+): readonly IVariable[] {
+  const { payload, state } = event;
+  let mid: number | undefined;
+
+  switch (payload.type) {
+    case "init":
+    case "not-found":
+      break;
+    case "pick-mid":
+    case "compare":
+    case "narrow":
+      mid = payload.mid;
+      break;
+    case "found":
+      mid = payload.index;
+      break;
+    default: {
+      const unreachable: never = payload;
+      throw new Error(`Bước không hợp lệ: ${JSON.stringify(unreachable)}`);
+    }
+  }
+
+  return [
+    { name: "n", value: state.array.length },
+    { name: "key", value: state.target },
+    { name: "low", value: state.low },
+    { name: "high", value: state.high },
+    { name: "mid", value: mid },
+    { name: "a[mid]", value: elementAt(state.array, mid) },
+  ];
 }

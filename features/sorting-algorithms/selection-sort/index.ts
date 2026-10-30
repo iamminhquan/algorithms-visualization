@@ -15,5 +15,6 @@ export type {
 } from "./types";
 export {
   getSelectionSortFrame,
+  getSelectionSortVariables,
   SELECTION_SORT_LEGEND,
 } from "./visualization";

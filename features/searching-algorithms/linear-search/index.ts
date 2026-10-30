@@ -7,4 +7,8 @@ export type {
   LinearSearchResult,
   LinearSearchStep,
 } from "./types";
-export { getLinearSearchFrame, LINEAR_SEARCH_LEGEND } from "./visualization";
+export {
+  getLinearSearchFrame,
+  getLinearSearchVariables,
+  LINEAR_SEARCH_LEGEND,
+} from "./visualization";
