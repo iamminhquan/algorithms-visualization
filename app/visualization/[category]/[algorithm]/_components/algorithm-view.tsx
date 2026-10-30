@@ -33,6 +33,11 @@ export async function AlgorithmView({ params }: AlgorithmViewProps) {
         <h1 className="text-3xl font-semibold tracking-tight text-text-primary sm:text-4xl">
           {algorithm.name}
         </h1>
+        {algorithm.description && (
+          <p className="max-w-160 text-lg leading-7.5 text-text-secondary">
+            {algorithm.description}
+          </p>
+        )}
       </header>
       <AlgorithmVisualizer algorithmKey={algorithm.key} />
     </article>
@@ -45,6 +50,7 @@ export function AlgorithmViewSkeleton() {
       <div className="flex flex-col gap-4">
         <div className="h-5 w-64 rounded bg-bg-subtle" />
         <div className="h-10 w-80 max-w-full rounded-lg bg-bg-subtle" />
+        <div className="h-15 w-full max-w-160 rounded-lg bg-bg-subtle" />
       </div>
       <VisualizerSkeleton />
     </div>
