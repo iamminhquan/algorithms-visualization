@@ -2,8 +2,15 @@ import { notFound } from "next/navigation";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { VisualizerSkeleton } from "@/components/visualization/visualizer-frame";
 import { AlgorithmVisualizer } from "@/features/catalog/components/algorithm-visualizer";
-import { getAlgorithmBySlug } from "@/features/catalog/queries";
-import { getCategoryHref, VISUALIZATION_PATH } from "@/features/catalog/routes";
+import {
+  getAlgorithmBySlug,
+  getCategoryBySlug,
+} from "@/features/catalog/queries";
+import {
+  getAlgorithmHref,
+  getCategoryHref,
+  VISUALIZATION_PATH,
+} from "@/features/catalog/routes";
 
 type AlgorithmViewProps = Pick<
   PageProps<"/visualization/[category]/[algorithm]">,
@@ -11,9 +18,13 @@ type AlgorithmViewProps = Pick<
 >;
 
 export async function AlgorithmView({ params }: AlgorithmViewProps) {
-  const { category, algorithm: algorithmSlug } = await params;
-  const algorithm = await getAlgorithmBySlug(category, algorithmSlug);
-  if (!algorithm) {
+  const { category: categorySlug, algorithm: algorithmSlug } = await params;
+  const [algorithm, category] = await Promise.all([
+    getAlgorithmBySlug(categorySlug, algorithmSlug),
+    getCategoryBySlug(categorySlug),
+  ]);
+
+  if (!algorithm || !category) {
     notFound();
   }
 
@@ -23,11 +34,15 @@ export async function AlgorithmView({ params }: AlgorithmViewProps) {
         <Breadcrumb
           items={[
             { label: "Mô phỏng", href: VISUALIZATION_PATH },
+            { label: category.name, href: getCategoryHref(category.slug) },
             {
-              label: algorithm.category.name,
-              href: getCategoryHref(algorithm.category.slug),
+              label: algorithm.name,
+              options: category.algorithms.map((sibling) => ({
+                label: sibling.name,
+                href: getAlgorithmHref(category.slug, sibling.slug),
+                isCurrent: sibling.id === algorithm.id,
+              })),
             },
-            { label: algorithm.name },
           ]}
         />
         <h1 className="text-3xl font-semibold tracking-tight text-text-primary sm:text-4xl">
