@@ -44,7 +44,7 @@ Mã giả viết bằng tiếng Việt, ngắn gọn kiểu Python nhưng không
 Mỗi feature export map key → trình mô phỏng tải lười (`SORTING_VISUALIZERS`); `features/catalog/visualizers.ts` ghép lại và `satisfies Record<AlgorithmKey, ...>`, `AlgorithmVisualizer` (client) tra theo key trong `<Suspense>`.
 Input mặc định phải cố định (không random khi render) để HTML server khớp lần render đầu ở client; mảng mặc định dùng chung là `DEFAULT_ARRAY` trong `engine/visualization/`.
 
-**Trợ lý AI** (chi tiết ở `docs/ai-assistant.md`).
+**Trợ lý AI.**
 `engine/assistant/` là TypeScript thuần dùng chung client và server: kiểu, giới hạn (`limits.ts`), giao thức stream NDJSON, `chatReducer`, `createStepContext`.
 Visualizer truyền `assistant={{ context, suggestions, onAsk }}` vào `VisualizerFrame`; ngữ cảnh là ảnh chụp bước đang xem (đầu vào, payload, state, mã giả, dòng đang chạy, chỉ số).
 `POST /api/assistant` (`app/api/assistant/route.ts`) gọi `handleAssistantRequest` trong `features/assistant/`: kiểm tra body, giới hạn 20 câu hỏi/10 phút theo IP (Redis, Redis lỗi thì đếm trong bộ nhớ), tra thông tin thuật toán qua `getAlgorithmCatalog`, rồi stream từ mô hình được chọn và tự chuyển sang mô hình còn lại nếu lỗi trước khi có chữ.
