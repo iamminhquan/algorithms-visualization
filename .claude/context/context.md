@@ -20,7 +20,6 @@ bun run db:migrate             # áp migration
 bun run db:seed                # upsert danh mục + thuật toán từ db/seed-data.ts
 bun run db:push                # đẩy thẳng schema lên DB, không tạo migration (chỉ dùng khi thử nghiệm)
 bun run db:studio              # Drizzle Studio để xem dữ liệu trong DB
-bun run assistant:mock         # server giả lập DeepSeek và Gemini ở cổng 4010 khi chưa có API key
 ```
 
 CI (`.github/workflows/ci.yml`) chạy khi push `dev` và khi mở PR vào `main`: một job lint, `next typegen`, typecheck, test; một job dựng Postgres rồi `db:migrate`, `db:seed`, `build` (lỗi Cache Components chỉ lộ ra lúc build).
@@ -44,7 +43,7 @@ Mã giả viết bằng tiếng Việt, ngắn gọn kiểu Python nhưng không
 Mỗi feature export map key → trình mô phỏng tải lười (`SORTING_VISUALIZERS`); `features/catalog/visualizers.ts` ghép lại và `satisfies Record<AlgorithmKey, ...>`, `AlgorithmVisualizer` (client) tra theo key trong `<Suspense>`.
 Input mặc định phải cố định (không random khi render) để HTML server khớp lần render đầu ở client; mảng mặc định dùng chung là `DEFAULT_ARRAY` trong `engine/visualization/`.
 
-**Trợ lý AI** (chi tiết ở `docs/ai-assistant.md`).
+**Trợ lý AI.**
 `engine/assistant/` là TypeScript thuần dùng chung client và server: kiểu, giới hạn (`limits.ts`), giao thức stream NDJSON, `chatReducer`, `createStepContext`.
 Visualizer truyền `assistant={{ context, suggestions, onAsk }}` vào `VisualizerFrame`; ngữ cảnh là ảnh chụp bước đang xem (đầu vào, payload, state, mã giả, dòng đang chạy, chỉ số).
 `POST /api/assistant` (`app/api/assistant/route.ts`) gọi `handleAssistantRequest` trong `features/assistant/`: kiểm tra body, giới hạn 20 câu hỏi/10 phút theo IP (Redis, Redis lỗi thì đếm trong bộ nhớ), tra thông tin thuật toán qua `getAlgorithmCatalog`, rồi stream từ mô hình được chọn và tự chuyển sang mô hình còn lại nếu lỗi trước khi có chữ.
@@ -64,10 +63,15 @@ Thêm một thuật toán gồm: cài đặt trong feature, thêm vào `*_ALGORI
 Danh mục chỉ khai báo một nơi là `CATEGORIES` trong `features/catalog/categories.ts`: trang chủ và footer đọc trực tiếp, `seedCategories` lấy lại chính nó, nên sửa xong phải chạy `db:seed`.
 
 **Route.** `/` là trang chủ, `/visualization` liệt kê mọi danh mục, `/visualization/[category]` là trang danh mục, `/visualization/[category]/[algorithm]` là trang thuật toán.
-`/learn` liệt kê các lộ trình học (chưa có bài, đều "Sắp ra mắt"); `/login` và `/register` nằm trong route group `app/(auth)/`, hiện chỉ có giao diện, form chưa gửi đi đâu.
+`/learn` liệt kê các lộ trình học (chưa có bài, đều "Sắp ra mắt"); `/login` và `/register` nằm trong route group `app/(site)/(auth)/`, hiện chỉ có giao diện, form chưa gửi đi đâu.
+Các trang công khai nằm trong route group `app/(site)/`, layout của group này gắn header và footer; root layout chỉ có `<html>`, `<body>` và theme.
+`/admin` là trang quản trị với layout riêng (sidebar, thanh trên cùng, `noindex`), chưa có đăng nhập nên ai cũng vào được.
+Admin đọc danh mục và thuật toán thật từ DB (mã nguồn lấy từ code qua `findSourceCode` trong `features/catalog/source-codes.ts`), còn người dùng, bài học, lớp học là dữ liệu mẫu trong `app/admin/_components/sample-data.ts` (gắn nhãn "Dữ liệu mẫu").
+Form và hộp xác nhận xoá trong admin chỉ là giao diện: `<form method="dialog">` đóng hộp thoại mà không gửi đi đâu.
 Thuật toán phải đúng danh mục của nó (`getAlgorithmBySlug(category, algorithm)`), sai danh mục thì `notFound()`.
 Dựng link bằng `getCategoryHref()` / `getAlgorithmHref()` trong `features/catalog/routes.ts`.
-Root layout có `title.template`, trang chỉ đặt tên riêng của nó; `app/not-found.tsx`, `app/error.tsx`, `app/global-error.tsx` lo trang 404 và trang lỗi.
+Root layout có `title.template`, trang chỉ đặt tên riêng của nó; admin có template riêng.
+`app/not-found.tsx` tự gắn header và footer vì nó render ngay trong root layout, còn `app/(site)/error.tsx`, `app/admin/error.tsx`, `app/admin/not-found.tsx` nằm trong layout của group nên giữ khung trang; `app/global-error.tsx` lo lỗi ở chính root layout.
 Query có `"use cache"` + `cacheLife("hours")` + `cacheTag("catalog")` nên đi vào static shell; dữ liệu theo request phải nằm trong `<Suspense>`.
 Page không `await params`: truyền Promise xuống view async nằm trong `<Suspense>` (xem `CategoryView`), nếu không `partialPrefetching` báo lỗi `instant-shell-url-data` vì App Shell dùng chung cho mọi URL của route.
 Chạy `db:seed` xong phải build lại (hoặc đợi hết `revalidate`), vì script seed chạy ngoài Next nên không gọi được `revalidateTag`.
@@ -75,14 +79,14 @@ Với Cache Components không dùng được `dynamicParams`, nên slug lạ đ�
 Hiện repo chưa có `proxy.ts` (hay `middleware.ts`) nên không có chỗ kiểm tra slug trước khi render. Trang đã bắt đầu stream nên slug lạ thành soft 404 (status 200 kèm `noindex`); muốn 404 thật thì thêm `proxy.ts` kiểm tra slug trước khi trang stream.
 
 **Đặt file.** `components/ui/` chứa primitive không biết nghiệp vụ (không import `features/`, `db/`).
-Header, footer, logo chỉ root layout dùng nên nằm ở `app/_components/`; khi có route group thì chuyển theo layout của group đó.
+Header, footer và logo nằm ở `app/_components/` vì dùng chung cho `app/(site)/layout.tsx`, `app/not-found.tsx` và admin (logo, nút đổi theme).
 Header tách thành nhiều file trong `app/_components/header/`: `site-header.tsx` (Server Component đọc danh mục từ DB, DB lỗi vẫn hiện danh mục), `nav-items.ts` (mục menu), menu danh mục, bảng tìm kiếm Ctrl K (`command-palette.tsx`), nút đổi theme và menu trượt mobile.
-Component dùng chung cho các trang trong một route group đặt ở `_components/` của group đó (ví dụ `app/(auth)/_components/`).
-Component chỉ một route dùng thì đặt ở `app/<route>/_components/`; component dùng chung cho cả `/visualization` và `/visualization/[category]` nằm ở `app/visualization/_components/` (ví dụ `algorithm-grid.tsx`).
-`lib/` chứa tiện ích dùng chung không gắn nghiệp vụ (`cn.ts`, `site.ts`).
+Component dùng chung cho các trang trong một route group đặt ở `_components/` của group đó (ví dụ `app/(site)/(auth)/_components/`, `app/admin/_components/`).
+Component chỉ một route dùng thì đặt ở `app/<route>/_components/`; component dùng chung cho cả `/visualization` và `/visualization/[category]` nằm ở `app/(site)/visualization/_components/` (ví dụ `algorithm-grid.tsx`).
+`lib/` chứa tiện ích dùng chung không gắn nghiệp vụ (`cn.ts`, `site.ts`, `format.ts`).
 
 **Style.** Chỉ dùng token ngữ nghĩa khai báo trong `app/globals.css` (`bg-bg-surface`, `text-text-secondary`, `border-border-strong`, `bg-accent-default`...), không dùng hex hay palette mặc định (`slate-*`, `indigo-*`).
-`accent/*` dành cho tương tác; `state/*` (compare, swap, pivot, pointer, sorted) chỉ dùng trong hình mô phỏng.
+`accent/*` dành cho tương tác; `success/*`, `warning/*`, `danger/*` cho trạng thái và hành động nguy hiểm (badge, nút xoá); `state/*` (compare, swap, pivot, pointer, sorted) chỉ dùng trong hình mô phỏng.
 Dark mode bật bằng `data-theme="dark"` trên `<html>`: `lib/theme.ts` đặt thuộc tính này trước khi hydrate (theo lựa chọn đã lưu, chưa lưu thì theo hệ điều hành) và biến CSS đổi theo, nên thường không cần `dark:`.
 
 ## Quy ước

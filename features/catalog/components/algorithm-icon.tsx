@@ -6,6 +6,7 @@ import {
   ScanLine,
   SquareSplitHorizontal,
 } from "lucide-react";
+import { cn } from "@/lib/cn";
 import type { AlgorithmKey } from "../catalog";
 
 /*
@@ -24,19 +25,31 @@ const ICON_BY_KEY: ReadonlyMap<string, LucideIcon> = new Map(
   Object.entries(ALGORITHM_ICONS),
 );
 
+const SIZE_CLASS_NAMES = {
+  sm: { box: "size-8 rounded-md", icon: "size-4" },
+  md: { box: "size-12 rounded-lg", icon: "size-6" },
+} as const;
+
 type AlgorithmIconProps = {
   algorithmKey: string;
+  size?: keyof typeof SIZE_CLASS_NAMES;
 };
 
 /** Ô vuông bo góc chứa icon minh hoạ, trang trí nên ẩn khỏi trình đọc màn hình. */
-export function AlgorithmIcon({ algorithmKey }: AlgorithmIconProps) {
+export function AlgorithmIcon({
+  algorithmKey,
+  size = "md",
+}: AlgorithmIconProps) {
   const Icon = ICON_BY_KEY.get(algorithmKey) ?? ChartNoAxesColumn;
   return (
     <span
       aria-hidden="true"
-      className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-accent-subtle text-accent-text"
+      className={cn(
+        "flex shrink-0 items-center justify-center bg-accent-subtle text-accent-text",
+        SIZE_CLASS_NAMES[size].box,
+      )}
     >
-      <Icon className="size-6" />
+      <Icon className={SIZE_CLASS_NAMES[size].icon} />
     </span>
   );
 }

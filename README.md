@@ -33,10 +33,8 @@ features/
   searching-algorithms/    Linear Search, Binary Search và trình mô phỏng
   sorting-algorithms/      Bubble Sort, Selection Sort, trình mô phỏng và ô nhập mảng
 db/                        Schema Drizzle, dữ liệu seed, kết nối DB
-docs/                      Tài liệu chi tiết, ví dụ ai-assistant.md
 drizzle/                   Migration do drizzle-kit sinh ra
 lib/                       Tiện ích thuần như cn.ts, site.ts
-scripts/                   Script phát triển, ví dụ server giả lập mô hình AI
 tests/                     Test của engine, catalog, các thuật toán và trợ lý AI
 ```
 
@@ -80,7 +78,7 @@ Route của website:
 
    Biến bắt buộc là `DATABASE_URL`, ví dụ `postgresql://postgres:postgres@localhost:5432/algorithms_visualization`.
    Các biến `POSTGRES_*` dùng cho Docker Compose và cần khớp với `DATABASE_URL`.
-   Muốn dùng trợ lý AI thì đặt thêm `DEEPSEEK_API_KEY` và/hoặc `GEMINI_API_KEY`; xem [docs/ai-assistant.md](docs/ai-assistant.md).
+   Muốn dùng trợ lý AI thì đặt thêm `DEEPSEEK_API_KEY` và/hoặc `GEMINI_API_KEY`.
 
 3. Khởi động PostgreSQL.
 
@@ -116,7 +114,6 @@ Route của website:
 | `bun run db:migrate`     | Áp migration                                          |
 | `bun run db:seed`        | Nạp lại danh mục và thuật toán từ `db/seed-data.ts`   |
 | `bun run db:studio`      | Mở Drizzle Studio để xem dữ liệu                      |
-| `bun run assistant:mock` | Chạy server giả lập DeepSeek và Gemini ở cổng 4010    |
 
 ## Thêm một thuật toán mới
 
@@ -124,10 +121,6 @@ Route của website:
 2. Thêm vào `*_ALGORITHMS` và thêm trình mô phỏng (kèm mã giả) vào `*_VISUALIZERS`.
 3. Thêm một dòng vào `db/seed-data.ts` với cùng `key`.
 4. Chạy `bun run db:seed`, rồi chạy `bun test` để kiểm tra registry và seed không lệch nhau.
-
-## Trợ lý AI
-
-Kiến trúc, biến môi trường, cách chạy khi chưa có API key và cách test nằm ở [docs/ai-assistant.md](docs/ai-assistant.md).
 
 ## Giấy phép
 
