@@ -239,7 +239,7 @@ mỗi request), trang phải bọc nó: `<Suspense fallback={<AlgorithmListSkele
 hiện ngay.
 
 ```tsx
-// app/visualization/[category]/[algorithm]/page.tsx
+// app/(site)/visualization/[category]/[algorithm]/page.tsx
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { getAlgorithmBySlug } from "@/features/catalog/queries";

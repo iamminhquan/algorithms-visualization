@@ -44,7 +44,7 @@ features/
   searching-algorithms/ (khi có) cùng khuôn với sorting-algorithms
 app/                    page/layout/not-found/error, ghép từ features và components
   _components/          component của root layout và trang chủ: site-header, site-footer, logo, home-hero
-  <route>/_components/  component chỉ dùng cho đúng một route (vd: app/visualization/_components/)
+  <route>/_components/  component chỉ dùng cho đúng một route (vd: app/(site)/visualization/_components/)
 lib/                    tiện ích thuần: cn.ts, format.ts
 ```
 
