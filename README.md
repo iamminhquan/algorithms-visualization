@@ -35,7 +35,6 @@ features/
 db/                        Schema Drizzle, dữ liệu seed, kết nối DB
 drizzle/                   Migration do drizzle-kit sinh ra
 lib/                       Tiện ích thuần như cn.ts, site.ts
-scripts/                   Script phát triển, ví dụ server giả lập mô hình AI
 tests/                     Test của engine, catalog, các thuật toán và trợ lý AI
 ```
 
@@ -115,7 +114,6 @@ Route của website:
 | `bun run db:migrate`     | Áp migration                                          |
 | `bun run db:seed`        | Nạp lại danh mục và thuật toán từ `db/seed-data.ts`   |
 | `bun run db:studio`      | Mở Drizzle Studio để xem dữ liệu                      |
-| `bun run assistant:mock` | Chạy server giả lập DeepSeek và Gemini ở cổng 4010    |
 
 ## Thêm một thuật toán mới
 

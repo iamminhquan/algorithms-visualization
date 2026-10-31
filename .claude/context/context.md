@@ -20,7 +20,6 @@ bun run db:migrate             # áp migration
 bun run db:seed                # upsert danh mục + thuật toán từ db/seed-data.ts
 bun run db:push                # đẩy thẳng schema lên DB, không tạo migration (chỉ dùng khi thử nghiệm)
 bun run db:studio              # Drizzle Studio để xem dữ liệu trong DB
-bun run assistant:mock         # server giả lập DeepSeek và Gemini ở cổng 4010 khi chưa có API key
 ```
 
 CI (`.github/workflows/ci.yml`) chạy khi push `dev` và khi mở PR vào `main`: một job lint, `next typegen`, typecheck, test; một job dựng Postgres rồi `db:migrate`, `db:seed`, `build` (lỗi Cache Components chỉ lộ ra lúc build).
