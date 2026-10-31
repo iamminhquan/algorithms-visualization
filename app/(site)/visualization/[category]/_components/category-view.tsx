@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { getCategoryBySlug } from "@/features/catalog/queries";
-import { VISUALIZATION_PATH } from "@/features/catalog/routes";
+import { getCompareHref, VISUALIZATION_PATH } from "@/features/catalog/routes";
 import { SearchingComparisonTable } from "@/features/searching-algorithms/components/searching-comparison-table";
 import { SortingComparisonTable } from "@/features/sorting-algorithms/components/sorting-comparison-table";
 import { AlgorithmGrid } from "../../_components/algorithm-grid";
@@ -34,7 +34,10 @@ export async function CategoryView({ params }: CategoryViewProps) {
       </header>
       <AlgorithmGrid category={category} />
       {category.slug === "sorting" && (
-        <SortingComparisonTable algorithms={category.algorithms} />
+        <SortingComparisonTable
+          algorithms={category.algorithms}
+          compareHref={getCompareHref(category.slug)}
+        />
       )}
       {category.slug === "searching" && (
         <SearchingComparisonTable algorithms={category.algorithms} />
