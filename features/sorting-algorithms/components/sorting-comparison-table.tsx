@@ -1,8 +1,12 @@
+import { GitCompare } from "lucide-react";
+import Link from "next/link";
+import { getButtonClassName } from "@/components/ui/button";
 import type { Algorithm } from "@/db/schema";
 import { findSortingComplexity } from "../complexity";
 
 type SortingComparisonTableProps = {
   algorithms: readonly Pick<Algorithm, "key" | "slug" | "name">[];
+  compareHref?: string;
 };
 
 const COLUMNS = [
@@ -20,6 +24,7 @@ const COLUMNS = [
  */
 export function SortingComparisonTable({
   algorithms,
+  compareHref,
 }: SortingComparisonTableProps) {
   const rows = algorithms.flatMap((algorithm) => {
     const complexity = findSortingComplexity(algorithm.key);
@@ -34,12 +39,20 @@ export function SortingComparisonTable({
       aria-labelledby="sorting-comparison-heading"
       className="flex flex-col gap-4"
     >
-      <h2
-        id="sorting-comparison-heading"
-        className="text-2xl font-semibold tracking-tight text-text-primary"
-      >
-        Bảng so sánh các thuật toán sắp xếp
-      </h2>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2
+          id="sorting-comparison-heading"
+          className="text-2xl font-semibold tracking-tight text-text-primary"
+        >
+          Bảng so sánh các thuật toán sắp xếp
+        </h2>
+        {compareHref && (
+          <Link href={compareHref} className={getButtonClassName("secondary")}>
+            <GitCompare aria-hidden="true" />
+            So sánh trực quan
+          </Link>
+        )}
+      </div>
       <div className="overflow-x-auto rounded-xl border border-border-default bg-bg-surface">
         <table className="w-full min-w-170 border-collapse text-left text-sm">
           <thead className="bg-bg-subtle text-text-primary">
