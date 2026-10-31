@@ -30,6 +30,7 @@ export {
 export type { IPseudocode } from "./pseudocode";
 export { MIN_BAR_HEIGHT_PERCENT, scaleBarHeights } from "./scale";
 export {
+  CODE_LANGUAGE_LABELS,
   CODE_LANGUAGES,
   type CodeLanguage,
   type SourceCode,

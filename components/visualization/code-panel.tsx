@@ -1,6 +1,10 @@
 import { useId, useState } from "react";
 import { Select } from "@/components/ui/select";
-import { CODE_LANGUAGES, type SourceCode } from "@/engine/visualization";
+import {
+  CODE_LANGUAGE_LABELS,
+  CODE_LANGUAGES,
+  type SourceCode,
+} from "@/engine/visualization";
 import { cn } from "@/lib/cn";
 
 const SPACES_PER_INDENT = 2;
@@ -11,7 +15,7 @@ type CodeView = (typeof CODE_VIEWS)[number];
 
 const CODE_VIEW_LABELS: Record<CodeView, string> = {
   pseudocode: "Mã giả",
-  cpp: "C++",
+  ...CODE_LANGUAGE_LABELS,
 };
 
 type CodePanelProps = {
