@@ -8,7 +8,9 @@ Chữ trên giao diện và commit message viết tiếng Việt; route và slug
 ```bash
 bun run dev                    # next dev
 bun run build                  # next build — cần DATABASE_URL vì generateStaticParams đọc DB
-bun run lint                   # biome check (bun run format để tự sửa định dạng và thứ tự import)
+bun run lint                   # biome check
+bun run format                 # biome format --write: chỉ sửa định dạng, không sắp lại import
+bunx biome check --write       # áp các bản sửa an toàn của lint, gồm cả thứ tự import
 bunx tsc --noEmit              # typecheck; nếu thiếu kiểu PageProps/LayoutProps thì chạy `bunx next typegen` trước
 bun test                       # toàn bộ test trong tests/
 bun test tests/sorting-algorithms/bubble-sort.test.ts   # một file
