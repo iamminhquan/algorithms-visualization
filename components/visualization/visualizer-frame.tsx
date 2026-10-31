@@ -58,9 +58,7 @@ export function VisualizerFrame({
         className,
       )}
     >
-      {toolbar !== undefined && (
-        <div className={cn(isFullscreen && "hidden")}>{toolbar}</div>
-      )}
+      {toolbar}
       <div
         className={cn(
           "grid gap-4",
