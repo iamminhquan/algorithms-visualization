@@ -48,3 +48,11 @@ export const CATEGORIES = [
 ] as const satisfies readonly ICategory[];
 
 export type CategorySlug = (typeof CATEGORIES)[number]["slug"];
+
+const CATEGORY_SLUGS: ReadonlySet<string> = new Set(
+  CATEGORIES.map((category) => category.slug),
+);
+
+export function isCategorySlug(slug: string): slug is CategorySlug {
+  return CATEGORY_SLUGS.has(slug);
+}
