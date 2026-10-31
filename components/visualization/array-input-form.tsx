@@ -7,10 +7,12 @@ import {
   parseArrayInput,
 } from "@/engine/visualization";
 
-/**
- * Mảng mới đến từ đâu: người dùng tự nhập (`manual`) hay bấm nút sinh ngẫu nhiên (`random`).
- */
-export type ArrayInputSource = "manual" | "random";
+export type ArrayInputSource = "manual" | "random" | "preset";
+
+export interface IArrayPreset {
+  readonly label: string;
+  readonly transform: (values: readonly number[]) => readonly number[];
+}
 
 /**
  * Props của `ArrayInputForm`.
@@ -30,6 +32,7 @@ type ArrayInputFormProps = {
   onChange: (values: readonly number[], source: ArrayInputSource) => void;
   normalize?: (values: readonly number[]) => readonly number[];
   hint?: string;
+  presets?: readonly IArrayPreset[];
   children?: ReactNode;
 };
 
@@ -39,6 +42,7 @@ export function ArrayInputForm({
   onChange,
   normalize = (values) => values,
   hint,
+  presets = [],
   children,
 }: ArrayInputFormProps) {
   const createRandom = createRandomDistinctArray;
@@ -46,14 +50,17 @@ export function ArrayInputForm({
   const errorId = useId();
   const hintId = useId();
   const sizeId = useId();
+  const presetsLabelId = useId();
   const [text, setText] = useState(() => formatArrayInput(initialValues));
   const [error, setError] = useState<string>();
   const [size, setSize] = useState(initialValues.length);
+  const [currentValues, setCurrentValues] = useState(initialValues);
 
   const apply = (values: readonly number[], source: ArrayInputSource) => {
     const normalized = normalize(values);
     setText(formatArrayInput(normalized));
     setError(undefined);
+    setCurrentValues(normalized);
     onChange(normalized, source);
   };
 
@@ -126,6 +133,32 @@ export function ArrayInputForm({
       </form>
 
       {children}
+
+      {presets.length > 0 && (
+        <div className="flex flex-col gap-1.5">
+          <span
+            id={presetsLabelId}
+            className="text-sm font-medium text-text-primary"
+          >
+            Mẫu dữ liệu
+          </span>
+          <fieldset
+            aria-labelledby={presetsLabelId}
+            className="flex flex-wrap gap-2"
+          >
+            {presets.map((preset) => (
+              <button
+                key={preset.label}
+                type="button"
+                onClick={() => apply(preset.transform(currentValues), "preset")}
+                className="inline-flex h-10 shrink-0 items-center rounded-lg border border-border-strong bg-bg-surface px-4 text-sm font-medium text-text-primary transition-colors hover:bg-bg-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default"
+              >
+                {preset.label}
+              </button>
+            ))}
+          </fieldset>
+        </div>
+      )}
 
       <div className="flex flex-col gap-1.5">
         <label
