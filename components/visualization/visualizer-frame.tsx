@@ -2,16 +2,12 @@
 
 import { Info, Maximize, Minimize } from "lucide-react";
 import { type ReactNode, useRef } from "react";
-import type { VisualTone } from "@/engine/visualization";
 import { cn } from "@/lib/cn";
 import { AiChatPanel, type IAiChatOptions } from "./ai-chat-panel";
-import { TONE_BACKGROUND } from "./tones";
+import { type ILegendItem, LegendList } from "./legend-list";
 import { useFullscreen } from "./use-fullscreen";
 
-export interface ILegendItem {
-  readonly tone: VisualTone;
-  readonly label: string;
-}
+export type { ILegendItem } from "./legend-list";
 
 export interface IMetricItem {
   readonly label: string;
@@ -134,25 +130,7 @@ export function VisualizerFrame({
           )}
         >
           {controls}
-          {legend.length > 0 && (
-            <ul
-              aria-label="Chú giải màu"
-              className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-text-secondary"
-            >
-              {legend.map((item) => (
-                <li key={item.tone} className="flex items-center gap-2">
-                  <span
-                    aria-hidden="true"
-                    className={cn(
-                      "size-3 rounded-sm",
-                      TONE_BACKGROUND[item.tone],
-                    )}
-                  />
-                  {item.label}
-                </li>
-              ))}
-            </ul>
-          )}
+          {legend.length > 0 && <LegendList items={legend} />}
         </div>
         {code !== undefined && (
           <div
