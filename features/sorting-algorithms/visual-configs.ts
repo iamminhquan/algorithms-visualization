@@ -1,9 +1,5 @@
 import type { ILegendItem } from "@/components/visualization/visualizer-frame";
-import type {
-  IPseudocode,
-  IVariable,
-  SourceCode,
-} from "@/engine/visualization";
+import type { IVariable, SourceCode } from "@/engine/visualization";
 import {
   BUBBLE_SORT_KEY,
   BUBBLE_SORT_LEGEND,
@@ -14,6 +10,7 @@ import {
   getBubbleSortVariables,
 } from "./bubble-sort";
 import type { SortingAlgorithm } from "./index";
+import type { SortingCounter } from "./run";
 import {
   getSelectionSortFrame,
   getSelectionSortVariables,
@@ -25,14 +22,22 @@ import {
 } from "./selection-sort";
 import type { ISortingFrame, SortingEvent } from "./visualization";
 
+interface ISortingPseudocode {
+  readonly lines: readonly string[];
+  getActiveLine(step: SortingEvent["payload"]): number | undefined;
+}
+
 export interface ISortingVisualConfig {
   readonly algorithm: SortingAlgorithm;
-  readonly pseudocode: IPseudocode<SortingEvent["payload"]>;
+  readonly pseudocode: ISortingPseudocode;
   readonly sourceCode: SourceCode;
-  readonly getFrame: (event: SortingEvent) => ISortingFrame;
-  readonly getVariables: (event: SortingEvent) => readonly IVariable[];
+  getFrame(event: SortingEvent): ISortingFrame;
+  getVariables(event: SortingEvent): readonly IVariable[];
   readonly legend: readonly ILegendItem[];
+  readonly counters: readonly SortingCounter[];
 }
+
+const SWAP_COUNTERS: readonly SortingCounter[] = ["compare", "swap"];
 
 export const SORTING_VISUAL_CONFIGS = {
   [BUBBLE_SORT_KEY]: {
@@ -42,6 +47,7 @@ export const SORTING_VISUAL_CONFIGS = {
     getFrame: getBubbleSortFrame,
     getVariables: getBubbleSortVariables,
     legend: BUBBLE_SORT_LEGEND,
+    counters: SWAP_COUNTERS,
   },
   [SELECTION_SORT_KEY]: {
     algorithm: selectionSort,
@@ -50,6 +56,7 @@ export const SORTING_VISUAL_CONFIGS = {
     getFrame: getSelectionSortFrame,
     getVariables: getSelectionSortVariables,
     legend: SELECTION_SORT_LEGEND,
+    counters: SWAP_COUNTERS,
   },
 } satisfies Record<SortingAlgorithm["metadata"]["key"], ISortingVisualConfig>;
 

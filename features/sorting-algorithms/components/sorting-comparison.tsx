@@ -19,7 +19,7 @@ import {
   sortDescending,
 } from "@/engine/visualization";
 import { MAX_ARRAY_LENGTH } from "../array-input";
-import { createSortingRun, type ISortingRun } from "../run";
+import { createSortingRun, getRunMetrics, type ISortingRun } from "../run";
 import {
   findSortingVisualConfig,
   type ISortingVisualConfig,
@@ -171,7 +171,6 @@ export function SortingComparison({
           const lane = state[side];
           const { run } = lane;
           const laneIndex = getLaneIndex(sharedIndex, run.events.length);
-          const counts = run.counts[laneIndex];
           const selectId = `${idPrefix}-${side}`;
 
           return (
@@ -198,10 +197,7 @@ export function SortingComparison({
                   </Select>
                 </>
               }
-              metrics={[
-                { label: "So sánh", value: counts.compare },
-                { label: "Hoán đổi", value: counts.swap },
-              ]}
+              metrics={getRunMetrics(run, laneIndex, lane.config.counters)}
               description={run.events[laneIndex].description}
               finishedLabel={
                 isLaneFinished(sharedIndex, run.events.length)

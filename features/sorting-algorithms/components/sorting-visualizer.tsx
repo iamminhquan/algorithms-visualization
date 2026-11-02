@@ -8,7 +8,7 @@ import { VisualizerFrame } from "@/components/visualization/visualizer-frame";
 import { createStepContext } from "@/engine/assistant";
 import { DEFAULT_ARRAY } from "@/engine/visualization";
 import { MAX_ARRAY_LENGTH } from "../array-input";
-import { createSortingRun } from "../run";
+import { createSortingRun, getRunMetrics } from "../run";
 import type { ISortingVisualConfig } from "../visual-configs";
 import { SortingStage } from "./sorting-stage";
 
@@ -27,6 +27,7 @@ export function SortingVisualizer({
   getFrame,
   getVariables,
   legend,
+  counters,
 }: SortingVisualizerProps) {
   const [run, setRun] = useState(() =>
     createSortingRun(algorithm, DEFAULT_ARRAY),
@@ -34,11 +35,7 @@ export function SortingVisualizer({
   const controls = usePlayback(run.events.length);
   const { index } = controls.state;
   const event = run.events[index];
-  const counts = run.counts[index];
-  const metrics = [
-    { label: "So sánh", value: counts.compare },
-    { label: "Hoán đổi", value: counts.swap },
-  ];
+  const metrics = getRunMetrics(run, index, counters);
 
   return (
     <VisualizerFrame
