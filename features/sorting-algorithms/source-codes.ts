@@ -5,6 +5,7 @@ import {
   INSERTION_SORT_KEY,
   INSERTION_SORT_SOURCE_CODE,
 } from "./insertion-sort";
+import { MERGE_SORT_KEY, MERGE_SORT_SOURCE_CODE } from "./merge-sort";
 import { QUICK_SORT_KEY, QUICK_SORT_SOURCE_CODE } from "./quick-sort";
 import {
   SELECTION_SORT_KEY,
@@ -16,4 +17,5 @@ export const SORTING_SOURCE_CODES = {
   [SELECTION_SORT_KEY]: SELECTION_SORT_SOURCE_CODE,
   [INSERTION_SORT_KEY]: INSERTION_SORT_SOURCE_CODE,
   [QUICK_SORT_KEY]: QUICK_SORT_SOURCE_CODE,
+  [MERGE_SORT_KEY]: MERGE_SORT_SOURCE_CODE,
 } satisfies Record<SortingAlgorithm["metadata"]["key"], SourceCode>;

@@ -20,6 +20,15 @@ import {
   insertionSort,
 } from "./insertion-sort";
 import {
+  getMergeSortFrame,
+  getMergeSortVariables,
+  MERGE_SORT_KEY,
+  MERGE_SORT_LEGEND,
+  MERGE_SORT_PSEUDOCODE,
+  MERGE_SORT_SOURCE_CODE,
+  mergeSort,
+} from "./merge-sort";
+import {
   getQuickSortFrame,
   getQuickSortVariables,
   QUICK_SORT_KEY,
@@ -57,6 +66,8 @@ export interface ISortingVisualConfig {
 
 const SWAP_COUNTERS: readonly SortingCounter[] = ["compare", "swap"];
 
+const WRITE_COUNTERS: readonly SortingCounter[] = ["compare", "write"];
+
 export const SORTING_VISUAL_CONFIGS = {
   [BUBBLE_SORT_KEY]: {
     algorithm: bubbleSort,
@@ -93,6 +104,15 @@ export const SORTING_VISUAL_CONFIGS = {
     getVariables: getQuickSortVariables,
     legend: QUICK_SORT_LEGEND,
     counters: SWAP_COUNTERS,
+  },
+  [MERGE_SORT_KEY]: {
+    algorithm: mergeSort,
+    pseudocode: MERGE_SORT_PSEUDOCODE,
+    sourceCode: MERGE_SORT_SOURCE_CODE,
+    getFrame: getMergeSortFrame,
+    getVariables: getMergeSortVariables,
+    legend: MERGE_SORT_LEGEND,
+    counters: WRITE_COUNTERS,
   },
 } satisfies Record<SortingAlgorithm["metadata"]["key"], ISortingVisualConfig>;
 

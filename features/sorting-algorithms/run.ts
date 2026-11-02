@@ -6,13 +6,18 @@ import {
 import type { SortingAlgorithm } from "./index";
 import { type SortingEvent, trackElementIds } from "./visualization";
 
-export type SortingCounter = "compare" | "swap";
+export type SortingCounter = "compare" | "swap" | "write";
 
-const SORTING_COUNTERS: readonly SortingCounter[] = ["compare", "swap"];
+const SORTING_COUNTERS: readonly SortingCounter[] = [
+  "compare",
+  "swap",
+  "write",
+];
 
 const COUNTER_LABELS: Readonly<Record<SortingCounter, string>> = {
   compare: "So sánh",
   swap: "Hoán đổi",
+  write: "Ghi mảng",
 };
 
 export interface ISortingRun {

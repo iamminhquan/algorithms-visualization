@@ -3,6 +3,7 @@ import {
   Bubbles,
   ChartNoAxesColumn,
   type LucideIcon,
+  Merge,
   MousePointerClick,
   ScanLine,
   SquareSplitHorizontal,
@@ -21,6 +22,7 @@ const ALGORITHM_ICONS = {
   "selection-sort": MousePointerClick,
   "insertion-sort": BetweenVerticalStart,
   "quick-sort": Zap,
+  "merge-sort": Merge,
   "linear-search": ScanLine,
   "binary-search": SquareSplitHorizontal,
 } satisfies Record<AlgorithmKey, LucideIcon>;

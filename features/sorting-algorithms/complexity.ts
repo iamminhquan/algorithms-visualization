@@ -1,6 +1,7 @@
 import { BUBBLE_SORT_KEY } from "./bubble-sort";
 import type { SortingAlgorithm } from "./index";
 import { INSERTION_SORT_KEY } from "./insertion-sort";
+import { MERGE_SORT_KEY } from "./merge-sort";
 import { QUICK_SORT_KEY } from "./quick-sort";
 import { SELECTION_SORT_KEY } from "./selection-sort";
 
@@ -40,6 +41,13 @@ const SORTING_COMPLEXITY = {
     worstTime: "O(n²)",
     space: "O(log n)",
     isStable: false,
+  },
+  [MERGE_SORT_KEY]: {
+    bestTime: "O(n log n)",
+    averageTime: "O(n log n)",
+    worstTime: "O(n log n)",
+    space: "O(n)",
+    isStable: true,
   },
 } satisfies Record<SortingAlgorithm["metadata"]["key"], ISortingComplexity>;
 

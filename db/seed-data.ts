@@ -3,6 +3,7 @@ import { BINARY_SEARCH_KEY } from "@/features/searching-algorithms/binary-search
 import { LINEAR_SEARCH_KEY } from "@/features/searching-algorithms/linear-search";
 import { BUBBLE_SORT_KEY } from "@/features/sorting-algorithms/bubble-sort";
 import { INSERTION_SORT_KEY } from "@/features/sorting-algorithms/insertion-sort";
+import { MERGE_SORT_KEY } from "@/features/sorting-algorithms/merge-sort";
 import { QUICK_SORT_KEY } from "@/features/sorting-algorithms/quick-sort";
 import { SELECTION_SORT_KEY } from "@/features/sorting-algorithms/selection-sort";
 import type { NewAlgorithm, NewCategory } from "./schema";
@@ -59,6 +60,17 @@ export const seedAlgorithms: readonly (Omit<NewAlgorithm, "categoryId"> & {
       "pivot vào giữa, sau đó sắp xếp đệ quy hai phần hai bên; trung bình O(n log n), xấu nhất O(n²).",
     timeComplexity: "O(n log n)",
     spaceComplexity: "O(log n)",
+  },
+  {
+    key: MERGE_SORT_KEY,
+    categorySlug: "sorting",
+    name: "Sắp xếp trộn (Merge Sort)",
+    slug: "merge-sort",
+    description:
+      "Chia đôi mảng, sắp xếp đệ quy từng nửa rồi trộn hai nửa đã sắp xếp bằng cách liên tục lấy " +
+      "phần tử nhỏ hơn ở đầu hai nửa; luôn O(n log n) nhưng cần thêm O(n) bộ nhớ phụ.",
+    timeComplexity: "O(n log n)",
+    spaceComplexity: "O(n)",
   },
   {
     key: LINEAR_SEARCH_KEY,

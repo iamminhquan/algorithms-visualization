@@ -6,6 +6,7 @@ import type {
 import type { VisualTone } from "@/engine/visualization";
 import type { BubbleSortEvent } from "./bubble-sort";
 import type { InsertionSortEvent } from "./insertion-sort";
+import type { MergeSortEvent } from "./merge-sort";
 import type { QuickSortEvent } from "./quick-sort";
 import type { SelectionSortEvent } from "./selection-sort";
 
@@ -13,7 +14,8 @@ export type SortingEvent =
   | BubbleSortEvent
   | SelectionSortEvent
   | InsertionSortEvent
-  | QuickSortEvent;
+  | QuickSortEvent
+  | MergeSortEvent;
 
 export interface ISortingFrame {
   readonly tones: readonly VisualTone[];
@@ -43,6 +45,9 @@ export function getBarTones(event: SortingEvent): readonly VisualTone[] {
         tones[index] = payload.type;
       }
       break;
+    case "write":
+      tones[payload.to] = "swap";
+      break;
     case "mark-sorted":
     case "complete":
       break;
@@ -63,6 +68,9 @@ export function trackElementIds(
     if (event.payload.type === "swap") {
       const [i, j] = event.payload.indices;
       [ids[i], ids[j]] = [ids[j], ids[i]];
+    } else if (event.payload.type === "write") {
+      const [moved] = ids.splice(event.payload.from, 1);
+      ids.splice(event.payload.to, 0, moved);
     }
     return Object.freeze([...ids]);
   });
