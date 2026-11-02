@@ -46,29 +46,28 @@ function executeBubbleSort(input: BubbleSortInput): BubbleSortResult {
     );
   };
 
-  // sua phan nay thanh vong for
   let unsortedLength = array.length;
-  while (unsortedLength > 1) {
+  for (let i = unsortedLength; i >= 0; i--) {
     let swapped = false;
 
-    for (let i = 0; i < unsortedLength - 1; i++) {
-      const left = array[i];
-      const right = array[i + 1];
+    for (let j = 0; j < i - 1; j++) {
+      const left = array[j];
+      const right = array[j + 1];
       const outOfOrder = left > right;
 
       comparisons++;
       record(
-        { type: "compare", indices: [i, i + 1] },
+        { type: "compare", indices: [j, j + 1] },
         `Đang so sánh ${left} và ${right}`,
       );
 
       if (outOfOrder) {
-        array[i] = right;
-        array[i + 1] = left;
+        array[j] = right;
+        array[j + 1] = left;
         swaps++;
         swapped = true;
         record(
-          { type: "swap", indices: [i, i + 1] },
+          { type: "swap", indices: [j, j + 1] },
           `Đang hoán đổi ${left} và ${right}`,
         );
       }

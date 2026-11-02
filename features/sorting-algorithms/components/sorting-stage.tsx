@@ -23,6 +23,7 @@ export function SortingStage({
     <ArrayBars
       className={className}
       bracket={index === 0 ? undefined : frame.bracket}
+      range={frame.range}
       bars={event.state.array.map((value, position) => ({
         id: ids[position],
         value,
