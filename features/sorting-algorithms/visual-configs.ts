@@ -10,6 +10,15 @@ import {
   getBubbleSortVariables,
 } from "./bubble-sort";
 import type { SortingAlgorithm } from "./index";
+import {
+  getInsertionSortFrame,
+  getInsertionSortVariables,
+  INSERTION_SORT_KEY,
+  INSERTION_SORT_LEGEND,
+  INSERTION_SORT_PSEUDOCODE,
+  INSERTION_SORT_SOURCE_CODE,
+  insertionSort,
+} from "./insertion-sort";
 import type { SortingCounter } from "./run";
 import {
   getSelectionSortFrame,
@@ -56,6 +65,15 @@ export const SORTING_VISUAL_CONFIGS = {
     getFrame: getSelectionSortFrame,
     getVariables: getSelectionSortVariables,
     legend: SELECTION_SORT_LEGEND,
+    counters: SWAP_COUNTERS,
+  },
+  [INSERTION_SORT_KEY]: {
+    algorithm: insertionSort,
+    pseudocode: INSERTION_SORT_PSEUDOCODE,
+    sourceCode: INSERTION_SORT_SOURCE_CODE,
+    getFrame: getInsertionSortFrame,
+    getVariables: getInsertionSortVariables,
+    legend: INSERTION_SORT_LEGEND,
     counters: SWAP_COUNTERS,
   },
 } satisfies Record<SortingAlgorithm["metadata"]["key"], ISortingVisualConfig>;

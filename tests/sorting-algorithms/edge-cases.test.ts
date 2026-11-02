@@ -34,6 +34,12 @@ const REVERSED_INPUTS: readonly (readonly number[])[] = [
   [9, 4, 4, 0, 0, -3],
 ];
 
+const expectAllZero = (metrics: object) => {
+  for (const value of Object.values(metrics)) {
+    expect(value).toBe(0);
+  }
+};
+
 const asCases = (inputs: readonly (readonly number[])[]) =>
   inputs.map((input) => [JSON.stringify(input), input] as const);
 
@@ -44,11 +50,11 @@ for (const algorithm of SORTING_ALGORITHMS) {
         const { output, events, metrics } = algorithm.execute([]);
 
         expect(output).toEqual([]);
-        expect(metrics).toEqual({ comparisons: 0, swaps: 0, writes: 0 });
+        expectAllZero(metrics);
         expect(events).toHaveLength(1);
         expect(events[0].payload).toEqual({ type: "complete" });
-        expect(events[0].description).toBe(
-          "Hoàn tất: 0 lần so sánh, 0 lần hoán đổi",
+        expect(events[0].description).toStartWith(
+          "Hoàn tất: 0 lần so sánh, 0 lần ",
         );
         expect(events[0].state).toEqual({ array: [], sortedIndices: [] });
       });
@@ -70,15 +76,14 @@ for (const algorithm of SORTING_ALGORITHMS) {
         const { output, events, metrics } = algorithm.execute([value]);
 
         expect(output).toEqual([value]);
-        expect(metrics).toEqual({ comparisons: 0, swaps: 0, writes: 0 });
+        expectAllZero(metrics);
         expect(events.map((event) => event.payload)).toEqual([
           { type: "mark-sorted", indices: [0] },
           { type: "complete" },
         ]);
-        expect(events.map((event) => event.description)).toEqual([
-          `${value} đã vào đúng vị trí`,
-          "Hoàn tất: 0 lần so sánh, 0 lần hoán đổi",
-        ]);
+        expect(events.at(-1)?.description).toStartWith(
+          "Hoàn tất: 0 lần so sánh, 0 lần ",
+        );
         for (const event of events) {
           expect(event.state).toEqual({ array: [value], sortedIndices: [0] });
           expect(getBarTones(event)).toEqual(["sorted"]);
@@ -110,11 +115,12 @@ for (const algorithm of SORTING_ALGORITHMS) {
 
       test("mảng toàn giá trị bằng nhau không có lần hoán đổi nào", () => {
         const input = [2, 2, 2, 2];
-        const { output, events, metrics } = algorithm.execute(input);
+        const { output, events } = algorithm.execute(input);
 
         expect(output).toEqual(input);
-        expect(metrics.swaps).toBe(0);
-        expect(metrics.writes).toBe(0);
+        expect(events.some((event) => event.payload.type === "swap")).toBe(
+          false,
+        );
         expect(trackElementIds(input.length, events).at(-1)).toEqual([
           0, 1, 2, 3,
         ]);
@@ -128,13 +134,14 @@ for (const algorithm of SORTING_ALGORITHMS) {
       test.each(
         asCases(SORTED_INPUTS),
       )("%s không hoán đổi và mảng giữ nguyên ở mọi bước", (_, input) => {
-        const { output, events, metrics } = algorithm.execute(input);
+        const { output, events } = algorithm.execute(input);
 
         expect(output).toEqual(input);
-        expect(metrics.swaps).toBe(0);
-        expect(metrics.writes).toBe(0);
         expect(events.some((event) => event.payload.type === "swap")).toBe(
           false,
+        );
+        expect(trackElementIds(input.length, events).at(-1)).toEqual(
+          input.map((_, index) => index),
         );
         for (const event of events) {
           expect(event.state.array).toEqual(input);

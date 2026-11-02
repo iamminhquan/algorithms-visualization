@@ -1,4 +1,5 @@
 import {
+  BetweenVerticalStart,
   Bubbles,
   ChartNoAxesColumn,
   type LucideIcon,
@@ -17,6 +18,7 @@ import type { AlgorithmKey } from "../catalog";
 const ALGORITHM_ICONS = {
   "bubble-sort": Bubbles,
   "selection-sort": MousePointerClick,
+  "insertion-sort": BetweenVerticalStart,
   "linear-search": ScanLine,
   "binary-search": SquareSplitHorizontal,
 } satisfies Record<AlgorithmKey, LucideIcon>;

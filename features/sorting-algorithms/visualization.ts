@@ -4,9 +4,13 @@ import type {
 } from "@/components/visualization/array-bars";
 import type { VisualTone } from "@/engine/visualization";
 import type { BubbleSortEvent } from "./bubble-sort";
+import type { InsertionSortEvent } from "./insertion-sort";
 import type { SelectionSortEvent } from "./selection-sort";
 
-export type SortingEvent = BubbleSortEvent | SelectionSortEvent;
+export type SortingEvent =
+  | BubbleSortEvent
+  | SelectionSortEvent
+  | InsertionSortEvent;
 
 export interface ISortingFrame {
   readonly tones: readonly VisualTone[];

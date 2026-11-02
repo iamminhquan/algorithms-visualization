@@ -2,6 +2,7 @@ import { CATEGORIES, type CategorySlug } from "@/features/catalog/categories";
 import { BINARY_SEARCH_KEY } from "@/features/searching-algorithms/binary-search";
 import { LINEAR_SEARCH_KEY } from "@/features/searching-algorithms/linear-search";
 import { BUBBLE_SORT_KEY } from "@/features/sorting-algorithms/bubble-sort";
+import { INSERTION_SORT_KEY } from "@/features/sorting-algorithms/insertion-sort";
 import { SELECTION_SORT_KEY } from "@/features/sorting-algorithms/selection-sort";
 import type { NewAlgorithm, NewCategory } from "./schema";
 
@@ -33,6 +34,17 @@ export const seedAlgorithms: readonly (Omit<NewAlgorithm, "categoryId"> & {
     description:
       "Ở mỗi lượt, duyệt đoạn chưa sắp xếp để tìm giá trị nhỏ nhất rồi đổi nó về đầu đoạn; " +
       "đoạn đã sắp xếp ở đầu mảng dài thêm một phần tử sau mỗi lượt.",
+    timeComplexity: "O(n²)",
+    spaceComplexity: "O(1)",
+  },
+  {
+    key: INSERTION_SORT_KEY,
+    categorySlug: "sorting",
+    name: "Sắp xếp chèn (Insertion Sort)",
+    slug: "insertion-sort",
+    description:
+      "Lấy lần lượt từng phần tử rồi đổi chỗ nó với phần tử kề bên trái chừng nào phần tử đó còn " +
+      "lớn hơn, nhờ vậy đoạn đầu mảng luôn đã sắp xếp; mảng gần đúng thứ tự chỉ tốn khoảng n lần so sánh.",
     timeComplexity: "O(n²)",
     spaceComplexity: "O(1)",
   },
