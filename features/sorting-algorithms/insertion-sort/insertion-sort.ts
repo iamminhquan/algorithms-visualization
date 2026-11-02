@@ -27,9 +27,6 @@ function executeInsertionSort(input: InsertionSortInput): InsertionSortResult {
   let swaps = 0;
   let sortedUntil = 0;
 
-  /*
-   * Mỗi sự kiện giữ bản sao riêng của mảng, nên các bước sau không làm đổi ảnh chụp trước đó.
-   */
   const record = (payload: InsertionSortStep, description: string) => {
     events.push(
       Object.freeze({
