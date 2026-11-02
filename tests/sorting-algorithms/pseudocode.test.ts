@@ -6,6 +6,7 @@ import {
   type BubbleSortStep,
   bubbleSort,
 } from "@/features/sorting-algorithms/bubble-sort";
+import { QUICK_SORT_PSEUDOCODE } from "@/features/sorting-algorithms/quick-sort";
 import {
   SELECTION_SORT_PSEUDOCODE,
   type SelectionSortStep,
@@ -64,6 +65,7 @@ describe("mã giả", () => {
     for (const { lines } of [
       BUBBLE_SORT_PSEUDOCODE,
       SELECTION_SORT_PSEUDOCODE,
+      QUICK_SORT_PSEUDOCODE,
     ]) {
       expect(new Set(lines).size).toBe(lines.length);
     }

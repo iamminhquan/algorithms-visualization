@@ -19,6 +19,15 @@ import {
   INSERTION_SORT_SOURCE_CODE,
   insertionSort,
 } from "./insertion-sort";
+import {
+  getQuickSortFrame,
+  getQuickSortVariables,
+  QUICK_SORT_KEY,
+  QUICK_SORT_LEGEND,
+  QUICK_SORT_PSEUDOCODE,
+  QUICK_SORT_SOURCE_CODE,
+  quickSort,
+} from "./quick-sort";
 import type { SortingCounter } from "./run";
 import {
   getSelectionSortFrame,
@@ -74,6 +83,15 @@ export const SORTING_VISUAL_CONFIGS = {
     getFrame: getInsertionSortFrame,
     getVariables: getInsertionSortVariables,
     legend: INSERTION_SORT_LEGEND,
+    counters: SWAP_COUNTERS,
+  },
+  [QUICK_SORT_KEY]: {
+    algorithm: quickSort,
+    pseudocode: QUICK_SORT_PSEUDOCODE,
+    sourceCode: QUICK_SORT_SOURCE_CODE,
+    getFrame: getQuickSortFrame,
+    getVariables: getQuickSortVariables,
+    legend: QUICK_SORT_LEGEND,
     counters: SWAP_COUNTERS,
   },
 } satisfies Record<SortingAlgorithm["metadata"]["key"], ISortingVisualConfig>;

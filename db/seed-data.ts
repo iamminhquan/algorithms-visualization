@@ -3,6 +3,7 @@ import { BINARY_SEARCH_KEY } from "@/features/searching-algorithms/binary-search
 import { LINEAR_SEARCH_KEY } from "@/features/searching-algorithms/linear-search";
 import { BUBBLE_SORT_KEY } from "@/features/sorting-algorithms/bubble-sort";
 import { INSERTION_SORT_KEY } from "@/features/sorting-algorithms/insertion-sort";
+import { QUICK_SORT_KEY } from "@/features/sorting-algorithms/quick-sort";
 import { SELECTION_SORT_KEY } from "@/features/sorting-algorithms/selection-sort";
 import type { NewAlgorithm, NewCategory } from "./schema";
 
@@ -47,6 +48,17 @@ export const seedAlgorithms: readonly (Omit<NewAlgorithm, "categoryId"> & {
       "lớn hơn, nhờ vậy đoạn đầu mảng luôn đã sắp xếp; mảng gần đúng thứ tự chỉ tốn khoảng n lần so sánh.",
     timeComplexity: "O(n²)",
     spaceComplexity: "O(1)",
+  },
+  {
+    key: QUICK_SORT_KEY,
+    categorySlug: "sorting",
+    name: "Sắp xếp nhanh (Quick Sort)",
+    slug: "quick-sort",
+    description:
+      "Chọn phần tử cuối đoạn làm pivot, dồn các phần tử nhỏ hơn hoặc bằng pivot sang trái rồi đặt " +
+      "pivot vào giữa, sau đó sắp xếp đệ quy hai phần hai bên; trung bình O(n log n), xấu nhất O(n²).",
+    timeComplexity: "O(n log n)",
+    spaceComplexity: "O(log n)",
   },
   {
     key: LINEAR_SEARCH_KEY,

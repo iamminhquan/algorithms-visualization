@@ -1,21 +1,25 @@
 import type {
   IBarBracket,
   IBarMarker,
+  IBarRange,
 } from "@/components/visualization/array-bars";
 import type { VisualTone } from "@/engine/visualization";
 import type { BubbleSortEvent } from "./bubble-sort";
 import type { InsertionSortEvent } from "./insertion-sort";
+import type { QuickSortEvent } from "./quick-sort";
 import type { SelectionSortEvent } from "./selection-sort";
 
 export type SortingEvent =
   | BubbleSortEvent
   | SelectionSortEvent
-  | InsertionSortEvent;
+  | InsertionSortEvent
+  | QuickSortEvent;
 
 export interface ISortingFrame {
   readonly tones: readonly VisualTone[];
   readonly markers: readonly (readonly IBarMarker[])[];
   readonly bracket?: IBarBracket;
+  readonly range?: IBarRange;
 }
 
 export function getBaseFrame(event: SortingEvent): ISortingFrame {

@@ -1,6 +1,7 @@
 import { BUBBLE_SORT_KEY } from "./bubble-sort";
 import type { SortingAlgorithm } from "./index";
 import { INSERTION_SORT_KEY } from "./insertion-sort";
+import { QUICK_SORT_KEY } from "./quick-sort";
 import { SELECTION_SORT_KEY } from "./selection-sort";
 
 export interface ISortingComplexity {
@@ -32,6 +33,13 @@ const SORTING_COMPLEXITY = {
     worstTime: "O(n²)",
     space: "O(1)",
     isStable: true,
+  },
+  [QUICK_SORT_KEY]: {
+    bestTime: "O(n log n)",
+    averageTime: "O(n log n)",
+    worstTime: "O(n²)",
+    space: "O(log n)",
+    isStable: false,
   },
 } satisfies Record<SortingAlgorithm["metadata"]["key"], ISortingComplexity>;
 
