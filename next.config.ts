@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   experimental: {
     agentFeedback: true,
   },
+  images: {
+    remotePatterns: [new URL("https://lh3.googleusercontent.com/**")],
+  },
   cacheComponents: true,
   partialPrefetching: true,
   reactCompiler: true,

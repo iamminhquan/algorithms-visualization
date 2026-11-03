@@ -1,0 +1,58 @@
+"use client";
+
+import { LogOut } from "lucide-react";
+import Image from "next/image";
+import { getButtonClassName } from "@/components/ui/button";
+import { authClient } from "@/lib/auth-client";
+import { cn } from "@/lib/cn";
+import { LoginLink } from "./login-link";
+
+type UserMenuProps = {
+  className: string;
+  onNavigate?: () => void;
+};
+
+export function UserMenu({ className, onNavigate }: UserMenuProps) {
+  const { data: session, isPending } = authClient.useSession();
+
+  if (isPending) {
+    return (
+      <span
+        aria-hidden="true"
+        className={cn("w-24 animate-pulse rounded-xl bg-bg-subtle", className)}
+      />
+    );
+  }
+
+  if (!session) {
+    return <LoginLink className={className} onNavigate={onNavigate} />;
+  }
+
+  const { user } = session;
+
+  return (
+    <div className={cn("items-center gap-2", className)}>
+      {user.image ? (
+        <Image
+          src={user.image}
+          alt=""
+          width={32}
+          height={32}
+          className="size-8 shrink-0 rounded-full"
+        />
+      ) : null}
+      <span className="min-w-0 max-w-32 flex-1 truncate text-sm font-medium text-text-primary">
+        {user.name}
+      </span>
+      <button
+        type="button"
+        aria-label="Đăng xuất"
+        title="Đăng xuất"
+        onClick={() => authClient.signOut()}
+        className={getButtonClassName("ghost", "icon")}
+      >
+        <LogOut />
+      </button>
+    </div>
+  );
+}
