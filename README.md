@@ -19,23 +19,44 @@ Khung trợ lý AI (DeepSeek hoặc Gemini) bên cạnh hình mô phỏng giải
 # Cấu trúc dự án
 
 ```
-app/                       Route, layout, trang lỗi; component riêng của từng route nằm trong _components/
-components/
-  ui/                      Primitive dùng chung, không biết nghiệp vụ
-  visualization/           Khối mô phỏng dùng chung: điều khiển phát, khung, dãy cột, mã giả, khung chat AI
-engine/
-  algorithm/               Hợp đồng chung của mọi thuật toán và registry (TypeScript thuần)
-  assistant/               Kiểu, giới hạn, giao thức stream và reducer hội thoại của trợ lý AI
-  visualization/           Bộ điều khiển phát, bộ đếm theo bước, thang chiều cao (TypeScript thuần)
-features/
-  assistant/               Phần máy chủ của trợ lý AI: kiểm tra dữ liệu, prompt, DeepSeek, Gemini, giới hạn lượt hỏi
-  catalog/                 Danh mục, ghép registry, truy vấn DB, dựng link, component trang chủ
-  searching-algorithms/    Linear Search, Binary Search và trình mô phỏng
-  sorting-algorithms/      Bubble Sort, Selection Sort, trình mô phỏng và ô nhập mảng
-db/                        Schema Drizzle, dữ liệu seed, kết nối DB
-drizzle/                   Migration do drizzle-kit sinh ra
-lib/                       Tiện ích thuần như cn.ts, site.ts
-tests/                     Test của engine, catalog, các thuật toán và trợ lý AI
+algorithms-visualization/
+├── .claude/                     # Ngữ cảnh dự án và các skill quy ước cho Claude Code
+├── .github/
+│   └── workflows/               # CI: lint, typecheck, test, build; đồng bộ nhánh dev
+├── app/                         # Route, layout, trang lỗi (App Router)
+│   ├── _components/             # Header, footer, logo dùng chung cho mọi trang
+│   ├── (site)/                  # Các trang công khai, layout gắn header và footer
+│   │   ├── (auth)/              # Giao diện đăng nhập, đăng ký
+│   │   ├── learn/               # Lộ trình học
+│   │   └── visualization/       # Danh mục, trang mô phỏng, trang so sánh hai thuật toán
+│   ├── admin/                   # Trang quản trị với layout riêng
+│   └── api/                     # API chat với trợ lý AI (POST, stream)
+├── components/
+│   ├── ui/                      # Primitive dùng chung, không biết nghiệp vụ
+│   └── visualization/           # Khối mô phỏng dùng chung: điều khiển phát, dãy cột, mã giả, khung chat AI
+├── db/                          # Schema Drizzle, dữ liệu seed, kết nối DB
+├── drizzle/                     # Migration do drizzle-kit sinh ra
+├── engine/                      # TypeScript thuần, không import React hay features/
+│   ├── algorithm/               # Hợp đồng chung của mọi thuật toán và registry
+│   ├── assistant/               # Kiểu, giới hạn, giao thức stream và reducer hội thoại của trợ lý AI
+│   └── visualization/           # Bộ điều khiển phát, bộ đếm theo bước, thang chiều cao
+├── features/
+│   ├── assistant/               # Phần máy chủ của trợ lý AI: kiểm tra dữ liệu, prompt, DeepSeek, Gemini
+│   ├── catalog/                 # Danh mục, ghép registry, truy vấn DB, dựng link, component trang chủ
+│   ├── searching-algorithms/    # Linear Search, Binary Search và trình mô phỏng
+│   └── sorting-algorithms/      # Bubble, Selection, Insertion, Quick, Merge Sort và trình mô phỏng
+├── lib/                         # Tiện ích thuần như cn.ts, site.ts
+├── tests/                       # Test của engine, catalog, các thuật toán và trợ lý AI
+├── .env.example                 # Mẫu biến môi trường
+├── AGENTS.md                    # Hướng dẫn cho AI agent (next dev tự sinh)
+├── CLAUDE.md                    # Hướng dẫn cho Claude Code
+├── biome.json                   # Cấu hình lint và format
+├── docker-compose.yml           # PostgreSQL, Redis, RabbitMQ cục bộ
+├── drizzle.config.ts            # Cấu hình drizzle-kit
+├── next.config.ts               # Cấu hình Next.js
+├── package.json                 # Thư viện và script
+├── tsconfig.json                # Cấu hình TypeScript
+└── README.md                    # Tài liệu tổng quan bạn đang đọc
 ```
 
 Chiều phụ thuộc đi một hướng: `engine/` không import `features/`, `components/` hay React, còn các feature danh mục không import lẫn nhau.

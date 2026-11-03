@@ -2,11 +2,10 @@ import type { SourceCode } from "@/engine/visualization";
 
 export const SELECTION_SORT_SOURCE_CODE: SourceCode = {
   cpp: [
+    "#include <iostream>",
     "#include <utility>",
-    "#include <vector>",
     "",
-    "void selectionSort(std::vector<int>& a) {",
-    "    int n = static_cast<int>(a.size());",
+    "void selection_sort(int a[], int n) {",
     "    for (int i = 0; i < n - 1; i++) {",
     "        int min = i;",
     "        for (int j = i + 1; j < n; j++) {",
@@ -18,6 +17,17 @@ export const SELECTION_SORT_SOURCE_CODE: SourceCode = {
     "            std::swap(a[i], a[min]);",
     "        }",
     "    }",
+    "}",
+    "",
+    "int main() {",
+    "    int a[] = {38, 27, 43, 3, 9, 82, 10, 55, 19, 64};",
+    "    int n = static_cast<int>(sizeof(a) / sizeof(a[0]));",
+    "    selection_sort(a, n);",
+    "    for (int i = 0; i < n; i++) {",
+    "        std::cout << a[i] << ' ';",
+    "    }",
+    "    std::cout << '\\n';",
+    "    return 0;",
     "}",
   ],
 };

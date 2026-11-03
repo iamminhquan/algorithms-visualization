@@ -1,10 +1,13 @@
 import {
+  BetweenVerticalStart,
   Bubbles,
   ChartNoAxesColumn,
   type LucideIcon,
+  Merge,
   MousePointerClick,
   ScanLine,
   SquareSplitHorizontal,
+  Zap,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { AlgorithmKey } from "../catalog";
@@ -17,6 +20,9 @@ import type { AlgorithmKey } from "../catalog";
 const ALGORITHM_ICONS = {
   "bubble-sort": Bubbles,
   "selection-sort": MousePointerClick,
+  "insertion-sort": BetweenVerticalStart,
+  "quick-sort": Zap,
+  "merge-sort": Merge,
   "linear-search": ScanLine,
   "binary-search": SquareSplitHorizontal,
 } satisfies Record<AlgorithmKey, LucideIcon>;

@@ -21,10 +21,11 @@ describe("createSortingRun", () => {
         expect(run.events).toEqual(events);
         expect(run.ids).toHaveLength(events.length);
         expect(run.counts).toHaveLength(events.length);
-        expect(run.counts.at(-1)).toEqual({
-          compare: metrics.comparisons,
-          swap: metrics.swaps,
-        });
+        expect(run.counts.at(-1)).toEqual(
+          "swaps" in metrics
+            ? { compare: metrics.comparisons, swap: metrics.swaps, write: 0 }
+            : { compare: metrics.comparisons, swap: 0, write: metrics.writes },
+        );
       }
     }
   });

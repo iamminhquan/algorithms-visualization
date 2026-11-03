@@ -1,20 +1,20 @@
 import type { ReactNode } from "react";
+import { GoogleSignInButton } from "./google-sign-in-button";
 
 type AuthCardProps = {
   title: string;
   description: string;
   children: ReactNode;
   footer: ReactNode;
+  showSocialSignIn?: boolean;
 };
 
-/**
- * Khung chung của trang đăng nhập và đăng ký: tiêu đề, form ở giữa, dòng chuyển trang ở cuối.
- */
 export function AuthCard({
   title,
   description,
   children,
   footer,
+  showSocialSignIn = true,
 }: AuthCardProps) {
   return (
     <main className="flex flex-1 items-start justify-center px-4 pt-10 pb-24 sm:px-8 sm:pt-16">
@@ -27,6 +27,16 @@ export function AuthCard({
             {description}
           </p>
         </div>
+        {showSocialSignIn ? (
+          <>
+            <GoogleSignInButton />
+            <div className="flex items-center gap-3 text-xs text-text-muted">
+              <span className="h-px flex-1 bg-border-default" />
+              hoặc dùng email
+              <span className="h-px flex-1 bg-border-default" />
+            </div>
+          </>
+        ) : null}
         {children}
         <p className="text-center text-sm text-text-secondary">{footer}</p>
       </div>

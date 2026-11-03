@@ -1,4 +1,4 @@
-import { relations, sql } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import {
   check,
   index,
@@ -6,24 +6,9 @@ import {
   jsonb,
   pgTable,
   text,
-  timestamp,
 } from "drizzle-orm/pg-core";
+import { timestamps } from "./columns";
 
-const timestamps = {
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
-    .defaultNow()
-    .notNull()
-    .$onUpdate(() => new Date()),
-};
-
-/**
- * Danh mục gom các thuật toán cùng nhóm.
- *
- * `slug`: Chữ thường không dấu nối bằng gạch ngang, ví dụ "sorting".
- */
 export const categoriesTable = pgTable(
   "categories",
   {
@@ -41,14 +26,6 @@ export const categoriesTable = pgTable(
   ],
 );
 
-/**
- * Thuật toán, mỗi thuật toán thuộc một danh mục.
- *
- * `key`: Khoá nối với cài đặt trong code, ví dụ "bubble-sort" (`BUBBLE_SORT_KEY`). Không đổi sau khi tạo.
- * `slug`: Chữ thường không dấu nối bằng gạch ngang, ví dụ "bubble-sort".
- * `timeComplexity`: Ví dụ "O(n²)".
- * `spaceComplexity`: Ví dụ "O(1)".
- */
 export const algorithmsTable = pgTable(
   "algorithms",
   {
@@ -95,28 +72,6 @@ export const runsTable = pgTable(
     check("runs_input_size_non_negative", sql`${table.inputSize} >= 0`),
   ],
 );
-
-export const categoriesRelations = relations(categoriesTable, ({ many }) => ({
-  algorithms: many(algorithmsTable),
-}));
-
-export const algorithmsRelations = relations(
-  algorithmsTable,
-  ({ one, many }) => ({
-    category: one(categoriesTable, {
-      fields: [algorithmsTable.categoryId],
-      references: [categoriesTable.id],
-    }),
-    runs: many(runsTable),
-  }),
-);
-
-export const runsRelations = relations(runsTable, ({ one }) => ({
-  algorithm: one(algorithmsTable, {
-    fields: [runsTable.algorithmId],
-    references: [algorithmsTable.id],
-  }),
-}));
 
 export type Category = typeof categoriesTable.$inferSelect;
 export type NewCategory = typeof categoriesTable.$inferInsert;

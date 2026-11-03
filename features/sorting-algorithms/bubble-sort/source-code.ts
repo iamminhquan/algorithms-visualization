@@ -2,11 +2,10 @@ import type { SourceCode } from "@/engine/visualization";
 
 export const BUBBLE_SORT_SOURCE_CODE: SourceCode = {
   cpp: [
+    "#include <iostream>",
     "#include <utility>",
-    "#include <vector>",
     "",
-    "void bubbleSort(std::vector<int>& a) {",
-    "    int n = static_cast<int>(a.size());",
+    "void bubble_sort(int a[], int n) {",
     "    for (int end = n - 1; end >= 1; end--) {",
     "        bool swapped = false;",
     "        for (int i = 0; i < end; i++) {",
@@ -19,6 +18,17 @@ export const BUBBLE_SORT_SOURCE_CODE: SourceCode = {
     "            break;",
     "        }",
     "    }",
+    "}",
+    "",
+    "int main() {",
+    "    int a[] = {38, 27, 43, 3, 9, 82, 10, 55, 19, 64};",
+    "    int n = static_cast<int>(sizeof(a) / sizeof(a[0]));",
+    "    bubble_sort(a, n);",
+    "    for (int i = 0; i < n; i++) {",
+    "        std::cout << a[i] << ' ';",
+    "    }",
+    "    std::cout << '\\n';",
+    "    return 0;",
     "}",
   ],
 };

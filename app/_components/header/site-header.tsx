@@ -5,11 +5,11 @@ import { getAlgorithmHref, getCategoryHref } from "@/features/catalog/routes";
 import { Logo } from "../logo";
 import { CommandPalette } from "./command-palette";
 import { HeaderShell } from "./header-shell";
-import { LoginLink } from "./login-link";
 import { CurrentMobileMenu, MobileMenu } from "./mobile-menu";
 import { CATEGORY_TAGLINES, type IHeaderCategory } from "./nav-items";
 import { CurrentNavLinks, NavLinks } from "./nav-links";
 import { ThemeToggle } from "./theme-toggle";
+import { UserMenu } from "./user-menu";
 
 async function getHeaderCategories(): Promise<IHeaderCategory[]> {
   const catalog = await getCategoryCatalog().catch((error: unknown) => {
@@ -50,7 +50,7 @@ export async function SiteHeader() {
         <div className="ml-auto flex items-center gap-1">
           <CommandPalette categories={categories} />
           <ThemeToggle />
-          <LoginLink className="ml-2 hidden h-9 md:inline-flex" />
+          <UserMenu className="ml-2 hidden h-9 md:inline-flex" />
           <Suspense
             fallback={<MobileMenu categories={categories} pathname={null} />}
           >

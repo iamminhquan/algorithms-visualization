@@ -8,10 +8,6 @@ if (!dbUrl) {
   throw new Error("Chưa đặt biến môi trường DATABASE_URL");
 }
 
-/*
- * Giữ một Pool duy nhất qua các lần hot reload khi chạy `next dev`.
- * `globalThis` không khai báo sẵn field `pool` nên phải ép kiểu để gắn thêm vào.
- */
 const globalForDb = globalThis as unknown as { pool?: Pool };
 
 const pool = globalForDb.pool ?? new Pool({ connectionString: dbUrl });
