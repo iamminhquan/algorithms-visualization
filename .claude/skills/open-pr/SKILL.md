@@ -36,7 +36,7 @@ git log --oneline origin/main..dev
 git diff --stat origin/main...dev
 ```
 
-- **Đang ở nhánh tính năng có commit chưa vào `dev`** (`git log --oneline dev..HEAD` không rỗng): PR chỉ lấy commit trên `dev`, nên merge nhánh vào `dev` và push theo bước 8 của skill `commit` trước.
+- **Đang ở nhánh tính năng có commit chưa vào `dev`** (`git log --oneline dev..HEAD` không rỗng): PR chỉ lấy commit trên `dev`, nên phải merge nhánh vào `dev` và push theo bước 8 của skill `commit` trước; hỏi người dùng và chỉ merge khi họ cho phép rõ ràng.
   Đừng cherry-pick hay rebase.
 - **Không có commit nào so với `origin/main`**: báo người dùng là không có gì để mở PR, và dừng.
 - **Có thay đổi chưa commit**: chúng sẽ không có trong PR. Nếu người dùng nói kiểu "commit rồi mở PR",

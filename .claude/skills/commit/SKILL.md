@@ -1,6 +1,6 @@
 ---
 name: commit
-description: Tạo git commit cho dự án này theo đúng quy ước - Conventional Commits với mô tả tiếng Việt, tiêu đề tối đa 80 ký tự, tự tách thay đổi thành các commit nguyên tử (atomic commit - mỗi commit một mục đích, tự build được, revert độc lập), chạy lint/typecheck và chặn file nhạy cảm trước khi commit, commit trên nhánh tính năng (`feature/*` cho feat, các type khác giữ nguyên prefix như `fix/*`, `refactor/*`) rồi merge vào `dev` và push lên `origin/dev`. Dùng skill này bất cứ khi nào người dùng muốn commit, lưu thay đổi vào git, viết commit message, hoặc nói những câu như "commit đi", "commit giúp mình", "tạo commit", "lưu lại thay đổi", "commit code vừa sửa", "commit and push", "make a commit", kể cả khi họ chỉ nói ngắn gọn "commit" ở cuối một yêu cầu khác.
+description: Tạo git commit cho dự án này theo đúng quy ước - Conventional Commits với mô tả tiếng Việt, tiêu đề tối đa 80 ký tự, tự tách thay đổi thành các commit nguyên tử (atomic commit - mỗi commit một mục đích, tự build được, revert độc lập), chạy lint/typecheck và chặn file nhạy cảm trước khi commit, commit trên nhánh tính năng (`feature/*` cho feat, các type khác giữ nguyên prefix như `fix/*`, `refactor/*`); chỉ merge vào `dev` và push `origin/dev` khi người dùng cho phép rõ ràng. Dùng skill này bất cứ khi nào người dùng muốn commit, lưu thay đổi vào git, viết commit message, hoặc nói những câu như "commit đi", "commit giúp mình", "tạo commit", "lưu lại thay đổi", "commit code vừa sửa", "commit and push", "make a commit", kể cả khi họ chỉ nói ngắn gọn "commit" ở cuối một yêu cầu khác.
 ---
 
 # Commit
@@ -14,7 +14,7 @@ Các script hỗ trợ nằm ở `.claude/skills/commit/scripts/` (đường d�
 
 Mỗi việc được làm trên một nhánh tính năng tách từ `dev`, không commit thẳng lên `dev` hay `main`.
 Tên nhánh lấy prefix theo type chính của việc đó: `feat` dùng `feature/...`, các type khác giữ nguyên làm prefix (`fix/...`, `refactor/...`, `docs/...`, `chore/...`).
-Commit xong thì merge nhánh đó vào `dev` và push `origin/dev`; khi `dev` chạy ổn mới mở PR `dev` → `main` bằng skill `open-pr`.
+Commit xong thì dừng ở nhánh tính năng; chỉ merge nhánh đó vào `dev` và push `origin/dev` khi người dùng cho phép rõ ràng (xem bước 8); khi `dev` chạy ổn mới mở PR `dev` → `main` bằng skill `open-pr`.
 
 ## Quy trình
 
@@ -215,9 +215,13 @@ bằng mắt — dùng kết quả của script.
 
 Lặp lại bước 5–7 cho từng commit trong kế hoạch.
 
-### 8. Merge vào `dev` và push
+### 8. Merge vào `dev` và push (chỉ khi người dùng cho phép)
 
-Sau khi tạo xong mọi commit trong lượt, merge nhánh tính năng vào `dev` một lần rồi quay lại nhánh tính năng để làm tiếp:
+**Mặc định không merge.** Commit xong thì dừng ở nhánh tính năng và hỏi người dùng có muốn merge vào `dev` không.
+Chỉ merge khi người dùng cho phép rõ ràng trong lượt này, ví dụ "merge vào dev", "merge đi", "commit rồi merge"; lời cho phép ở lượt trước không áp dụng cho lượt sau.
+`/commit` hay "commit đi" đơn thuần không phải là cho phép merge.
+
+Khi được cho phép, merge nhánh tính năng vào `dev` một lần rồi quay lại nhánh tính năng để làm tiếp:
 
 ```bash
 git switch dev
@@ -237,11 +241,12 @@ Nhánh tính năng chỉ nằm ở local, không push lên remote trừ khi ngư
 
 ### 9. Báo cáo
 
-Sau khi xong, chạy `git log --oneline -<số commit vừa tạo>` và `git status --short`, rồi báo ngắn gọn: các commit đã tạo trên nhánh nào, đã merge và push lên `dev` chưa, và còn thay đổi nào chưa commit (nếu có).
+Sau khi xong, chạy `git log --oneline -<số commit vừa tạo>` và `git status --short`, rồi báo ngắn gọn: các commit đã tạo trên nhánh nào, đã merge và push lên `dev` chưa (nếu chưa thì hỏi người dùng có muốn merge không), và còn thay đổi nào chưa commit (nếu có).
 
 ## Những điều không làm
 
 - Không commit thẳng lên `dev` hay `main`; không push lên `main`.
+- Không merge vào `dev` hay push `origin/dev` khi người dùng chưa cho phép rõ ràng.
 - Không `push --force` (kể cả `--force-with-lease`) trừ khi người dùng yêu cầu rõ ràng.
 - Không dùng `--no-verify`, không `--amend` commit đã có, không `reset --hard`, không đổi git config.
   Nếu pre-commit hook thất bại, sửa nguyên nhân hoặc báo người dùng, rồi tạo commit mới.
