@@ -15,6 +15,13 @@
       "when": 1792577730239,
       "tag": "0001_algorithms_key",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793682605941,
+      "tag": "0002_mixed_deathstrike",
+      "breakpoints": true
     }
   ]
 }
