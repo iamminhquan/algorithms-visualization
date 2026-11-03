@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { GoogleSignInButton } from "./google-sign-in-button";
 
 type AuthCardProps = {
   title: string;
@@ -23,6 +24,12 @@ export function AuthCard({
           <p className="text-sm leading-5.5 text-text-secondary">
             {description}
           </p>
+        </div>
+        <GoogleSignInButton />
+        <div className="flex items-center gap-3 text-xs text-text-muted">
+          <span className="h-px flex-1 bg-border-default" />
+          hoặc dùng email
+          <span className="h-px flex-1 bg-border-default" />
         </div>
         {children}
         <p className="text-center text-sm text-text-secondary">{footer}</p>
