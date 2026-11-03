@@ -27,6 +27,7 @@ bun run db:studio              # Drizzle Studio để xem dữ liệu trong DB
 CI (`.github/workflows/ci.yml`) chạy khi push `dev` và khi mở PR vào `main`: một job lint, `next typegen`, typecheck, test; một job dựng Postgres rồi `db:migrate`, `db:seed`, `build` (lỗi Cache Components chỉ lộ ra lúc build).
 `db/index.ts` có `import "server-only"`, nên script Bun nào import code đọc DB phải chạy với `--conditions=react-server` (như `db:seed`).
 Biến môi trường: xem `.env.example`; trợ lý AI cần `DEEPSEEK_API_KEY` và/hoặc `GEMINI_API_KEY`, `REDIS_URL` là tuỳ chọn.
+Gửi mail cần `SMTP_USER` và `SMTP_PASSWORD` (App Password của Gmail), `MAIL_FROM` tuỳ chọn; ở development thiếu hai biến này thì nội dung mail (kèm mã OTP) được in ra log server thay vì gửi.
 
 ## Kiến trúc
 
@@ -53,6 +54,13 @@ DeepSeek gọi qua Anthropic SDK tới endpoint tương thích Anthropic, Gemini
 Chỉ `features/assistant/server.ts` đọc `process.env` và DB (`server-only`); các file khác nhận cấu hình qua tham số nên test bằng provider giả và server SSE giả trong `tests/assistant/`, không gọi API thật.
 Chưa dùng RabbitMQ vì chat là luồng hỏi–đáp đồng bộ stream thẳng về trình duyệt, chưa có việc chạy nền.
 
+**Đăng nhập.** Better Auth cấu hình ở `lib/auth.ts` (`server-only`), client ở `lib/auth-client.ts`, route `app/api/auth/[...all]/route.ts`; bảng nằm trong `db/schema/auth.ts`.
+Có hai cách: Google (`GoogleSignInButton`) và email + mật khẩu với `requireEmailVerification`.
+Đăng ký xong chưa có phiên; plugin `emailOTP` (`overrideDefaultEmailVerification`, mã 6 số, hạn 10 phút, lưu dạng hash, sai 3 lần phải gửi lại) gửi mã, người dùng nhập ở `/verify-email` và được đăng nhập luôn (`autoSignInAfterVerification`).
+Đăng nhập bằng email chưa xác thực trả `EMAIL_NOT_VERIFIED`: `LoginForm` gửi mã mới rồi chuyển sang `/verify-email`.
+`features/auth/` là TypeScript thuần: `limits.ts` (độ dài mật khẩu, mã, thời gian chờ gửi lại), `routes.ts`, `error-messages.ts` (`getAuthErrorMessage` đổi mã lỗi Better Auth sang tiếng Việt), `emails/verification-otp.ts` (nội dung mail); `lib/mailer.ts` gửi qua Gmail SMTP bằng nodemailer, transporter tạo lười nên build không cần biến SMTP.
+Các form (`login-form.tsx`, `register-form.tsx`, `verify-email-form.tsx`) là client component trong `app/(site)/(auth)/_components/`, gọi `authClient` trực tiếp; chưa có quên mật khẩu.
+
 **Feature theo danh mục.** `features/sorting-algorithms/` chứa `bubble-sort/`, `selection-sort/`, `insertion-sort/`, `quick-sort/` và `merge-sort/`, export `SORTING_ALGORITHMS`; `run.ts` có `createSortingRun` (chạy thuật toán một lần rồi dựng vết phát lại) và `getRunMetrics` (bộ đếm hiển thị theo `counters` của cấu hình: Merge Sort đếm `write` thay cho `swap`, mỗi `write` dời phần tử từ `from` về `to` nên `trackElementIds` vẫn giữ được định danh cột), `components/sorting-stage.tsx` có `SortingStage` (khung vẽ thanh cột dùng chung cho trình đơn lẻ và trình so sánh), `visual-configs.ts` có `SORTING_VISUAL_CONFIGS` và `findSortingVisualConfig` (cấu hình hình vẽ theo key: mã giả, chú giải, hàm dựng khung và biến); `features/searching-algorithms/` chứa `linear-search/` và `binary-search/`, export `SEARCHING_ALGORITHMS`; danh mục mới theo cùng khuôn.
 Phần dùng chung trong một danh mục nằm ở gốc feature đó, ví dụ `features/sorting-algorithms/shared.ts` (`assertSortInput`, `range`).
 `features/catalog/` là phần dùng chung: `catalog.ts` ghép registry từ mọi feature, `queries.ts` đọc DB, `routes.ts` dựng link, `categories.ts` và `components/` phục vụ trang chủ và `/visualization`.
@@ -69,7 +77,7 @@ Danh mục chỉ khai báo một nơi là `CATEGORIES` trong `features/catalog/c
 `/visualization/[category]/compare` là trang so sánh song song hai thuật toán (hiện chỉ danh mục `sorting`, danh mục khác `notFound()`); cặp thuật toán lấy từ query `?a=<slug>&b=<slug>` qua `resolveComparisonPair`, dựng link bằng `getCompareHref()`, và trang này đọc `searchParams` trong `<Suspense>` giống cách đọc `params`.
 Không có tuỳ chọn nào bị vô hiệu hoá: chọn ở một bên thuật toán đang ở bên kia thì hai bên đổi chỗ (dùng lại lần chạy trên mảng hiện tại), chọn thuật toán khác thì chỉ thay bên đó, và mọi thay đổi đều đặt lại phát.
 URL luôn phản chiếu cặp đang hiển thị: `SortingComparison` có effect so `useSearchParams()` với cặp hiện tại và gọi `history.replaceState` (giữ tham số khác và hash) khi chúng lệch, còn URL sạch đang hiện cặp mặc định thì giữ nguyên.
-`/learn` liệt kê các lộ trình học (chưa có bài, đều "Sắp ra mắt"); `/login` và `/register` nằm trong route group `app/(site)/(auth)/`, hiện chỉ có giao diện, form chưa gửi đi đâu.
+`/learn` liệt kê các lộ trình học (chưa có bài, đều "Sắp ra mắt"); `/login`, `/register` và `/verify-email` nằm trong route group `app/(site)/(auth)/`; `/verify-email?email=...` đọc `searchParams` trong `<Suspense>`, thiếu email thì `redirect` về `/register`.
 Các trang công khai nằm trong route group `app/(site)/`, layout của group này gắn header và footer; root layout chỉ có `<html>`, `<body>` và theme.
 `/admin` là trang quản trị với layout riêng (sidebar, thanh trên cùng, `noindex`), chưa có đăng nhập nên ai cũng vào được.
 Admin đọc danh mục và thuật toán thật từ DB (mã nguồn lấy từ code qua `findSourceCode` trong `features/catalog/source-codes.ts`), còn người dùng, bài học, lớp học là dữ liệu mẫu trong `app/admin/_components/sample-data.ts` (gắn nhãn "Dữ liệu mẫu").
