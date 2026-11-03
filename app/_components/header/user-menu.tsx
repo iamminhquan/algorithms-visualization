@@ -12,6 +12,10 @@ type UserMenuProps = {
   onNavigate?: () => void;
 };
 
+function getInitial(name: string): string {
+  return name.trim().charAt(0).toLocaleUpperCase("vi") || "?";
+}
+
 export function UserMenu({ className, onNavigate }: UserMenuProps) {
   const { data: session, isPending } = authClient.useSession();
 
@@ -40,7 +44,14 @@ export function UserMenu({ className, onNavigate }: UserMenuProps) {
           height={32}
           className="size-8 shrink-0 rounded-full"
         />
-      ) : null}
+      ) : (
+        <span
+          aria-hidden="true"
+          className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent-subtle text-sm font-semibold text-accent-text"
+        >
+          {getInitial(user.name)}
+        </span>
+      )}
       <span className="min-w-0 max-w-32 flex-1 truncate text-sm font-medium text-text-primary">
         {user.name}
       </span>
