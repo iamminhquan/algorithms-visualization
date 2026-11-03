@@ -2,6 +2,7 @@ import "server-only";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { emailOTP } from "better-auth/plugins";
+import { after } from "next/server";
 import { db } from "@/db";
 import {
   accountsTable,
@@ -15,12 +16,13 @@ import { sendMail } from "@/lib/mailer";
 
 const OTP_EXPIRES_IN_SECONDS = 600;
 
-function getRequiredEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Thiếu biến môi trường ${name}`);
+function getSocialProviders() {
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  if (!clientId || !clientSecret) {
+    return {};
   }
-  return value;
+  return { google: { clientId, clientSecret } };
 }
 
 function sendVerificationOtpEmail(email: string, otp: string): void {
@@ -28,9 +30,11 @@ function sendVerificationOtpEmail(email: string, otp: string): void {
     otp,
     expiresInMinutes: OTP_EXPIRES_IN_SECONDS / 60,
   });
-  sendMail({ to: email, ...content }).catch((error: unknown) => {
-    console.error(`Không gửi được mã xác thực tới ${email}`, error);
-  });
+  after(() =>
+    sendMail({ to: email, ...content }).catch((error: unknown) => {
+      console.error(`Không gửi được mã xác thực tới ${email}`, error);
+    }),
+  );
 }
 
 export const auth = betterAuth({
@@ -51,12 +55,7 @@ export const auth = betterAuth({
   emailVerification: {
     autoSignInAfterVerification: true,
   },
-  socialProviders: {
-    google: {
-      clientId: getRequiredEnv("GOOGLE_CLIENT_ID"),
-      clientSecret: getRequiredEnv("GOOGLE_CLIENT_SECRET"),
-    },
-  },
+  socialProviders: getSocialProviders(),
   plugins: [
     emailOTP({
       otpLength: OTP_LENGTH,
