@@ -1,4 +1,5 @@
 import type { ComponentProps, ReactNode } from "react";
+import { cn } from "@/lib/cn";
 
 type AuthFieldProps = ComponentProps<"input"> & {
   id: string;
@@ -9,7 +10,13 @@ type AuthFieldProps = ComponentProps<"input"> & {
   labelAside?: ReactNode;
 };
 
-export function AuthField({ id, label, labelAside, ...props }: AuthFieldProps) {
+export function AuthField({
+  id,
+  label,
+  labelAside,
+  className,
+  ...props
+}: AuthFieldProps) {
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between gap-3">
@@ -20,7 +27,10 @@ export function AuthField({ id, label, labelAside, ...props }: AuthFieldProps) {
       </div>
       <input
         id={id}
-        className="h-11 rounded-lg border border-border-strong bg-bg-surface px-3 text-sm text-text-primary outline-none placeholder:text-text-muted focus-visible:ring-2 focus-visible:ring-accent-default"
+        className={cn(
+          "h-11 rounded-lg border border-border-strong bg-bg-surface px-3 text-sm text-text-primary outline-none placeholder:text-text-muted focus-visible:ring-2 focus-visible:ring-accent-default",
+          className,
+        )}
         {...props}
       />
     </div>

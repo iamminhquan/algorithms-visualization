@@ -7,13 +7,13 @@ import { useEffect, useRef, useState } from "react";
 import { CategoryIcon } from "@/features/catalog/components/category-icon";
 import { cn } from "@/lib/cn";
 import { ComingSoonBadge } from "./coming-soon-badge";
-import { LoginLink } from "./login-link";
 import {
   FOCUS_RING_CLASS_NAME,
   type IHeaderCategory,
   isCurrentPage,
   NAV_ITEMS,
 } from "./nav-items";
+import { UserMenu } from "./user-menu";
 
 const DESKTOP_QUERY = "(min-width: 48rem)";
 
@@ -142,7 +142,7 @@ export function MobileMenu({ categories, pathname }: MobileMenuProps) {
             </nav>
           </div>
           <div className="shrink-0 border-t border-border-default p-4">
-            <LoginLink className="flex h-11 w-full" onNavigate={close} />
+            <UserMenu className="flex h-11 w-full" onNavigate={close} />
           </div>
         </div>
       </dialog>
