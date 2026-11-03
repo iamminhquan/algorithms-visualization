@@ -7,9 +7,6 @@ type AuthCardProps = {
   footer: ReactNode;
 };
 
-/**
- * Khung chung của trang đăng nhập và đăng ký: tiêu đề, form ở giữa, dòng chuyển trang ở cuối.
- */
 export function AuthCard({
   title,
   description,
