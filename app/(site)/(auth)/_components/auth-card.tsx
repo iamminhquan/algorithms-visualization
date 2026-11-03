@@ -6,6 +6,7 @@ type AuthCardProps = {
   description: string;
   children: ReactNode;
   footer: ReactNode;
+  showSocialSignIn?: boolean;
 };
 
 export function AuthCard({
@@ -13,6 +14,7 @@ export function AuthCard({
   description,
   children,
   footer,
+  showSocialSignIn = true,
 }: AuthCardProps) {
   return (
     <main className="flex flex-1 items-start justify-center px-4 pt-10 pb-24 sm:px-8 sm:pt-16">
@@ -25,12 +27,16 @@ export function AuthCard({
             {description}
           </p>
         </div>
-        <GoogleSignInButton />
-        <div className="flex items-center gap-3 text-xs text-text-muted">
-          <span className="h-px flex-1 bg-border-default" />
-          hoặc dùng email
-          <span className="h-px flex-1 bg-border-default" />
-        </div>
+        {showSocialSignIn ? (
+          <>
+            <GoogleSignInButton />
+            <div className="flex items-center gap-3 text-xs text-text-muted">
+              <span className="h-px flex-1 bg-border-default" />
+              hoặc dùng email
+              <span className="h-px flex-1 bg-border-default" />
+            </div>
+          </>
+        ) : null}
         {children}
         <p className="text-center text-sm text-text-secondary">{footer}</p>
       </div>
