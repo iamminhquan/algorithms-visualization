@@ -56,7 +56,9 @@ function executeQuickSort(input: QuickSortInput): QuickSortResult {
     swaps++;
     record(
       { type: "swap", indices: [left, right], lo, hi, i },
-      `Đang hoán đổi ${leftValue} và ${rightValue}`,
+      right === hi
+        ? `Đã hoán đổi ${leftValue} và ${rightValue} để đưa pivot ${rightValue} về đúng vị trí`
+        : `Đã hoán đổi ${leftValue} và ${rightValue} để đưa ${rightValue} vào vùng nhỏ hơn hoặc bằng pivot`,
     );
   };
 
@@ -70,10 +72,15 @@ function executeQuickSort(input: QuickSortInput): QuickSortResult {
 
     for (let j = lo; j < hi; j++) {
       const current = array[j];
+      const relation = current < pivot ? "<" : current > pivot ? ">" : "=";
       comparisons++;
       record(
         { type: "compare", indices: [j, hi], lo, hi, i },
-        `Đang so sánh ${current} với pivot ${pivot}`,
+        `Đang so sánh a[${j}] = ${current} với pivot = ${pivot}: vì ${current} ${relation} ${pivot} nên ${
+          current <= pivot
+            ? `giữ ${current} trong vùng nhỏ hơn hoặc bằng pivot`
+            : `giữ ${current} ở vùng lớn hơn pivot`
+        }`,
       );
 
       if (current <= pivot) {
@@ -92,7 +99,7 @@ function executeQuickSort(input: QuickSortInput): QuickSortResult {
     isSorted[pivotIndex] = true;
     record(
       { type: "mark-sorted", indices: [pivotIndex] },
-      `Pivot ${pivot} đã vào đúng vị trí ${pivotIndex}`,
+      `Pivot ${pivot} đã vào đúng vị trí ${pivotIndex} vì mọi phần tử bên trái đều nhỏ hơn hoặc bằng ${pivot}`,
     );
 
     sortRange(lo, pivotIndex - 1);

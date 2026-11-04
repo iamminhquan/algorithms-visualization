@@ -54,11 +54,12 @@ function executeBubbleSort(input: BubbleSortInput): BubbleSortResult {
       const left = array[j];
       const right = array[j + 1];
       const outOfOrder = left > right;
+      const relation = left === right ? "=" : left > right ? ">" : "<";
 
       comparisons++;
       record(
         { type: "compare", indices: [j, j + 1] },
-        `Đang so sánh ${left} và ${right}`,
+        `Đang so sánh a[${j}] = ${left} với a[${j + 1}] = ${right}: vì ${left} ${relation} ${right} nên ${outOfOrder ? "hoán đổi" : "không hoán đổi"}`,
       );
 
       if (outOfOrder) {
@@ -68,7 +69,7 @@ function executeBubbleSort(input: BubbleSortInput): BubbleSortResult {
         swapped = true;
         record(
           { type: "swap", indices: [j, j + 1] },
-          `Đang hoán đổi ${left} và ${right}`,
+          `Đã hoán đổi ${left} và ${right}`,
         );
       }
     }
@@ -81,7 +82,7 @@ function executeBubbleSort(input: BubbleSortInput): BubbleSortResult {
     sortedFrom = unsortedLength;
     record(
       { type: "mark-sorted", indices: [unsortedLength] },
-      `${array[unsortedLength]} đã vào đúng vị trí`,
+      `Đã chốt ${array[unsortedLength]} vào đúng vị trí ${unsortedLength} vì ${array[unsortedLength]} là lớn nhất trong đoạn còn lại`,
     );
   }
 
@@ -91,8 +92,8 @@ function executeBubbleSort(input: BubbleSortInput): BubbleSortResult {
     record(
       { type: "mark-sorted", indices: remaining },
       unsortedLength === 1
-        ? `${array[0]} đã vào đúng vị trí`
-        : "Không còn hoán đổi, các phần tử còn lại đã đúng thứ tự",
+        ? `${array[0]} đã vào đúng vị trí vì chỉ còn một phần tử`
+        : "Các phần tử còn lại đã đúng thứ tự vì không còn cặp nào sai thứ tự",
     );
   }
 

@@ -165,18 +165,18 @@ describe("selectionSort: vết thực thi", () => {
     expect(
       selectionSort.execute([5, 3]).events.map((event) => event.description),
     ).toEqual([
-      "Đang so sánh 5 và 3",
-      "Đang hoán đổi 5 và 3",
-      "3 đã vào đúng vị trí",
-      "5 đã vào đúng vị trí",
+      "Đang so sánh a[1] = 3 với min = 5: vì 3 < 5 nên chọn 3 làm min mới",
+      "Đã hoán đổi 5 và 3 vì 3 nhỏ hơn 5",
+      "Đã chốt 3 vào đúng vị trí 0 vì 3 là nhỏ nhất trong đoạn còn lại",
+      "Đã chốt 5 vào đúng vị trí 1 vì chỉ còn một phần tử",
       "Hoàn tất: 1 lần so sánh, 1 lần hoán đổi",
     ]);
     expect(
       selectionSort.execute([1, 2]).events.map((event) => event.description),
     ).toEqual([
-      "Đang so sánh 1 và 2",
-      "1 đã vào đúng vị trí",
-      "2 đã vào đúng vị trí",
+      "Đang so sánh a[1] = 2 với min = 1: vì 2 > 1 nên giữ nguyên min là 1",
+      "Đã chốt 1 vào đúng vị trí 0 vì 1 là nhỏ nhất trong đoạn còn lại",
+      "Đã chốt 2 vào đúng vị trí 1 vì chỉ còn một phần tử",
       "Hoàn tất: 1 lần so sánh, 0 lần hoán đổi",
     ]);
   });
