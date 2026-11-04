@@ -43,6 +43,12 @@ export {
   type CodeLanguage,
   type SourceCode,
 } from "./source-code";
+export {
+  getEventIndex,
+  getStepCount,
+  isReadyStep,
+  READY_STEP_DESCRIPTION,
+} from "./steps";
 export { countPayloadTypes, type PayloadTypeCounts } from "./timeline";
 export type { VisualTone } from "./tones";
 export { elementAt, type IVariable } from "./variables";

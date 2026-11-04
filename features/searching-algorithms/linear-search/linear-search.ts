@@ -46,9 +46,9 @@ function executeLinearSearch(input: LinearSearchInput): LinearSearchResult {
     }
     record(
       { type: "compare", index: i },
-      isMatch
-        ? `So sánh a[${i}] = ${value} với ${target}: bằng nhau`
-        : `So sánh a[${i}] = ${value} với ${target}: khác nhau, xét phần tử kế tiếp`,
+      `Đang so sánh a[${i}] = ${value} với key ${target}: vì ${value} ${isMatch ? "bằng" : "khác"} ${target} nên ${
+        isMatch ? "dừng tìm kiếm" : "xét phần tử kế tiếp"
+      }`,
     );
 
     if (isMatch) {
@@ -62,7 +62,7 @@ function executeLinearSearch(input: LinearSearchInput): LinearSearchResult {
 
   record(
     { type: "not-found" },
-    `Đã xét hết mảng, không có ${target} (${comparisons} lần so sánh)`,
+    `Không tìm thấy ${target} vì đã xét hết mảng mà không có phần tử nào bằng ${target} (${comparisons} lần so sánh)`,
   );
   return { metadata, output: -1, events, metrics: { comparisons } };
 }

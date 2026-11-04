@@ -44,11 +44,16 @@ function executeInsertionSort(input: InsertionSortInput): InsertionSortResult {
     for (let j = i; j > 0; j--) {
       const left = array[j - 1];
       const right = array[j];
+      const relation = left < right ? "<" : left > right ? ">" : "=";
 
       comparisons++;
       record(
         { type: "compare", indices: [j - 1, j] },
-        `Đang so sánh ${left} và ${right}`,
+        `Đang so sánh a[${j - 1}] = ${left} với a[${j}] = ${right}: vì ${left} ${relation} ${right} nên ${
+          left <= right
+            ? "giữ nguyên và kết thúc chèn"
+            : `hoán đổi ${left} và ${right}`
+        }`,
       );
 
       if (left <= right) {
@@ -60,14 +65,14 @@ function executeInsertionSort(input: InsertionSortInput): InsertionSortResult {
       swaps++;
       record(
         { type: "swap", indices: [j - 1, j] },
-        `Đang hoán đổi ${left} và ${right}`,
+        `Đã hoán đổi ${left} và ${right}`,
       );
     }
 
     sortedUntil = i + 1;
     record(
       { type: "mark-sorted", indices: [i] },
-      `Đoạn a[0..${i}] đã được sắp xếp`,
+      `Đã sắp xếp xong a[0..${i}] vì phần tử vừa chèn đã đúng chỗ`,
     );
   }
 

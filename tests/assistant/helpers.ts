@@ -131,7 +131,8 @@ export const BUBBLE_SORT_CONTEXT: IAssistantContext = {
   step: {
     index: 1,
     total: 9,
-    description: "Đang so sánh 38 và 27",
+    description:
+      "Đang so sánh a[0] = 38 với a[1] = 27: vì 38 > 27 nên hoán đổi",
     payload: COMPARE_PAYLOAD,
     state: { array: [38, 27, 43], sortedIndices: [] },
   },

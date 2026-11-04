@@ -6,7 +6,7 @@ import { defineConfig } from "drizzle-kit";
  */
 loadEnvConfig(process.cwd());
 
-const dbUrl = process.env.DATABASE_URL;
+const dbUrl = process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL;
 if (!dbUrl) {
   throw new Error("Chưa đặt biến môi trường DATABASE_URL");
 }

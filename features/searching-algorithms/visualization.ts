@@ -26,6 +26,13 @@ export function getBaseFrame(state: ISearchState): ISearchingFrame {
   };
 }
 
+export function getReadyFrame(length: number): ISearchingFrame {
+  return {
+    tones: Array.from({ length }, () => "default"),
+    markers: Array.from({ length }, () => []),
+  };
+}
+
 export function getRemainingCount(state: ISearchState): number {
   return Math.max(0, state.high - state.low + 1);
 }

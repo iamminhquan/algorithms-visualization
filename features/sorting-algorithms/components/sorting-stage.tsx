@@ -1,6 +1,11 @@
 import { ArrayBars } from "@/components/visualization/array-bars";
+import { getEventIndex } from "@/engine/visualization";
 import type { ISortingRun } from "../run";
-import type { ISortingFrame, SortingEvent } from "../visualization";
+import {
+  getReadyFrame,
+  type ISortingFrame,
+  type SortingEvent,
+} from "../visualization";
 
 type SortingStageProps = {
   run: ISortingRun;
@@ -15,16 +20,19 @@ export function SortingStage({
   getFrame,
   className,
 }: SortingStageProps) {
-  const event = run.events[index];
-  const frame = getFrame(event);
-  const ids = run.ids[index];
+  const eventIndex = getEventIndex(index);
+  const event = run.events[eventIndex];
+  const frame =
+    event === undefined ? getReadyFrame(run.values.length) : getFrame(event);
+  const values = event?.state.array ?? run.values;
+  const ids = run.ids[eventIndex] ?? run.values.map((_, position) => position);
 
   return (
     <ArrayBars
       className={className}
-      bracket={index === 0 ? undefined : frame.bracket}
+      bracket={frame.bracket}
       range={frame.range}
-      bars={event.state.array.map((value, position) => ({
+      bars={values.map((value, position) => ({
         id: ids[position],
         value,
         tone: frame.tones[position],

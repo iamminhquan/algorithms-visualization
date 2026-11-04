@@ -29,11 +29,11 @@ export function PlaybackControls({
   const speedId = useId();
   const { state } = controls;
   usePlaybackShortcuts(controls);
-  const lastIndex = Math.max(state.totalEvents - 1, 0);
+  const eventCount = Math.max(state.totalEvents - 1, 0);
   const atStart = state.index === 0;
   const atEnd = isAtEnd(state);
   const playing = state.status === "playing";
-  const step = state.totalEvents === 0 ? 0 : state.index + 1;
+  const step = state.index;
 
   return (
     <div
@@ -85,15 +85,15 @@ export function PlaybackControls({
           id={sliderId}
           type="range"
           min={0}
-          max={lastIndex}
+          max={eventCount}
           value={state.index}
           disabled={state.totalEvents <= 1}
-          aria-valuetext={`Bước ${step} trên ${state.totalEvents}`}
+          aria-valuetext={`Bước ${step} trên ${eventCount}`}
           onChange={(event) => controls.seek(event.currentTarget.valueAsNumber)}
           className="h-2 flex-1 cursor-pointer accent-accent-default disabled:cursor-not-allowed"
         />
         <span className="shrink-0 font-mono text-sm text-text-secondary tabular-nums">
-          {step}/{state.totalEvents}
+          {step}/{eventCount}
         </span>
       </div>
 

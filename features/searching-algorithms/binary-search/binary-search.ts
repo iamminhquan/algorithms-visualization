@@ -52,14 +52,21 @@ function executeBinarySearch(input: BinarySearchInput): BinarySearchResult {
     const mid = Math.floor((low + high) / 2);
     record(
       { type: "pick-mid", mid },
-      `Chọn phần tử giữa: mid = ⌊(${low} + ${high}) / 2⌋ = ${mid}`,
+      `Chọn phần tử giữa của vùng [${low}, ${high}]: mid = ⌊(${low} + ${high}) / 2⌋ = ${mid}`,
     );
 
     const value = array[mid];
     comparisons++;
+    const relation = value === target ? "=" : value < target ? "<" : ">";
+    const action =
+      value === target
+        ? "dừng tìm kiếm"
+        : value < target
+          ? "bỏ nửa trái"
+          : "bỏ nửa phải";
     record(
       { type: "compare", mid },
-      `So sánh a[${mid}] = ${value} với ${target}`,
+      `Đang so sánh a[${mid}] = ${value} với key ${target}: vì ${value} ${relation} ${target} nên ${action}`,
     );
 
     if (value === target) {
@@ -74,20 +81,20 @@ function executeBinarySearch(input: BinarySearchInput): BinarySearchResult {
       low = mid + 1;
       record(
         { type: "narrow", mid, keep: "right" },
-        `${value} < ${target} nên bỏ nửa trái, low = ${low}`,
+        `Đã bỏ nửa trái, low = ${low}`,
       );
     } else {
       high = mid - 1;
       record(
         { type: "narrow", mid, keep: "left" },
-        `${value} > ${target} nên bỏ nửa phải, high = ${high}`,
+        `Đã bỏ nửa phải, high = ${high}`,
       );
     }
   }
 
   record(
     { type: "not-found" },
-    `low > high nên vùng tìm kiếm đã rỗng: không có ${target} (${comparisons} lần so sánh)`,
+    `Không tìm thấy ${target} vì low > high: vùng tìm kiếm đã rỗng (${comparisons} lần so sánh)`,
   );
   return { metadata, output: -1, events, metrics: { comparisons } };
 }
