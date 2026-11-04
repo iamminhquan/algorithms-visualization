@@ -1,8 +1,10 @@
 import { useEffect, useReducer } from "react";
 import {
   createPlaybackState,
+  getStepCount,
   getStepInterval,
   type IPlaybackState,
+  isAtEnd,
   type PlaybackSpeed,
   playbackReducer,
 } from "@/engine/visualization";
@@ -48,5 +50,26 @@ export function usePlayback(initialTotal: number): IPlaybackControls {
     seek: (index) => dispatch({ type: "seek", index }),
     setSpeed: (speed) => dispatch({ type: "set-speed", speed }),
     load: (total) => dispatch({ type: "load", total }),
+  };
+}
+
+export function useEventPlayback(eventCount: number): IPlaybackControls {
+  const controls = usePlayback(getStepCount(eventCount));
+
+  const play = () => {
+    if (controls.state.totalEvents <= 2) {
+      controls.play();
+      return;
+    }
+    if (controls.state.index === 0 || isAtEnd(controls.state)) {
+      controls.seek(1);
+    }
+    controls.play();
+  };
+
+  return {
+    ...controls,
+    play,
+    load: (total) => controls.load(getStepCount(total)),
   };
 }

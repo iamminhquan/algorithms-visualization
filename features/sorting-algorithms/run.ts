@@ -1,7 +1,9 @@
 import type { IMetricItem } from "@/components/visualization/visualizer-frame";
 import {
   countPayloadTypes,
+  getEventIndex,
   type PayloadTypeCounts,
+  READY_STEP_DESCRIPTION,
 } from "@/engine/visualization";
 import type { SortingAlgorithm } from "./index";
 import { type SortingEvent, trackElementIds } from "./visualization";
@@ -40,14 +42,25 @@ export function createSortingRun(
   };
 }
 
+export function getRunEvent(
+  run: ISortingRun,
+  stepIndex: number,
+): SortingEvent | undefined {
+  return run.events[getEventIndex(stepIndex)];
+}
+
+export function getRunDescription(run: ISortingRun, stepIndex: number): string {
+  return getRunEvent(run, stepIndex)?.description ?? READY_STEP_DESCRIPTION;
+}
+
 export function getRunMetrics(
   run: ISortingRun,
-  index: number,
+  stepIndex: number,
   counters: readonly SortingCounter[],
 ): readonly IMetricItem[] {
-  const counts = run.counts[index];
+  const counts = run.counts[getEventIndex(stepIndex)];
   return counters.map((counter) => ({
     label: COUNTER_LABELS[counter],
-    value: counts[counter],
+    value: counts?.[counter] ?? 0,
   }));
 }

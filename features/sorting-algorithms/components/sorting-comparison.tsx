@@ -6,12 +6,13 @@ import { Select } from "@/components/ui/select";
 import { ArrayInputForm } from "@/components/visualization/array-input-form";
 import { ComparisonLane } from "@/components/visualization/comparison-lane";
 import { PlaybackControls } from "@/components/visualization/playback-controls";
-import { usePlayback } from "@/components/visualization/use-playback";
+import { useEventPlayback } from "@/components/visualization/use-playback";
 import {
   COMPARISON_PARAMS,
   DEFAULT_ARRAY,
   getComparisonTotal,
   getLaneIndex,
+  getStepCount,
   isLaneFinished,
   nearlySorted,
   resolveComparisonPair,
@@ -19,7 +20,12 @@ import {
   sortDescending,
 } from "@/engine/visualization";
 import { MAX_ARRAY_LENGTH } from "../array-input";
-import { createSortingRun, getRunMetrics, type ISortingRun } from "../run";
+import {
+  createSortingRun,
+  getRunDescription,
+  getRunMetrics,
+  type ISortingRun,
+} from "../run";
 import {
   findSortingVisualConfig,
   type ISortingVisualConfig,
@@ -100,7 +106,7 @@ export function SortingComparison({
     left: createLane(options, initialPair[0], DEFAULT_ARRAY),
     right: createLane(options, initialPair[1], DEFAULT_ARRAY),
   }));
-  const controls = usePlayback(
+  const controls = useEventPlayback(
     getComparisonTotal([
       state.left.run.events.length,
       state.right.run.events.length,
@@ -170,7 +176,8 @@ export function SortingComparison({
         {LANE_DISPLAYS.map(({ side, label, selectLabel }) => {
           const lane = state[side];
           const { run } = lane;
-          const laneIndex = getLaneIndex(sharedIndex, run.events.length);
+          const laneTotal = getStepCount(run.events.length);
+          const laneIndex = getLaneIndex(sharedIndex, laneTotal);
           const selectId = `${idPrefix}-${side}`;
 
           return (
@@ -198,9 +205,9 @@ export function SortingComparison({
                 </>
               }
               metrics={getRunMetrics(run, laneIndex, lane.config.counters)}
-              description={run.events[laneIndex].description}
+              description={getRunDescription(run, laneIndex)}
               finishedLabel={
-                isLaneFinished(sharedIndex, run.events.length)
+                isLaneFinished(sharedIndex, laneTotal)
                   ? `Xong sau ${run.events.length} bước`
                   : undefined
               }
