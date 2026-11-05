@@ -1,10 +1,11 @@
 "use client";
 
-import { Menu, X } from "lucide-react";
+import { GitCompare, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { CategoryIcon } from "@/features/catalog/components/category-icon";
+import { getCompareHref } from "@/features/catalog/routes";
 import { cn } from "@/lib/cn";
 import { ComingSoonBadge } from "./coming-soon-badge";
 import {
@@ -16,6 +17,7 @@ import {
 import { UserMenu } from "./user-menu";
 
 const DESKTOP_QUERY = "(min-width: 48rem)";
+const COMPARE_HREF = getCompareHref("sorting");
 
 const ICON_BUTTON_CLASS_NAME = cn(
   "flex size-9 items-center justify-center rounded-full text-text-secondary transition-colors hover:bg-bg-subtle hover:text-text-primary",
@@ -140,6 +142,22 @@ export function MobileMenu({ categories, pathname }: MobileMenuProps) {
                 ))}
               </ul>
             </nav>
+            <Link
+              href={COMPARE_HREF}
+              onClick={close}
+              className={cn(
+                "flex items-center gap-3 rounded-lg border border-border-default bg-bg-subtle px-3 py-2.5 text-sm font-medium text-text-primary transition-colors hover:border-border-strong",
+                FOCUS_RING_CLASS_NAME,
+              )}
+            >
+              <span
+                aria-hidden="true"
+                className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-bg-surface text-accent-text"
+              >
+                <GitCompare className="size-4.5" />
+              </span>
+              So sánh thuật toán
+            </Link>
           </div>
           <div className="shrink-0 border-t border-border-default p-4">
             <UserMenu className="flex h-11 w-full" onNavigate={close} />
