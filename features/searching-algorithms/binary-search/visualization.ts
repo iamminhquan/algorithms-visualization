@@ -13,9 +13,9 @@ import {
 import type { BinarySearchEvent } from "./types";
 
 export const BINARY_SEARCH_LEGEND: readonly ILegendItem[] = [
-  { tone: "default", label: "Trong vùng [low, high]" },
-  { tone: "pivot", label: "mid: phần tử ở giữa" },
-  { tone: "compare", label: "Đang so sánh với key" },
+  { tone: "default", label: "Trong vùng tìm" },
+  { tone: "pivot", label: "Phần tử giữa" },
+  { tone: "compare", label: "Đang so sánh" },
   { tone: "discarded", label: "Đã loại" },
   { tone: "found", label: "Tìm thấy" },
 ];

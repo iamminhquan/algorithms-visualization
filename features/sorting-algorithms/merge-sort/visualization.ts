@@ -6,10 +6,10 @@ import type { MergeSortEvent } from "./types";
 
 export const MERGE_SORT_LEGEND: readonly ILegendItem[] = [
   { tone: "default", label: "Chưa trộn" },
-  { tone: "pointer", label: "Khung: đoạn a[lo..hi] đang trộn, k: ô đang ghi" },
-  { tone: "compare", label: "i, j: đầu nửa trái left và nửa phải right" },
-  { tone: "swap", label: "Đang ghi vào a[k]" },
-  { tone: "sorted", label: "Đã sắp xếp xong" },
+  { tone: "pointer", label: "Ô đang ghi" },
+  { tone: "compare", label: "Đang so sánh" },
+  { tone: "swap", label: "Vừa ghi" },
+  { tone: "sorted", label: "Đã sắp xếp" },
 ];
 
 function createMarkers(

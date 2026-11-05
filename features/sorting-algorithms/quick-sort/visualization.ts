@@ -10,14 +10,11 @@ import type { QuickSortEvent } from "./types";
 
 export const QUICK_SORT_LEGEND: readonly ILegendItem[] = [
   { tone: "default", label: "Chưa sắp xếp" },
-  {
-    tone: "pointer",
-    label: "Khung: đoạn a[lo..hi], i: cuối vùng nhỏ hơn hoặc bằng pivot",
-  },
-  { tone: "pivot", label: "pivot: phần tử cuối đoạn" },
-  { tone: "compare", label: "j: đang so sánh với pivot" },
+  { tone: "pointer", label: "Vị trí đang xét" },
+  { tone: "pivot", label: "Pivot" },
+  { tone: "compare", label: "Đang so sánh" },
   { tone: "swap", label: "Đang hoán đổi" },
-  { tone: "sorted", label: "Đã đúng vị trí" },
+  { tone: "sorted", label: "Đã sắp xếp" },
 ];
 
 function createMarkers(
