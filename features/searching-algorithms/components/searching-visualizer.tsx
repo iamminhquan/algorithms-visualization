@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { ArrayBars } from "@/components/visualization/array-bars";
 import { ArrayInputForm } from "@/components/visualization/array-input-form";
-import { CodePanel } from "@/components/visualization/code-panel";
 import { PlaybackControls } from "@/components/visualization/playback-controls";
 import { useEventPlayback } from "@/components/visualization/use-playback";
 import { VariablesPanel } from "@/components/visualization/variables-panel";
@@ -152,18 +151,15 @@ export function SearchingVisualizer<TEvent extends SearchingEvent>({
         </ArrayInputForm>
       }
       description={event?.description ?? READY_STEP_DESCRIPTION}
-      code={
-        <CodePanel
-          pseudocode={pseudocode.lines}
-          sourceCode={sourceCode}
-          activeLine={
-            event === undefined
-              ? undefined
-              : pseudocode.getActiveLine(event.payload)
-          }
-        />
-      }
-      variables={<VariablesPanel variables={variables} />}
+      code={{
+        pseudocode: pseudocode.lines,
+        sourceCode,
+        activeLine:
+          event === undefined
+            ? undefined
+            : pseudocode.getActiveLine(event.payload),
+      }}
+      variables={<VariablesPanel variables={variables} compact />}
       controls={<PlaybackControls controls={controls} />}
       legend={legend}
       metrics={metrics}
