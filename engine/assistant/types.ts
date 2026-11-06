@@ -1,17 +1,20 @@
 import type { IEventPayload } from "@/engine/algorithm";
 
-export const ASSISTANT_PROVIDERS = ["deepseek", "gemini"] as const;
+export const ASSISTANT_PROVIDERS = [
+  { id: "deepseek", label: "DeepSeek" },
+  { id: "gemini", label: "Gemini" },
+] as const;
 
-export type AssistantProviderId = (typeof ASSISTANT_PROVIDERS)[number];
+export type AssistantProviderId = (typeof ASSISTANT_PROVIDERS)[number]["id"];
 
-export const ASSISTANT_PROVIDER_LABELS: Readonly<
-  Record<AssistantProviderId, string>
-> = {
-  deepseek: "DeepSeek",
-  gemini: "Gemini",
-};
-
-export const DEFAULT_ASSISTANT_PROVIDER: AssistantProviderId = "deepseek";
+export function getAssistantProviderLabel(
+  provider: AssistantProviderId,
+): string {
+  return (
+    ASSISTANT_PROVIDERS.find((entry) => entry.id === provider)?.label ??
+    provider
+  );
+}
 
 export type AssistantRole = "user" | "assistant";
 
@@ -43,7 +46,6 @@ export interface IAssistantContext {
 }
 
 export interface IAssistantRequest {
-  readonly provider: AssistantProviderId;
   readonly messages: readonly IAssistantMessage[];
   readonly context?: IAssistantContext;
 }
@@ -51,5 +53,5 @@ export interface IAssistantRequest {
 export function isAssistantProviderId(
   value: unknown,
 ): value is AssistantProviderId {
-  return ASSISTANT_PROVIDERS.some((provider) => provider === value);
+  return ASSISTANT_PROVIDERS.some((entry) => entry.id === value);
 }

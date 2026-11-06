@@ -3,7 +3,7 @@
 Website mô phỏng từng bước chạy của các thuật toán, được xây dựng cho đồ án tốt nghiệp.
 Người xem nhập mảng đầu vào, rồi phát, tạm dừng, tua và đổi tốc độ để theo dõi từng phép so sánh, hoán đổi cùng đoạn mã
 giả đang chạy.
-Khung trợ lý AI (DeepSeek hoặc Gemini) bên cạnh hình mô phỏng giải thích đúng bước đang xem.
+Khung trợ lý AI bên cạnh hình mô phỏng giải thích đúng bước đang xem: mặc định dùng DeepSeek, tự chuyển sang Gemini khi DeepSeek lỗi.
 
 # Công nghệ sử dụng
 

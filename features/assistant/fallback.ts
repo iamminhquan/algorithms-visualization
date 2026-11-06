@@ -1,4 +1,7 @@
-import type { AssistantProviderId } from "@/engine/assistant";
+import {
+  ASSISTANT_PROVIDERS,
+  type AssistantProviderId,
+} from "@/engine/assistant";
 import {
   AssistantProviderError,
   type IAssistantProvider,
@@ -29,14 +32,17 @@ export class AllProvidersFailedError extends Error {
   }
 }
 
+function providerRank(id: AssistantProviderId): number {
+  const rank = ASSISTANT_PROVIDERS.findIndex((entry) => entry.id === id);
+  return rank === -1 ? ASSISTANT_PROVIDERS.length : rank;
+}
+
 export function orderProviders(
   providers: readonly IAssistantProvider[],
-  preferred: AssistantProviderId,
 ): readonly IAssistantProvider[] {
-  return [
-    ...providers.filter((provider) => provider.id === preferred),
-    ...providers.filter((provider) => provider.id !== preferred),
-  ];
+  return [...providers].sort(
+    (left, right) => providerRank(left.id) - providerRank(right.id),
+  );
 }
 
 function toProviderError(
@@ -55,7 +61,6 @@ function toProviderError(
 
 export async function openProviderStream(
   providers: readonly IAssistantProvider[],
-  preferred: AssistantProviderId,
   request: IProviderRequest,
 ): Promise<IOpenedProviderStream> {
   if (providers.length === 0) {
@@ -63,7 +68,8 @@ export async function openProviderStream(
   }
 
   const failures: AssistantProviderError[] = [];
-  for (const provider of orderProviders(providers, preferred)) {
+  let fallbackFrom: AssistantProviderId | undefined;
+  for (const provider of orderProviders(providers)) {
     const iterator = provider.stream(request)[Symbol.asyncIterator]();
     try {
       const first = await iterator.next();
@@ -76,7 +82,7 @@ export async function openProviderStream(
       }
       return {
         provider: provider.id,
-        fallbackFrom: provider.id === preferred ? undefined : preferred,
+        fallbackFrom,
         first: first.value,
         rest: iterator,
       };
@@ -86,6 +92,7 @@ export async function openProviderStream(
         throw failure;
       }
       failures.push(failure);
+      fallbackFrom = provider.id;
     }
   }
   throw new AllProvidersFailedError(failures);

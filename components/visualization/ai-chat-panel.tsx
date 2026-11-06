@@ -9,14 +9,11 @@ import {
   SquarePen,
 } from "lucide-react";
 import { type ReactNode, useEffect, useId, useRef, useState } from "react";
-import { Select } from "@/components/ui/select";
 import {
-  ASSISTANT_PROVIDER_LABELS,
-  ASSISTANT_PROVIDERS,
   formatStepLabel,
+  getAssistantProviderLabel,
   type IAssistantContext,
   type IChatMessage,
-  isAssistantProviderId,
   MAX_QUESTION_LENGTH,
 } from "@/engine/assistant";
 import { cn } from "@/lib/cn";
@@ -52,7 +49,6 @@ export function AiChatPanel({
 }: AiChatPanelProps) {
   const headingId = useId();
   const inputId = useId();
-  const providerSelectId = useId();
   const chat = useAssistantChat();
   const [draft, setDraft] = useState("");
   const logRef = useRef<HTMLDivElement>(null);
@@ -98,26 +94,6 @@ export function AiChatPanel({
         <h2 id={headingId} className="text-sm font-medium text-text-primary">
           Trợ lý AI
         </h2>
-        <label htmlFor={providerSelectId} className="sr-only">
-          Mô hình AI
-        </label>
-        <Select
-          id={providerSelectId}
-          className="ml-auto w-30"
-          value={chat.provider}
-          onChange={(event) => {
-            const provider = event.currentTarget.value;
-            if (isAssistantProviderId(provider)) {
-              chat.setProvider(provider);
-            }
-          }}
-        >
-          {ASSISTANT_PROVIDERS.map((provider) => (
-            <option key={provider} value={provider}>
-              {ASSISTANT_PROVIDER_LABELS[provider]}
-            </option>
-          ))}
-        </Select>
         <button
           type="button"
           onClick={() => {
@@ -129,7 +105,7 @@ export function AiChatPanel({
           title="Cuộc trò chuyện mới"
           className={cn(
             ICON_BUTTON_CLASS,
-            "text-text-secondary hover:bg-bg-subtle hover:text-text-primary",
+            "ml-auto text-text-secondary hover:bg-bg-subtle hover:text-text-primary",
           )}
         >
           <SquarePen aria-hidden="true" className="size-4" />
@@ -304,11 +280,11 @@ function getEmptyReplyText(message: IChatMessage): string | undefined {
 function getNotes(message: IChatMessage): string[] {
   const notes: string[] = [];
   if (message.provider !== undefined) {
-    const label = ASSISTANT_PROVIDER_LABELS[message.provider];
+    const label = getAssistantProviderLabel(message.provider);
     notes.push(
       message.fallbackFrom === undefined
         ? `Trả lời bởi ${label}`
-        : `Trả lời bởi ${label} vì ${ASSISTANT_PROVIDER_LABELS[message.fallbackFrom]} chưa sẵn sàng`,
+        : `Trả lời bởi ${label} vì ${getAssistantProviderLabel(message.fallbackFrom)} chưa sẵn sàng`,
     );
   }
   if (message.status === "stopped" && message.content !== "") {

@@ -141,9 +141,13 @@ bun run db:seed:preview        # nạp seed cho DB preview (cần PREVIEW_DATABA
   xem (đầu vào, payload, state, mã giả, dòng đang chạy, chỉ số).
 - `POST /api/assistant` (`app/api/assistant/route.ts`) gọi `handleAssistantRequest` trong `features/assistant/`: kiểm
   tra body, giới hạn 20 câu hỏi/10 phút theo IP (Redis, Redis lỗi thì đếm trong bộ nhớ), tra thông tin thuật toán qua
-  `getAlgorithmCatalog`, rồi stream từ mô hình được chọn và tự chuyển sang mô hình còn lại nếu lỗi trước khi có chữ.
+  `getAlgorithmCatalog`, rồi stream từ mô hình đầu tiên chạy được theo thứ tự ưu tiên trong `ASSISTANT_PROVIDERS`
+  (DeepSeek rồi Gemini); người dùng không chọn mô hình, lỗi trước khi có chữ thì tự chuyển mô hình kế tiếp.
 - DeepSeek gọi qua Anthropic SDK tới endpoint tương thích Anthropic, Gemini qua `@google/genai` (Google không có
-  endpoint kiểu Anthropic); cả hai cài `IAssistantProvider` trong `features/assistant/providers/`.
+  endpoint kiểu Anthropic); cả hai cài `IAssistantProvider` trong `features/assistant/providers/` và khai báo trong
+  `PROVIDER_DEFINITIONS` (`providers/registry.ts`). Thêm mô hình mới chỉ cần thêm mục vào `ASSISTANT_PROVIDERS`
+  (`engine/assistant/types.ts`), viết provider rồi thêm vào registry; biến môi trường theo mẫu `<ID>_API_KEY`,
+  `<ID>_MODEL`, `<ID>_BASE_URL`.
 - Chỉ `features/assistant/server.ts` đọc `process.env` và DB (`server-only`); các file khác nhận cấu hình qua tham số
   nên test bằng provider giả và server SSE giả trong `tests/assistant/`, không gọi API thật.
 - Chưa dùng RabbitMQ vì chat là luồng hỏi–đáp đồng bộ stream thẳng về trình duyệt, chưa có việc chạy nền.
