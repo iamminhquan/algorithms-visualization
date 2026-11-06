@@ -1,8 +1,14 @@
-import type { Algorithm } from "@/db/schema";
-import { findSearchingComplexity } from "../complexity";
+import type { Algorithm, AlgorithmComplexity } from "@/db/schema";
+
+type SearchingAlgorithmWithComplexity = Pick<
+  Algorithm,
+  "key" | "slug" | "name"
+> & {
+  readonly complexity: AlgorithmComplexity | null;
+};
 
 type SearchingComparisonTableProps = {
-  algorithms: readonly Pick<Algorithm, "key" | "slug" | "name">[];
+  algorithms: readonly SearchingAlgorithmWithComplexity[];
 };
 
 const COLUMNS = [
@@ -17,10 +23,11 @@ const COLUMNS = [
 export function SearchingComparisonTable({
   algorithms,
 }: SearchingComparisonTableProps) {
-  const rows = algorithms.flatMap((algorithm) => {
-    const complexity = findSearchingComplexity(algorithm.key);
-    return complexity ? [{ algorithm, complexity }] : [];
-  });
+  const rows = algorithms.flatMap((algorithm) =>
+    algorithm.complexity
+      ? [{ algorithm, complexity: algorithm.complexity }]
+      : [],
+  );
   if (rows.length === 0) {
     return null;
   }
