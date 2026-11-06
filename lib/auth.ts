@@ -10,8 +10,10 @@ import {
   usersTable,
   verificationsTable,
 } from "@/db/schema";
+import { createPasswordResetOtpEmail } from "@/features/auth/emails/password-reset-otp";
 import { createVerificationOtpEmail } from "@/features/auth/emails/verification-otp";
 import { MIN_PASSWORD_LENGTH, OTP_LENGTH } from "@/features/auth/limits";
+import { getResetPasswordHref } from "@/features/auth/routes";
 import { sendMail } from "@/lib/mailer";
 
 const OTP_EXPIRES_IN_SECONDS = 600;
@@ -33,6 +35,21 @@ function sendVerificationOtpEmail(email: string, otp: string): void {
   after(() =>
     sendMail({ to: email, ...content }).catch((error: unknown) => {
       console.error(`Không gửi được mã xác thực tới ${email}`, error);
+    }),
+  );
+}
+
+function sendPasswordResetOtpEmail(email: string, otp: string): void {
+  const baseUrl =
+    process.env.BETTER_AUTH_URL?.replace(/\/$/, "") ?? "http://localhost:3000";
+  const content = createPasswordResetOtpEmail({
+    otp,
+    expiresInMinutes: OTP_EXPIRES_IN_SECONDS / 60,
+    resetUrl: `${baseUrl}${getResetPasswordHref(email)}`,
+  });
+  after(() =>
+    sendMail({ to: email, ...content }).catch((error: unknown) => {
+      console.error(`Không gửi được mã đặt mật khẩu tới ${email}`, error);
     }),
   );
 }
@@ -76,6 +93,9 @@ export const auth = betterAuth({
       async sendVerificationOTP({ email, otp, type }) {
         if (type === "email-verification") {
           sendVerificationOtpEmail(email, otp);
+        }
+        if (type === "forget-password") {
+          sendPasswordResetOtpEmail(email, otp);
         }
       },
     }),
