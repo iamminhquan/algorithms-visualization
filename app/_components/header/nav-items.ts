@@ -9,7 +9,7 @@ export interface INavItem {
 export const NAV_ITEMS: readonly INavItem[] = [
   { label: "Trang chủ", href: "/" },
   { label: "Mô phỏng", href: VISUALIZATION_PATH, matchPrefix: true },
-  { label: "Học tập", href: "/learn", matchPrefix: true },
+  { label: "Học tập", href: "/learning", matchPrefix: true },
   { label: "Giới thiệu", href: "/#about" },
 ];
 
