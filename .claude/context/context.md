@@ -184,21 +184,23 @@ bun run db:seed:preview        # nạp seed cho DB preview (cần PREVIEW_DATABA
 - Phần dùng chung trong một danh mục nằm ở gốc feature đó, ví dụ `features/sorting-algorithms/shared.ts`
   (`assertSortInput`, `range`).
 - `features/catalog/` là phần dùng chung: `catalog.ts` ghép registry từ mọi feature, `queries.ts` đọc DB, `routes.ts`
-  dựng link, `categories.ts` và `components/` phục vụ trang chủ và `/visualization`.
+  dựng link, `categories.ts` giữ kiểu danh mục, `components/` phục vụ trang chủ và `/visualization`.
 - Các feature danh mục không import lẫn nhau; thứ dùng chung đẩy xuống `engine/` hoặc `components/`.
 
 **Code ↔ DB**
 
 - Bảng `algorithms` nối với code qua cột `key` (không đổi sau khi tạo); cột `slug` dùng cho URL.
 - Dòng DB không có cài đặt trong registry bị ẩn (`getAlgorithmCatalog`, `getCategoryCatalog`).
-- Thêm một thuật toán gồm: cài đặt trong feature, thêm vào `*_ALGORITHMS`, thêm trình mô phỏng vào `*_VISUALIZERS` (kèm
-  mã giả, mã nguồn C++ và `getXxxVariables`), thêm dòng vào `db/seed-data.ts` cùng `key`, rồi chạy `db:seed`.
+- Thêm một thuật toán gồm: cài đặt trong feature, thêm vào `*_ALGORITHMS`, thêm trình mô phỏng vào `*_VISUALIZERS`
+  (kèm hàm `getXxxActiveLine` và `getXxxVariables`), thêm dòng vào `db/seed-data.ts` cùng `key` và độ phức tạp, thêm
+  mã giả/mã nguồn vào `db/seed-data/snippets.json`, rồi chạy `db:seed`.
 - Với danh mục sắp xếp, thuật toán còn phải có cấu hình hình vẽ trong `SORTING_VISUAL_CONFIGS`
   (`features/sorting-algorithms/visual-configs.ts`) thì mới xuất hiện ở trang so sánh.
 - `tests/catalog/seed-data.test.ts` bắt chỗ lệch giữa registry và seed, `tests/catalog/visualizers.test.ts` bắt thuật
   toán thiếu trình mô phỏng.
-- Danh mục chỉ khai báo một nơi là `CATEGORIES` trong `features/catalog/categories.ts`: trang chủ và footer đọc trực
-  tiếp, `seedCategories` lấy lại chính nó, nên sửa xong phải chạy `db:seed`.
+- Danh mục, độ phức tạp, mã giả và mã nguồn đều đọc từ DB; seed chỉ nạp dữ liệu ban đầu từ `db/seed-data/`.
+- Bảng `algorithm_source_codes` lưu mã giả và mã nguồn; bảng `algorithm_complexities` lưu độ phức tạp và thuộc tính
+  ổn định/yêu cầu mảng đã sắp xếp. Danh mục có `sort_order` để giữ thứ tự hiển thị.
 
 **Route**
 
@@ -219,9 +221,8 @@ bun run db:seed:preview        # nạp seed cho DB preview (cần PREVIEW_DATABA
   `<html>`, `<body>` và theme.
 - `/admin` là trang quản trị với layout riêng (sidebar, thanh trên cùng, `noindex`), chưa có đăng nhập nên ai cũng vào
   được.
-- Admin đọc danh mục và thuật toán thật từ DB (mã nguồn lấy từ code qua `findSourceCode` trong
-  `features/catalog/source-codes.ts`), còn người dùng, bài học, lớp học là dữ liệu mẫu trong
-  `app/admin/_components/sample-data.ts` (gắn nhãn "Dữ liệu mẫu").
+- Admin đọc danh mục, thuật toán, mã nguồn và người dùng thật từ DB; thanh trên cùng lấy người dùng từ session.
+  Bài học và lớp học vẫn là dữ liệu mẫu trong `app/admin/_components/sample-data.ts` (gắn nhãn "Dữ liệu mẫu").
 - Form và hộp xác nhận xoá trong admin chỉ là giao diện: `<form method="dialog">` đóng hộp thoại mà không gửi đi đâu.
 - Thuật toán phải đúng danh mục của nó (`getAlgorithmBySlug(category, algorithm)`), sai danh mục thì `notFound()`.
 - Dựng link bằng `getCategoryHref()` / `getAlgorithmHref()` / `getCompareHref()` trong `features/catalog/routes.ts`.
@@ -246,7 +247,7 @@ bun run db:seed:preview        # nạp seed cho DB preview (cần PREVIEW_DATABA
 - Header, footer và logo nằm ở `app/_components/` vì dùng chung cho `app/(site)/layout.tsx`, `app/not-found.tsx` và
   admin (logo, nút đổi theme).
 - Header tách thành nhiều file trong `app/_components/header/`: `site-header.tsx` (Server Component đọc danh mục từ DB,
-  DB lỗi vẫn hiện danh mục), `nav-items.ts` (mục menu), menu danh mục, bảng tìm kiếm Ctrl K (`command-palette.tsx`), nút
+  DB lỗi thì danh mục rỗng), `nav-items.ts` (mục menu), menu danh mục, bảng tìm kiếm Ctrl K (`command-palette.tsx`), nút
   đổi theme và menu trượt mobile.
 - Component dùng chung cho các trang trong một route group đặt ở `_components/` của group đó (ví dụ
   `app/(site)/(auth)/_components/`, `app/admin/_components/`).
