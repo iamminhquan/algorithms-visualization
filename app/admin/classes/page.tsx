@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Badge } from "@/components/ui/badge";
 import { getButtonClassName } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
+import { getUserCatalog } from "@/features/auth/queries";
 import { cn } from "@/lib/cn";
 import { formatDate, formatNumber } from "@/lib/format";
 import { ConfirmDeleteDialog } from "../_components/confirm-delete-dialog";
@@ -32,7 +33,13 @@ const COLUMNS: readonly ITableColumn[] = [
   { label: "Thao tác", align: "right", isLabelHidden: true },
 ];
 
-export default function AdminClassesPage() {
+export default async function AdminClassesPage() {
+  const teachers = (await getUserCatalog()).flatMap((user) =>
+    user.role === "teacher" || user.role === "admin"
+      ? [{ id: user.id, name: user.name }]
+      : [],
+  );
+
   return (
     <>
       <PageHeader
@@ -52,7 +59,7 @@ export default function AdminClassesPage() {
             triggerClassName={getButtonClassName("primary")}
             submitLabel="Mở lớp"
           >
-            <ClassFormFields idPrefix="class-new" />
+            <ClassFormFields idPrefix="class-new" teachers={teachers} />
           </FormDialog>
         }
       />
@@ -132,6 +139,7 @@ export default function AdminClassesPage() {
                   <ClassFormFields
                     idPrefix={`class-${sampleClass.id}`}
                     sampleClass={sampleClass}
+                    teachers={teachers}
                   />
                 </EditDialog>
                 <ConfirmDeleteDialog

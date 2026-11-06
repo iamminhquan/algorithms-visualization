@@ -1,4 +1,3 @@
-import { CATEGORIES, type CategorySlug } from "@/features/catalog/categories";
 import { BINARY_SEARCH_KEY } from "@/features/searching-algorithms/binary-search";
 import { LINEAR_SEARCH_KEY } from "@/features/searching-algorithms/linear-search";
 import { BUBBLE_SORT_KEY } from "@/features/sorting-algorithms/bubble-sort";
@@ -6,16 +5,18 @@ import { INSERTION_SORT_KEY } from "@/features/sorting-algorithms/insertion-sort
 import { MERGE_SORT_KEY } from "@/features/sorting-algorithms/merge-sort";
 import { QUICK_SORT_KEY } from "@/features/sorting-algorithms/quick-sort";
 import { SELECTION_SORT_KEY } from "@/features/sorting-algorithms/selection-sort";
-import type { NewAlgorithm, NewCategory } from "./schema";
+import type {
+  NewAlgorithm,
+  NewAlgorithmComplexity,
+  NewCategory,
+} from "./schema";
+import categoriesData from "./seed-data/categories.json";
+import complexitiesData from "./seed-data/complexities.json";
 
-/**
- * Trang chủ và footer đọc thẳng `CATEGORIES` mà không qua DB, nên seed lấy từ cùng nguồn đó
- * để tên và mô tả danh mục ở mọi trang luôn khớp nhau.
- */
-export const seedCategories = CATEGORIES satisfies readonly NewCategory[];
+export const seedCategories = categoriesData satisfies readonly NewCategory[];
 
 export const seedAlgorithms: readonly (Omit<NewAlgorithm, "categoryId"> & {
-  readonly categorySlug: CategorySlug;
+  readonly categorySlug: string;
 })[] = [
   {
     key: BUBBLE_SORT_KEY,
@@ -95,3 +96,10 @@ export const seedAlgorithms: readonly (Omit<NewAlgorithm, "categoryId"> & {
     spaceComplexity: "O(1)",
   },
 ];
+
+export const seedComplexities: readonly (Omit<
+  NewAlgorithmComplexity,
+  "algorithmId"
+> & {
+  readonly algorithmKey: string;
+})[] = complexitiesData;

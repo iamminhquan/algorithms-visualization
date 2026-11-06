@@ -1,6 +1,6 @@
 import { Mail } from "lucide-react";
 import Link from "next/link";
-import { CATEGORIES } from "@/features/catalog/categories";
+import { getCategoryCatalog } from "@/features/catalog/queries";
 import { getCategoryHref } from "@/features/catalog/routes";
 import { SITE_NAME } from "@/lib/site";
 import { Logo } from "./logo";
@@ -11,15 +11,7 @@ interface IFooterColumn {
   readonly links: readonly { readonly label: string; readonly href: string }[];
 }
 
-const FOOTER_COLUMNS: readonly IFooterColumn[] = [
-  {
-    id: "footer-kham-pha",
-    title: "Khám phá",
-    links: CATEGORIES.map(({ name, slug }) => ({
-      label: name,
-      href: getCategoryHref(slug),
-    })),
-  },
+const STATIC_FOOTER_COLUMNS: readonly IFooterColumn[] = [
   {
     id: "footer-tai-nguyen",
     title: "Tài nguyên",
@@ -51,7 +43,23 @@ const LINK_CLASS_NAME =
 const SOCIAL_CLASS_NAME =
   "flex size-10 items-center justify-center rounded-full bg-text-inverse/10 text-text-muted transition-colors hover:text-text-inverse focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default dark:bg-bg-subtle dark:text-text-secondary dark:hover:text-text-primary";
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const categories = await getCategoryCatalog().catch((error: unknown) => {
+    console.error("Không đọc được danh mục cho footer", error);
+    return [];
+  });
+  const footerColumns: readonly IFooterColumn[] = [
+    {
+      id: "footer-kham-pha",
+      title: "Khám phá",
+      links: categories.map(({ name, slug }) => ({
+        label: name,
+        href: getCategoryHref(slug),
+      })),
+    },
+    ...STATIC_FOOTER_COLUMNS,
+  ];
+
   return (
     <footer className="bg-bg-inverse dark:border-t dark:border-border-default dark:bg-bg-surface">
       <div className="mx-auto flex max-w-360 flex-col gap-12 px-4 pt-18 pb-8 sm:px-8 lg:px-20">
@@ -72,7 +80,7 @@ export function SiteFooter() {
             </div>
           </div>
           <div className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 lg:flex-1 lg:gap-16">
-            {FOOTER_COLUMNS.map((column) => (
+            {footerColumns.map((column) => (
               <nav key={column.id} aria-labelledby={column.id}>
                 <h2
                   id={column.id}

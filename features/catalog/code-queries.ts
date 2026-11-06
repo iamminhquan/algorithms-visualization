@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 import "server-only";
 import { db } from "@/db";
-import { algorithmCodeSnippetsTable, algorithmsTable } from "@/db/schema";
+import { algorithmSourceCodesTable, algorithmsTable } from "@/db/schema";
 import type { SourceCode } from "@/engine/visualization";
 import type { IAlgorithmCodeContent } from "./code-content";
 
@@ -19,14 +19,14 @@ export async function getAlgorithmSourceCode(
 
   const rows = await db
     .select({
-      kind: algorithmCodeSnippetsTable.kind,
-      language: algorithmCodeSnippetsTable.language,
-      lines: algorithmCodeSnippetsTable.lines,
+      kind: algorithmSourceCodesTable.kind,
+      language: algorithmSourceCodesTable.language,
+      lines: algorithmSourceCodesTable.lines,
     })
-    .from(algorithmCodeSnippetsTable)
+    .from(algorithmSourceCodesTable)
     .innerJoin(
       algorithmsTable,
-      eq(algorithmsTable.id, algorithmCodeSnippetsTable.algorithmId),
+      eq(algorithmsTable.id, algorithmSourceCodesTable.algorithmId),
     )
     .where(eq(algorithmsTable.key, key));
 

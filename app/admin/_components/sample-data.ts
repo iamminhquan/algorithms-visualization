@@ -5,98 +5,6 @@ interface IStatusOption {
   readonly tone: BadgeTone;
 }
 
-export type UserRole = "admin" | "teacher" | "student";
-
-export type UserStatus = "active" | "invited" | "locked";
-
-export const USER_ROLES: Readonly<Record<UserRole, IStatusOption>> = {
-  admin: { label: "Quản trị", tone: "accent" },
-  teacher: { label: "Giáo viên", tone: "neutral" },
-  student: { label: "Học viên", tone: "neutral" },
-};
-
-export const USER_STATUSES: Readonly<Record<UserStatus, IStatusOption>> = {
-  active: { label: "Đang hoạt động", tone: "success" },
-  invited: { label: "Chờ kích hoạt", tone: "warning" },
-  locked: { label: "Đã khoá", tone: "danger" },
-};
-
-export interface ISampleUser {
-  readonly id: number;
-  readonly name: string;
-  readonly email: string;
-  readonly role: UserRole;
-  readonly status: UserStatus;
-  readonly joinedAt: string;
-}
-
-export const SAMPLE_USERS: readonly ISampleUser[] = [
-  {
-    id: 1,
-    name: "Nguyễn Văn An",
-    email: "an.nguyen@example.com",
-    role: "admin",
-    status: "active",
-    joinedAt: "2026-03-02",
-  },
-  {
-    id: 2,
-    name: "Trần Thị Bình",
-    email: "binh.tran@example.com",
-    role: "teacher",
-    status: "active",
-    joinedAt: "2026-04-15",
-  },
-  {
-    id: 3,
-    name: "Lê Hoàng Châu",
-    email: "chau.le@example.com",
-    role: "teacher",
-    status: "active",
-    joinedAt: "2026-05-08",
-  },
-  {
-    id: 4,
-    name: "Phạm Quốc Dũng",
-    email: "dung.pham@example.com",
-    role: "student",
-    status: "active",
-    joinedAt: "2026-08-21",
-  },
-  {
-    id: 5,
-    name: "Võ Thu Hà",
-    email: "ha.vo@example.com",
-    role: "student",
-    status: "active",
-    joinedAt: "2026-09-03",
-  },
-  {
-    id: 6,
-    name: "Đặng Gia Huy",
-    email: "huy.dang@example.com",
-    role: "student",
-    status: "invited",
-    joinedAt: "2026-10-12",
-  },
-  {
-    id: 7,
-    name: "Bùi Ngọc Lan",
-    email: "lan.bui@example.com",
-    role: "student",
-    status: "active",
-    joinedAt: "2026-10-18",
-  },
-  {
-    id: 8,
-    name: "Hồ Văn Khoa",
-    email: "khoa.ho@example.com",
-    role: "student",
-    status: "locked",
-    joinedAt: "2026-07-27",
-  },
-];
-
 export const LESSON_TRACKS = [
   "Nhập môn thuật toán",
   "Sắp xếp",
@@ -249,7 +157,3 @@ export const SAMPLE_CLASSES: readonly ISampleClass[] = [
     startsAt: "2026-02-16",
   },
 ];
-
-export const SAMPLE_TEACHERS = SAMPLE_USERS.filter(
-  (user) => user.role === "teacher",
-);

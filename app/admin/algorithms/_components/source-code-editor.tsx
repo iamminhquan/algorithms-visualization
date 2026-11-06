@@ -16,8 +16,6 @@ import { Panel } from "../../_components/panel";
 
 const MAX_EDITOR_ROWS = 20;
 
-const ADDABLE_LANGUAGES = ["Python", "Java", "JavaScript", "C#"] as const;
-
 type SourceCodeEditorProps = {
   sourceCode?: SourceCode;
 };
@@ -27,6 +25,9 @@ export function SourceCodeEditor({ sourceCode }: SourceCodeEditorProps) {
     const lines = sourceCode?.[language];
     return lines ? [{ language, lines }] : [];
   });
+  const availableLanguages = CODE_LANGUAGES.filter(
+    (language) => sourceCode?.[language] === undefined,
+  );
 
   return (
     <Panel
@@ -55,9 +56,9 @@ export function SourceCodeEditor({ sourceCode }: SourceCodeEditorProps) {
               <option value="" disabled>
                 Chọn ngôn ngữ
               </option>
-              {ADDABLE_LANGUAGES.map((language) => (
+              {availableLanguages.map((language) => (
                 <option key={language} value={language}>
-                  {language}
+                  {CODE_LANGUAGE_LABELS[language]}
                 </option>
               ))}
             </Select>

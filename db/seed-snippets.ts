@@ -1,9 +1,9 @@
 import { db } from ".";
-import { algorithmCodeSnippetsTable, algorithmsTable } from "./schema";
+import { algorithmSourceCodesTable, algorithmsTable } from "./schema";
 import {
   CODE_SNIPPET_KINDS,
   type CodeSnippetKind,
-  type NewAlgorithmCodeSnippet,
+  type NewAlgorithmSourceCode,
 } from "./schema/sources";
 import snippetsData from "./seed-data/snippets.json";
 
@@ -17,7 +17,7 @@ const algorithms = await db
 
 const idByKey = new Map(algorithms.map(({ id, key }) => [key, id]));
 
-const snippets: NewAlgorithmCodeSnippet[] = [];
+const snippets: NewAlgorithmSourceCode[] = [];
 
 for (const snippet of snippetsData) {
   if (!isCodeSnippetKind(snippet.kind)) {
@@ -37,7 +37,7 @@ for (const snippet of snippetsData) {
 
 if (snippets.length > 0) {
   await db
-    .insert(algorithmCodeSnippetsTable)
+    .insert(algorithmSourceCodesTable)
     .values(snippets)
     .onConflictDoNothing();
 }

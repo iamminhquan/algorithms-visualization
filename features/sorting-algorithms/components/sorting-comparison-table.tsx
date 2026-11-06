@@ -1,11 +1,17 @@
 import { GitCompare } from "lucide-react";
 import Link from "next/link";
 import { getButtonClassName } from "@/components/ui/button";
-import type { Algorithm } from "@/db/schema";
-import { findSortingComplexity } from "../complexity";
+import type { Algorithm, AlgorithmComplexity } from "@/db/schema";
+
+type SortingAlgorithmWithComplexity = Pick<
+  Algorithm,
+  "key" | "slug" | "name"
+> & {
+  readonly complexity: AlgorithmComplexity | null;
+};
 
 type SortingComparisonTableProps = {
-  algorithms: readonly Pick<Algorithm, "key" | "slug" | "name">[];
+  algorithms: readonly SortingAlgorithmWithComplexity[];
   compareHref?: string;
 };
 
@@ -26,10 +32,11 @@ export function SortingComparisonTable({
   algorithms,
   compareHref,
 }: SortingComparisonTableProps) {
-  const rows = algorithms.flatMap((algorithm) => {
-    const complexity = findSortingComplexity(algorithm.key);
-    return complexity ? [{ algorithm, complexity }] : [];
-  });
+  const rows = algorithms.flatMap((algorithm) =>
+    algorithm.complexity
+      ? [{ algorithm, complexity: algorithm.complexity }]
+      : [],
+  );
   if (rows.length === 0) {
     return null;
   }

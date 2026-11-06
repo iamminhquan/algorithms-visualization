@@ -1,18 +1,24 @@
 import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
+import type { User } from "@/db/schema";
 import {
-  type ISampleUser,
   USER_ROLES,
   USER_STATUSES,
-} from "../../_components/sample-data";
+  type UserStatus,
+} from "../../_components/user-meta";
 
 type UserFormFieldsProps = {
   idPrefix: string;
-  user?: ISampleUser;
+  user?: Pick<User, "name" | "email" | "role">;
+  status?: UserStatus;
 };
 
-export function UserFormFields({ idPrefix, user }: UserFormFieldsProps) {
+export function UserFormFields({
+  idPrefix,
+  user,
+  status,
+}: UserFormFieldsProps) {
   return (
     <>
       <FormField label="Họ và tên" htmlFor={`${idPrefix}-name`}>
@@ -54,10 +60,10 @@ export function UserFormFields({ idPrefix, user }: UserFormFieldsProps) {
           <Select
             id={`${idPrefix}-status`}
             name="status"
-            defaultValue={user?.status ?? "invited"}
+            defaultValue={status ?? "invited"}
           >
-            {Object.entries(USER_STATUSES).map(([status, option]) => (
-              <option key={status} value={status}>
+            {Object.entries(USER_STATUSES).map(([value, option]) => (
+              <option key={value} value={value}>
                 {option.label}
               </option>
             ))}

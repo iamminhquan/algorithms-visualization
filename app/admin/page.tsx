@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { isCategorySlug } from "@/features/catalog/categories";
+import { getUserCatalog } from "@/features/auth/queries";
 import { CategoryIcon } from "@/features/catalog/components/category-icon";
 import {
   getAlgorithmCatalog,
@@ -24,7 +24,7 @@ import {
 } from "./_components/admin-routes";
 import { PageHeader } from "./_components/page-header";
 import { Panel } from "./_components/panel";
-import { SAMPLE_CLASSES, SAMPLE_USERS } from "./_components/sample-data";
+import { SAMPLE_CLASSES } from "./_components/sample-data";
 import { SampleDataBadge } from "./_components/sample-data-badge";
 import { StatCard } from "./_components/stat-card";
 
@@ -72,9 +72,10 @@ const LINK_FOCUS_CLASS_NAME =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default";
 
 export default async function AdminOverviewPage() {
-  const [algorithms, categories] = await Promise.all([
+  const [algorithms, categories, users] = await Promise.all([
     getAlgorithmCatalog(),
     getCategoryCatalog(),
+    getUserCatalog(),
   ]);
   const activeCategoryCount = categories.filter(
     (category) => category.algorithms.length > 0,
@@ -82,9 +83,7 @@ export default async function AdminOverviewPage() {
   const ongoingClasses = SAMPLE_CLASSES.filter(
     (sampleClass) => sampleClass.status === "ongoing",
   );
-  const activeUserCount = SAMPLE_USERS.filter(
-    (user) => user.status === "active",
-  ).length;
+  const activeUserCount = users.filter((user) => user.emailVerified).length;
   const categoriesBySize = categories
     .map((category) => ({
       slug: category.slug,
@@ -122,10 +121,9 @@ export default async function AdminOverviewPage() {
         />
         <StatCard
           label="Người dùng"
-          value={SAMPLE_USERS.length}
+          value={users.length}
           hint={`${formatNumber(activeUserCount)} đang hoạt động`}
           icon={Users}
-          isSampleData
         />
         <StatCard
           label="Lớp học"
@@ -149,9 +147,7 @@ export default async function AdminOverviewPage() {
                 className="grid grid-cols-[minmax(0,12rem)_1fr_2rem] items-center gap-4"
               >
                 <span className="flex min-w-0 items-center gap-2.5 text-sm text-text-primary">
-                  {isCategorySlug(category.slug) && (
-                    <CategoryIcon slug={category.slug} size="sm" />
-                  )}
+                  <CategoryIcon slug={category.slug} size="sm" />
                   <span className="truncate">{category.name}</span>
                 </span>
                 <span
