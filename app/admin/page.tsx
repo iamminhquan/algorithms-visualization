@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { isCategorySlug } from "@/features/catalog/categories";
 import { CategoryIcon } from "@/features/catalog/components/category-icon";
 import {
   getAlgorithmCatalog,
@@ -149,9 +148,7 @@ export default async function AdminOverviewPage() {
                 className="grid grid-cols-[minmax(0,12rem)_1fr_2rem] items-center gap-4"
               >
                 <span className="flex min-w-0 items-center gap-2.5 text-sm text-text-primary">
-                  {isCategorySlug(category.slug) && (
-                    <CategoryIcon slug={category.slug} size="sm" />
-                  )}
+                  <CategoryIcon slug={category.slug} size="sm" />
                   <span className="truncate">{category.name}</span>
                 </span>
                 <span
