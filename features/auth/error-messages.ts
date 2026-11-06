@@ -18,6 +18,10 @@ const AUTH_ERROR_MESSAGES: ReadonlyMap<string, string> = new Map(
     EMAIL_NOT_VERIFIED: "Email của bạn chưa được xác thực.",
     PASSWORD_TOO_SHORT: `Mật khẩu phải có ít nhất ${MIN_PASSWORD_LENGTH} ký tự.`,
     PASSWORD_TOO_LONG: "Mật khẩu quá dài.",
+    PASSWORD_ALREADY_SET: "Tài khoản đã có mật khẩu.",
+    UNAUTHORIZED: "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+    SESSION_EXPIRED: "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+    SESSION_NOT_FRESH: "Phiên đăng nhập đã cũ. Vui lòng đăng nhập lại.",
     USER_ALREADY_EXISTS: "Email này đã được đăng ký.",
     USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL:
       "Email này đã được đăng ký. Vui lòng dùng email khác.",
