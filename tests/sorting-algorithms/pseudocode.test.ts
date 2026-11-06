@@ -1,18 +1,16 @@
 import { describe, expect, test } from "bun:test";
 import type { IEventPayload } from "@/engine/algorithm";
-import type { IPseudocode } from "@/engine/visualization";
 import {
-  BUBBLE_SORT_PSEUDOCODE,
   type BubbleSortStep,
   bubbleSort,
+  getBubbleSortActiveLine,
 } from "@/features/sorting-algorithms/bubble-sort";
-import { MERGE_SORT_PSEUDOCODE } from "@/features/sorting-algorithms/merge-sort";
-import { QUICK_SORT_PSEUDOCODE } from "@/features/sorting-algorithms/quick-sort";
 import {
-  SELECTION_SORT_PSEUDOCODE,
+  getSelectionSortActiveLine,
   type SelectionSortStep,
   selectionSort,
 } from "@/features/sorting-algorithms/selection-sort";
+import { getSeedPseudocodeLines } from "../helpers/seed-snippets";
 
 const SAMPLE_INPUTS: readonly (readonly number[])[] = [
   [],
@@ -24,6 +22,11 @@ const SAMPLE_INPUTS: readonly (readonly number[])[] = [
   [5, 4, 3, 2, 1],
   [3, 1, 3, 2, 1],
 ];
+
+const BUBBLE_SORT_LINES = getSeedPseudocodeLines("bubble-sort");
+const SELECTION_SORT_LINES = getSeedPseudocodeLines("selection-sort");
+const QUICK_SORT_LINES = getSeedPseudocodeLines("quick-sort");
+const MERGE_SORT_LINES = getSeedPseudocodeLines("merge-sort");
 
 const BUBBLE_SORT_KEYWORDS: Readonly<Record<BubbleSortStep["type"], string>> = {
   compare: "nếu a[i] > a[i + 1]",
@@ -41,33 +44,32 @@ const SELECTION_SORT_KEYWORDS: Readonly<
   complete: "kết thúc",
 };
 
-/**
- * Mọi bước của mọi input mẫu phải trỏ tới một dòng có thật, và dòng ứng với mỗi loại bước
- * phải nói đúng thao tác đó.
- */
 function expectEveryStepHasLine<TStep extends IEventPayload>(
-  run: (input: readonly number[]) => readonly { readonly payload: TStep }[],
-  pseudocode: IPseudocode<TStep>,
+  run: (input: readonly number[]) => readonly {
+    readonly payload: TStep;
+  }[],
+  getActiveLine: (step: TStep) => number | undefined,
+  lines: readonly string[],
   keywordOf: (step: TStep) => string,
 ) {
   for (const input of SAMPLE_INPUTS) {
     for (const { payload } of run(input)) {
-      const line = pseudocode.getActiveLine(payload);
+      const line = getActiveLine(payload);
       if (line === undefined) {
         throw new Error(`Bước "${payload.type}" không ứng với dòng nào`);
       }
-      expect(pseudocode.lines[line]).toContain(keywordOf(payload));
+      expect(lines[line]).toContain(keywordOf(payload));
     }
   }
 }
 
 describe("mã giả", () => {
   test("các dòng không trùng nhau vì panel dùng nội dung dòng làm key", () => {
-    for (const { lines } of [
-      BUBBLE_SORT_PSEUDOCODE,
-      SELECTION_SORT_PSEUDOCODE,
-      QUICK_SORT_PSEUDOCODE,
-      MERGE_SORT_PSEUDOCODE,
+    for (const lines of [
+      BUBBLE_SORT_LINES,
+      SELECTION_SORT_LINES,
+      QUICK_SORT_LINES,
+      MERGE_SORT_LINES,
     ]) {
       expect(new Set(lines).size).toBe(lines.length);
     }
@@ -76,7 +78,8 @@ describe("mã giả", () => {
   test("Bubble Sort: mỗi bước tô đúng dòng của thao tác", () => {
     expectEveryStepHasLine(
       (input) => bubbleSort.execute(input).events,
-      BUBBLE_SORT_PSEUDOCODE,
+      getBubbleSortActiveLine,
+      BUBBLE_SORT_LINES,
       (step) => BUBBLE_SORT_KEYWORDS[step.type],
     );
   });
@@ -86,22 +89,19 @@ describe("mã giả", () => {
     const earlyStop = sortedEvents.find(
       (event) => event.payload.type === "mark-sorted",
     );
-    expect(
-      earlyStop && BUBBLE_SORT_PSEUDOCODE.getActiveLine(earlyStop.payload),
-    ).toBe(4);
+    expect(earlyStop && getBubbleSortActiveLine(earlyStop.payload)).toBe(4);
 
     const passEnd = bubbleSort
       .execute([3, 2, 1])
       .events.find((event) => event.payload.type === "mark-sorted");
-    expect(
-      passEnd && BUBBLE_SORT_PSEUDOCODE.getActiveLine(passEnd.payload),
-    ).toBe(5);
+    expect(passEnd && getBubbleSortActiveLine(passEnd.payload)).toBe(5);
   });
 
   test("Selection Sort: mỗi bước tô đúng dòng của thao tác", () => {
     expectEveryStepHasLine(
       (input) => selectionSort.execute(input).events,
-      SELECTION_SORT_PSEUDOCODE,
+      getSelectionSortActiveLine,
+      SELECTION_SORT_LINES,
       (step) => SELECTION_SORT_KEYWORDS[step.type],
     );
   });

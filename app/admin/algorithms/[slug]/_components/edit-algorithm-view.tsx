@@ -2,12 +2,12 @@ import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getButtonClassName } from "@/components/ui/button";
+import { getAlgorithmSourceCode } from "@/features/catalog/code-queries";
 import {
   getAlgorithmCatalog,
   getCategoryCatalog,
 } from "@/features/catalog/queries";
 import { getAlgorithmHref } from "@/features/catalog/routes";
-import { findSourceCode } from "@/features/catalog/source-codes";
 import { ADMIN_ROUTES } from "../../../_components/admin-routes";
 import { PageHeader } from "../../../_components/page-header";
 import { AlgorithmForm } from "../../_components/algorithm-form";
@@ -28,6 +28,8 @@ export async function EditAlgorithmView({ params }: EditAlgorithmViewProps) {
   if (!algorithm) {
     notFound();
   }
+
+  const code = await getAlgorithmSourceCode(algorithm.key);
 
   return (
     <>
@@ -51,7 +53,7 @@ export async function EditAlgorithmView({ params }: EditAlgorithmViewProps) {
       <AlgorithmForm
         categories={categories.map(({ id, name }) => ({ id, name }))}
         algorithm={algorithm}
-        sourceCode={findSourceCode(algorithm.key)}
+        sourceCode={code.sourceCode}
       />
     </>
   );

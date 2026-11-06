@@ -6,7 +6,7 @@ import {
   type VisualTone,
 } from "@/engine/visualization";
 import { getBaseFrame, type ISortingFrame } from "../visualization";
-import type { QuickSortEvent } from "./types";
+import type { QuickSortEvent, QuickSortStep } from "./types";
 
 export const QUICK_SORT_LEGEND: readonly ILegendItem[] = [
   { tone: "default", label: "Chưa sắp xếp" },
@@ -147,4 +147,23 @@ export function getQuickSortVariables(
     { name: "j", value: j },
     { name: "p", value: p },
   ];
+}
+
+export function getQuickSortActiveLine(
+  step: QuickSortStep,
+): number | undefined {
+  switch (step.type) {
+    case "compare":
+      return 4;
+    case "swap":
+      return step.indices[1] === step.hi ? 6 : 5;
+    case "mark-sorted":
+      return 7;
+    case "complete":
+      return 11;
+    default: {
+      const unreachable: never = step;
+      throw new Error(`Bước không hợp lệ: ${JSON.stringify(unreachable)}`);
+    }
+  }
 }

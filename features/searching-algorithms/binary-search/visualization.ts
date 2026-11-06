@@ -10,7 +10,7 @@ import {
   type IPointer,
   type ISearchingFrame,
 } from "../visualization";
-import type { BinarySearchEvent } from "./types";
+import type { BinarySearchEvent, BinarySearchStep } from "./types";
 
 export const BINARY_SEARCH_LEGEND: readonly ILegendItem[] = [
   { tone: "default", label: "Trong vùng [low, high]" },
@@ -124,4 +124,27 @@ export function getBinarySearchVariables(
     { name: "mid", value: mid },
     { name: "a[mid]", value: elementAt(state.array, mid) },
   ];
+}
+
+export function getBinarySearchActiveLine(
+  step: BinarySearchStep,
+): number | undefined {
+  switch (step.type) {
+    case "init":
+      return 0;
+    case "pick-mid":
+      return 2;
+    case "compare":
+      return 3;
+    case "found":
+      return 4;
+    case "narrow":
+      return step.keep === "right" ? 6 : 8;
+    case "not-found":
+      return 9;
+    default: {
+      const unreachable: never = step;
+      throw new Error(`Bước không hợp lệ: ${JSON.stringify(unreachable)}`);
+    }
+  }
 }

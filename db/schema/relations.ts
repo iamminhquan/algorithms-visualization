@@ -1,6 +1,7 @@
 import { relations } from "drizzle-orm";
 import { algorithmsTable, categoriesTable, runsTable } from "./algorithms";
 import { accountsTable, sessionsTable, usersTable } from "./auth";
+import { algorithmCodeSnippetsTable } from "./sources";
 
 export const categoriesRelations = relations(categoriesTable, ({ many }) => ({
   algorithms: many(algorithmsTable),
@@ -14,6 +15,17 @@ export const algorithmsRelations = relations(
       references: [categoriesTable.id],
     }),
     runs: many(runsTable),
+    codeSnippets: many(algorithmCodeSnippetsTable),
+  }),
+);
+
+export const algorithmCodeSnippetsRelations = relations(
+  algorithmCodeSnippetsTable,
+  ({ one }) => ({
+    algorithm: one(algorithmsTable, {
+      fields: [algorithmCodeSnippetsTable.algorithmId],
+      references: [algorithmsTable.id],
+    }),
   }),
 );
 
