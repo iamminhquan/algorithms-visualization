@@ -9,11 +9,11 @@ import {
   getBaseFrame,
   type ISearchingFrame,
 } from "../visualization";
-import type { LinearSearchEvent } from "./types";
+import type { LinearSearchEvent, LinearSearchStep } from "./types";
 
 export const LINEAR_SEARCH_LEGEND: readonly ILegendItem[] = [
   { tone: "default", label: "Chưa xét" },
-  { tone: "compare", label: "i: đang so sánh với key" },
+  { tone: "compare", label: "Đang so sánh" },
   { tone: "discarded", label: "Đã loại" },
   { tone: "found", label: "Tìm thấy" },
 ];
@@ -70,4 +70,21 @@ export function getLinearSearchVariables(
     { name: "i", value: i },
     { name: "a[i]", value: elementAt(state.array, i) },
   ];
+}
+
+export function getLinearSearchActiveLine(
+  step: LinearSearchStep,
+): number | undefined {
+  switch (step.type) {
+    case "compare":
+      return 1;
+    case "found":
+      return 2;
+    case "not-found":
+      return 3;
+    default: {
+      const unreachable: never = step;
+      throw new Error(`Bước không hợp lệ: ${JSON.stringify(unreachable)}`);
+    }
+  }
 }

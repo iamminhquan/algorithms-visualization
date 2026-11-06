@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { ArrayBars } from "@/components/visualization/array-bars";
 import { ArrayInputForm } from "@/components/visualization/array-input-form";
-import { CodePanel } from "@/components/visualization/code-panel";
 import { PlaybackControls } from "@/components/visualization/playback-controls";
-import { usePlayback } from "@/components/visualization/use-playback";
+import { useEventPlayback } from "@/components/visualization/use-playback";
 import { VariablesPanel } from "@/components/visualization/variables-panel";
 import {
   type ILegendItem,
+  type IMetricItem,
   VisualizerFrame,
 } from "@/components/visualization/visualizer-frame";
 import type {
@@ -16,8 +16,10 @@ import type {
 import { createStepContext } from "@/engine/assistant";
 import {
   DEFAULT_ARRAY,
+  getEventIndex,
   type IPseudocode,
   type IVariable,
+  READY_STEP_DESCRIPTION,
   type SourceCode,
 } from "@/engine/visualization";
 import {
@@ -27,6 +29,7 @@ import {
 } from "../search-input";
 import type { ISearchInput, ISearchMetrics, SearchOutput } from "../types";
 import {
+  getReadyFrame,
   getRemainingCount,
   type ISearchingFrame,
   type SearchingEvent,
@@ -93,15 +96,31 @@ export function SearchingVisualizer<TEvent extends SearchingEvent>({
   const [run, setRun] = useState(() =>
     createRun(algorithm, normalize(DEFAULT_ARRAY), DEFAULT_TARGET),
   );
-  const controls = usePlayback(run.events.length);
+  const controls = useEventPlayback(run.events.length);
   const { index } = controls.state;
-  const event = run.events[index];
-  const frame = getFrame(event);
-  const metrics = [
-    { label: "Key", value: run.target },
-    { label: "So sánh", value: run.comparisons[index] },
-    { label: "Còn lại", value: getRemainingCount(event.state) },
-  ];
+  const eventIndex = getEventIndex(index);
+  const event = run.events[eventIndex];
+  const frame =
+    event === undefined ? getReadyFrame(run.values.length) : getFrame(event);
+  const metrics: readonly IMetricItem[] =
+    event === undefined
+      ? [
+          { label: "Key", value: run.target },
+          { label: "So sánh", value: 0 },
+          { label: "Còn lại", value: run.values.length },
+        ]
+      : [
+          { label: "Key", value: run.target },
+          { label: "So sánh", value: run.comparisons[eventIndex] },
+          { label: "Còn lại", value: getRemainingCount(event.state) },
+        ];
+  const variables: readonly IVariable[] =
+    event === undefined
+      ? [
+          { name: "n", value: run.values.length },
+          { name: "key", value: run.target },
+        ]
+      : getVariables(event);
 
   const rerun = (values: readonly number[], target: number) => {
     const next = createRun(algorithm, values, target);
@@ -131,42 +150,47 @@ export function SearchingVisualizer<TEvent extends SearchingEvent>({
           />
         </ArrayInputForm>
       }
-      description={event.description}
-      code={
-        <CodePanel
-          pseudocode={pseudocode.lines}
-          sourceCode={sourceCode}
-          activeLine={pseudocode.getActiveLine(event.payload)}
-        />
-      }
-      variables={<VariablesPanel variables={getVariables(event)} />}
+      description={event?.description ?? READY_STEP_DESCRIPTION}
+      code={{
+        pseudocode: pseudocode.lines,
+        sourceCode,
+        activeLine:
+          event === undefined
+            ? undefined
+            : pseudocode.getActiveLine(event.payload),
+      }}
+      variables={<VariablesPanel variables={variables} compact />}
       controls={<PlaybackControls controls={controls} />}
       legend={legend}
       metrics={metrics}
       assistant={{
-        context: createStepContext({
-          algorithmKey: algorithm.metadata.key,
-          input: { array: run.values, target: run.target },
-          events: run.events,
-          index,
-          pseudocode,
-          metrics,
-        }),
+        context:
+          event === undefined
+            ? undefined
+            : createStepContext({
+                algorithmKey: algorithm.metadata.key,
+                input: { array: run.values, target: run.target },
+                events: run.events,
+                index: eventIndex,
+                pseudocode,
+                metrics,
+              }),
         suggestions: SEARCHING_ASSISTANT_SUGGESTIONS,
         onAsk: controls.pause,
       }}
     >
       <ArrayBars
         className="h-full"
-        bracket={index === 0 ? undefined : frame.bracket}
+        bracket={frame.bracket}
         range={frame.range}
         captionRow
-        bars={event.state.array.map((value, position) => ({
+        bars={(event?.state.array ?? run.values).map((value, position) => ({
           id: position,
           value,
           tone: frame.tones[position],
           markers: frame.markers[position],
-          caption: position === run.output ? "key" : undefined,
+          caption:
+            event !== undefined && position === run.output ? "key" : undefined,
         }))}
       />
     </VisualizerFrame>

@@ -1,13 +1,13 @@
 import type { ILegendItem } from "@/components/visualization/visualizer-frame";
 import { elementAt, type IVariable } from "@/engine/visualization";
 import { getBaseFrame, type ISortingFrame } from "../visualization";
-import type { BubbleSortEvent } from "./types";
+import type { BubbleSortEvent, BubbleSortStep } from "./types";
 
 export const BUBBLE_SORT_LEGEND: readonly ILegendItem[] = [
   { tone: "default", label: "Chưa sắp xếp" },
   { tone: "compare", label: "Đang so sánh" },
   { tone: "swap", label: "Đang hoán đổi" },
-  { tone: "sorted", label: "Đã đúng vị trí" },
+  { tone: "sorted", label: "Đã sắp xếp" },
 ];
 
 /**
@@ -83,4 +83,23 @@ export function getBubbleSortVariables(
       value: elementAt(state.array, i === undefined ? undefined : i + 1),
     },
   ];
+}
+
+export function getBubbleSortActiveLine(
+  step: BubbleSortStep,
+): number | undefined {
+  switch (step.type) {
+    case "compare":
+      return 2;
+    case "swap":
+      return 3;
+    case "mark-sorted":
+      return step.indices.length > 1 ? 4 : 5;
+    case "complete":
+      return 6;
+    default: {
+      const unreachable: never = step;
+      throw new Error(`Bước không hợp lệ: ${JSON.stringify(unreachable)}`);
+    }
+  }
 }

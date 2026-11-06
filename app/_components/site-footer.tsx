@@ -1,48 +1,64 @@
-import { Mail } from "lucide-react";
+import { ArrowRight, GitCompare } from "lucide-react";
 import Link from "next/link";
-import { CATEGORIES } from "@/features/catalog/categories";
-import { getCategoryHref } from "@/features/catalog/routes";
+import { getCategoryCatalog } from "@/features/catalog/queries";
+import {
+  getCategoryHref,
+  getCompareHref,
+  VISUALIZATION_PATH,
+} from "@/features/catalog/routes";
 import { SITE_NAME } from "@/lib/site";
 import { Logo } from "./logo";
+
+interface IFooterLink {
+  readonly label: string;
+  readonly href: string;
+  readonly isExternal?: boolean;
+}
 
 interface IFooterColumn {
   readonly id: string;
   readonly title: string;
-  readonly links: readonly { readonly label: string; readonly href: string }[];
+  readonly links: readonly IFooterLink[];
 }
 
-const FOOTER_COLUMNS: readonly IFooterColumn[] = [
+const COMPARE_HREF = getCompareHref("sorting");
+const GITHUB_URL = "https://github.com/iamminhquan/algorithms-visualization";
+
+const STATIC_FOOTER_COLUMNS: readonly IFooterColumn[] = [
   {
     id: "footer-kham-pha",
     title: "Khám phá",
-    links: CATEGORIES.map(({ name, slug }) => ({
-      label: name,
-      href: getCategoryHref(slug),
-    })),
-  },
-  {
-    id: "footer-tai-nguyen",
-    title: "Tài nguyên",
     links: [
-      { label: "Hướng dẫn sử dụng", href: "#" },
-      { label: "Bảng độ phức tạp Big-O", href: "#" },
-      { label: "Câu hỏi thường gặp", href: "#" },
+      { label: "Trang chủ", href: "/" },
+      { label: "Lộ trình học", href: "/learn" },
+      { label: "Giới thiệu", href: "/#about" },
     ],
   },
   {
-    id: "footer-lien-he",
-    title: "Liên hệ",
+    id: "footer-du-an",
+    title: "Dự án",
     links: [
-      { label: "Email liên hệ", href: "#" },
-      { label: "GitHub dự án", href: "#" },
-      { label: "Gửi góp ý", href: "#" },
+      { label: "Mã nguồn GitHub", href: GITHUB_URL, isExternal: true },
+      {
+        label: "Báo lỗi & góp ý",
+        href: `${GITHUB_URL}/issues`,
+        isExternal: true,
+      },
+      {
+        label: "Tài liệu dự án",
+        href: `${GITHUB_URL}#readme`,
+        isExternal: true,
+      },
     ],
   },
 ];
 
-const LEGAL_LINKS = [
-  { label: "Điều khoản sử dụng", href: "#" },
-  { label: "Chính sách bảo mật", href: "#" },
+const BOTTOM_LINKS: readonly IFooterLink[] = [
+  {
+    label: "Giấy phép MIT",
+    href: `${GITHUB_URL}/blob/main/LICENSE`,
+    isExternal: true,
+  },
 ];
 
 const LINK_CLASS_NAME =
@@ -51,7 +67,43 @@ const LINK_CLASS_NAME =
 const SOCIAL_CLASS_NAME =
   "flex size-10 items-center justify-center rounded-full bg-text-inverse/10 text-text-muted transition-colors hover:text-text-inverse focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default dark:bg-bg-subtle dark:text-text-secondary dark:hover:text-text-primary";
 
-export function SiteFooter() {
+const COMPARE_CLASS_NAME =
+  "group inline-flex items-center gap-2 rounded-lg border border-text-inverse/20 px-4 py-2.5 text-sm font-medium text-text-inverse transition-colors hover:border-text-inverse/40 hover:bg-text-inverse/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default dark:border-border-default dark:text-text-primary dark:hover:border-border-strong dark:hover:bg-bg-subtle";
+
+function FooterLink({ link }: { link: IFooterLink }) {
+  return (
+    <Link
+      href={link.href}
+      target={link.isExternal ? "_blank" : undefined}
+      rel={link.isExternal ? "noreferrer" : undefined}
+      className={LINK_CLASS_NAME}
+    >
+      {link.label}
+    </Link>
+  );
+}
+
+export async function SiteFooter() {
+  const categories = await getCategoryCatalog().catch((error: unknown) => {
+    console.error("Không đọc được danh mục cho footer", error);
+    return [];
+  });
+  const footerColumns: readonly IFooterColumn[] = [
+    {
+      id: "footer-mo-phong",
+      title: "Mô phỏng",
+      links: [
+        { label: "Tất cả mô phỏng", href: VISUALIZATION_PATH },
+        { label: "So sánh thuật toán", href: COMPARE_HREF },
+        ...categories.map(({ name, slug }) => ({
+          label: name,
+          href: getCategoryHref(slug),
+        })),
+      ],
+    },
+    ...STATIC_FOOTER_COLUMNS,
+  ];
+
   return (
     <footer className="bg-bg-inverse dark:border-t dark:border-border-default dark:bg-bg-surface">
       <div className="mx-auto flex max-w-360 flex-col gap-12 px-4 pt-18 pb-8 sm:px-8 lg:px-20">
@@ -62,17 +114,28 @@ export function SiteFooter() {
               Nền tảng học thuật toán và cấu trúc dữ liệu qua mô phỏng trực
               quan, giúp bạn hiểu từng bước chạy thay vì chỉ đọc lý thuyết.
             </p>
+            <Link href={COMPARE_HREF} className={COMPARE_CLASS_NAME}>
+              <GitCompare aria-hidden="true" className="size-4" />
+              So sánh thuật toán
+              <ArrowRight
+                aria-hidden="true"
+                className="size-4 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none"
+              />
+            </Link>
             <div className="flex gap-3">
-              <Link href="#" aria-label="GitHub" className={SOCIAL_CLASS_NAME}>
+              <Link
+                href={GITHUB_URL}
+                target="_blank"
+                rel="noreferrer"
+                aria-label="GitHub dự án"
+                className={SOCIAL_CLASS_NAME}
+              >
                 <GithubIcon />
-              </Link>
-              <Link href="#" aria-label="Email" className={SOCIAL_CLASS_NAME}>
-                <Mail aria-hidden="true" className="size-4.5" />
               </Link>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 lg:flex-1 lg:gap-16">
-            {FOOTER_COLUMNS.map((column) => (
+            {footerColumns.map((column) => (
               <nav key={column.id} aria-labelledby={column.id}>
                 <h2
                   id={column.id}
@@ -83,9 +146,7 @@ export function SiteFooter() {
                 <ul className="mt-7.5 flex flex-col items-start gap-3.5 text-sm">
                   {column.links.map((link) => (
                     <li key={link.label}>
-                      <Link href={link.href} className={LINK_CLASS_NAME}>
-                        {link.label}
-                      </Link>
+                      <FooterLink link={link} />
                     </li>
                   ))}
                 </ul>
@@ -97,11 +158,9 @@ export function SiteFooter() {
         <div className="flex flex-col gap-3 text-xs text-text-muted sm:flex-row sm:items-center sm:justify-between dark:text-text-secondary">
           <p>© 2026 {SITE_NAME}. Xây dựng cho mục đích học tập.</p>
           <ul className="flex gap-6">
-            {LEGAL_LINKS.map((link) => (
+            {BOTTOM_LINKS.map((link) => (
               <li key={link.label}>
-                <Link href={link.href} className={LINK_CLASS_NAME}>
-                  {link.label}
-                </Link>
+                <FooterLink link={link} />
               </li>
             ))}
           </ul>

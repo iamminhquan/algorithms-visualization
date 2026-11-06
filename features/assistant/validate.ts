@@ -2,7 +2,6 @@ import {
   type AssistantRole,
   type IAssistantMessage,
   type IAssistantRequest,
-  isAssistantProviderId,
   MAX_ANSWER_LENGTH,
   MAX_HISTORY_MESSAGES,
   MAX_QUESTION_LENGTH,
@@ -60,9 +59,6 @@ export function parseAssistantRequest(
   if (!isRecord(body)) {
     return invalid("Yêu cầu gửi lên không đúng định dạng.");
   }
-  if (!isAssistantProviderId(body.provider)) {
-    return invalid("Không nhận ra mô hình AI được chọn.");
-  }
   if (!Array.isArray(body.messages) || body.messages.length === 0) {
     return invalid("Yêu cầu phải có ít nhất một tin nhắn.");
   }
@@ -85,7 +81,7 @@ export function parseAssistantRequest(
   }
 
   if (body.context === undefined) {
-    return { type: "valid", request: { provider: body.provider, messages } };
+    return { type: "valid", request: { messages } };
   }
   const context = parseAssistantContext(body.context);
   if (context.type === "invalid") {
@@ -93,6 +89,6 @@ export function parseAssistantRequest(
   }
   return {
     type: "valid",
-    request: { provider: body.provider, messages, context: context.context },
+    request: { messages, context: context.context },
   };
 }

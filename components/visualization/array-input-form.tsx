@@ -5,6 +5,7 @@ import {
   formatArrayInput,
   MIN_RANDOM_LENGTH,
   parseArrayInput,
+  sanitizeArrayInput,
 } from "@/engine/visualization";
 
 export type ArrayInputSource = "manual" | "random" | "preset";
@@ -101,7 +102,9 @@ export function ArrayInputForm({
             autoComplete="off"
             spellCheck={false}
             value={text}
-            onChange={(event) => setText(event.currentTarget.value)}
+            onChange={(event) =>
+              setText(sanitizeArrayInput(event.currentTarget.value))
+            }
             aria-invalid={error !== undefined}
             aria-describedby={describedBy}
             placeholder="Ví dụ: 5 3 8 1"

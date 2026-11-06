@@ -2,7 +2,9 @@
 
 import { LogOut } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { getButtonClassName } from "@/components/ui/button";
+import { PROFILE_PATH } from "@/features/auth/routes";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/cn";
 import { LoginLink } from "./login-link";
@@ -36,25 +38,33 @@ export function UserMenu({ className, onNavigate }: UserMenuProps) {
 
   return (
     <div className={cn("items-center gap-2", className)}>
-      {user.image ? (
-        <Image
-          src={user.image}
-          alt=""
-          width={32}
-          height={32}
-          className="size-8 shrink-0 rounded-full"
-        />
-      ) : (
-        <span
-          aria-hidden="true"
-          className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent-subtle text-sm font-semibold text-accent-text"
-        >
-          {getInitial(user.name)}
+      <Link
+        href={PROFILE_PATH}
+        onClick={onNavigate}
+        aria-label={`Hồ sơ của ${user.name}`}
+        title="Hồ sơ"
+        className="flex min-w-0 flex-1 items-center gap-2 rounded-lg transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default"
+      >
+        {user.image ? (
+          <Image
+            src={user.image}
+            alt=""
+            width={32}
+            height={32}
+            className="size-8 shrink-0 rounded-full"
+          />
+        ) : (
+          <span
+            aria-hidden="true"
+            className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent-subtle text-sm font-semibold text-accent-text"
+          >
+            {getInitial(user.name)}
+          </span>
+        )}
+        <span className="min-w-0 max-w-32 flex-1 truncate text-sm font-medium text-text-primary">
+          {user.name}
         </span>
-      )}
-      <span className="min-w-0 max-w-32 flex-1 truncate text-sm font-medium text-text-primary">
-        {user.name}
-      </span>
+      </Link>
       <button
         type="button"
         aria-label="Đăng xuất"

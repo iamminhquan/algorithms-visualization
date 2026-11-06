@@ -1,4 +1,3 @@
-import type { CategorySlug } from "@/features/catalog/categories";
 import { VISUALIZATION_PATH } from "@/features/catalog/routes";
 
 export interface INavItem {
@@ -15,7 +14,7 @@ export const NAV_ITEMS: readonly INavItem[] = [
 ];
 
 export interface IHeaderCategory {
-  readonly slug: CategorySlug;
+  readonly slug: string;
   readonly name: string;
   readonly tagline: string;
   readonly href: string;
@@ -27,15 +26,6 @@ export interface IHeaderAlgorithm {
   readonly name: string;
   readonly href: string;
 }
-
-export const CATEGORY_TAGLINES = {
-  sorting: "So sánh và hoán đổi từng bước",
-  "data-structures": "Stack, queue, danh sách liên kết",
-  searching: "Tìm kiếm tuyến tính và nhị phân",
-  "core-concepts": "Đệ quy và quy hoạch động",
-  graphs: "BFS, DFS và đường đi ngắn nhất",
-  trees: "Cây tìm kiếm và cây cân bằng",
-} satisfies Record<CategorySlug, string>;
 
 export function isCurrentPage(item: INavItem, pathname: string | null) {
   if (pathname === null || item.href.includes("#")) {

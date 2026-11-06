@@ -1,0 +1,65 @@
+[
+  {
+    "algorithmKey": "bubble-sort",
+    "bestTime": "O(n)",
+    "averageTime": "O(n²)",
+    "worstTime": "O(n²)",
+    "space": "O(1)",
+    "isStable": true,
+    "requiresSorted": null
+  },
+  {
+    "algorithmKey": "selection-sort",
+    "bestTime": "O(n²)",
+    "averageTime": "O(n²)",
+    "worstTime": "O(n²)",
+    "space": "O(1)",
+    "isStable": false,
+    "requiresSorted": null
+  },
+  {
+    "algorithmKey": "insertion-sort",
+    "bestTime": "O(n)",
+    "averageTime": "O(n²)",
+    "worstTime": "O(n²)",
+    "space": "O(1)",
+    "isStable": true,
+    "requiresSorted": null
+  },
+  {
+    "algorithmKey": "quick-sort",
+    "bestTime": "O(n log n)",
+    "averageTime": "O(n log n)",
+    "worstTime": "O(n²)",
+    "space": "O(log n)",
+    "isStable": false,
+    "requiresSorted": null
+  },
+  {
+    "algorithmKey": "merge-sort",
+    "bestTime": "O(n log n)",
+    "averageTime": "O(n log n)",
+    "worstTime": "O(n log n)",
+    "space": "O(n)",
+    "isStable": true,
+    "requiresSorted": null
+  },
+  {
+    "algorithmKey": "linear-search",
+    "bestTime": "O(1)",
+    "averageTime": "O(n)",
+    "worstTime": "O(n)",
+    "space": "O(1)",
+    "isStable": null,
+    "requiresSorted": false
+  },
+  {
+    "algorithmKey": "binary-search",
+    "bestTime": "O(1)",
+    "averageTime": "O(log n)",
+    "worstTime": "O(log n)",
+    "space": "O(1)",
+    "isStable": null,
+    "requiresSorted": true
+  }
+]

@@ -1,5 +1,5 @@
+import { Layers } from "lucide-react";
 import type { ReactNode } from "react";
-import { CATEGORIES, type CategorySlug } from "../categories";
 import { getCategoryCatalog } from "../queries";
 import { CategoryCard } from "./category-card";
 import { CoreConceptsIllustration } from "./illustrations/core-concepts-illustration";
@@ -9,32 +9,37 @@ import { SearchingIllustration } from "./illustrations/searching-illustration";
 import { SortingIllustration } from "./illustrations/sorting-illustration";
 import { TreeIllustration } from "./illustrations/tree-illustration";
 
-const ILLUSTRATIONS = {
+const ILLUSTRATIONS: Readonly<Record<string, ReactNode>> = {
   sorting: <SortingIllustration />,
   "data-structures": <DataStructureIllustration />,
   searching: <SearchingIllustration />,
   "core-concepts": <CoreConceptsIllustration />,
   graphs: <GraphIllustration />,
   trees: <TreeIllustration />,
-} satisfies Record<CategorySlug, ReactNode>;
+};
+
+function getIllustration(slug: string): ReactNode {
+  return (
+    ILLUSTRATIONS[slug] ?? (
+      <div className="flex h-full items-center justify-center bg-bg-subtle text-text-muted">
+        <Layers aria-hidden="true" className="size-10" />
+      </div>
+    )
+  );
+}
 
 export async function CategoryGrid() {
-  const simulationCounts = new Map(
-    (await getCategoryCatalog()).map((category) => [
-      category.slug,
-      category.algorithms.length,
-    ]),
-  );
+  const categories = await getCategoryCatalog();
 
   return (
     <section aria-label="Danh mục thuật toán" className="w-full max-w-310">
       <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {CATEGORIES.map((category) => (
+        {categories.map((category) => (
           <li key={category.slug}>
             <CategoryCard
               category={category}
-              illustration={ILLUSTRATIONS[category.slug]}
-              simulationCount={simulationCounts.get(category.slug) ?? 0}
+              illustration={getIllustration(category.slug)}
+              simulationCount={category.algorithms.length}
             />
           </li>
         ))}

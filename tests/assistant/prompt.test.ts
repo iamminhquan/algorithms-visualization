@@ -48,7 +48,9 @@ describe("formatContext", () => {
     expect(text.startsWith(`<${CONTEXT_TAG}>`)).toBe(true);
     expect(text.endsWith(`</${CONTEXT_TAG}>`)).toBe(true);
     expect(text).toContain("Bước đang xem: 2/9");
-    expect(text).toContain("Mô tả bước: Đang so sánh 38 và 27");
+    expect(text).toContain(
+      "Mô tả bước: Đang so sánh a[0] = 38 với a[1] = 27: vì 38 > 27 nên hoán đổi",
+    );
     expect(text).toContain("Đầu vào: [38,27,43]");
     expect(text).toContain('"type":"compare","indices":[0,1]');
     expect(text).toContain('"sortedIndices":[]');

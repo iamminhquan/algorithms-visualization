@@ -31,6 +31,13 @@ export function getBaseFrame(event: SortingEvent): ISortingFrame {
   };
 }
 
+export function getReadyFrame(length: number): ISortingFrame {
+  return {
+    tones: Array.from({ length }, () => "default"),
+    markers: Array.from({ length }, () => []),
+  };
+}
+
 export function getBarTones(event: SortingEvent): readonly VisualTone[] {
   const tones: VisualTone[] = event.state.array.map(() => "default");
   for (const index of event.state.sortedIndices) {

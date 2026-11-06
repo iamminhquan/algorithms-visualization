@@ -16,6 +16,7 @@ export const categoriesTable = pgTable(
     name: text("name").notNull().unique(),
     slug: text("slug").notNull().unique(),
     description: text("description"),
+    sortOrder: integer("sort_order").notNull().default(0),
     ...timestamps,
   },
   (table) => [

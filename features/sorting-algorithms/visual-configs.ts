@@ -1,63 +1,52 @@
 import type { ILegendItem } from "@/components/visualization/visualizer-frame";
-import type { IVariable, SourceCode } from "@/engine/visualization";
+import type { IVariable } from "@/engine/visualization";
 import {
   BUBBLE_SORT_KEY,
   BUBBLE_SORT_LEGEND,
-  BUBBLE_SORT_PSEUDOCODE,
-  BUBBLE_SORT_SOURCE_CODE,
   bubbleSort,
+  getBubbleSortActiveLine,
   getBubbleSortFrame,
   getBubbleSortVariables,
 } from "./bubble-sort";
 import type { SortingAlgorithm } from "./index";
 import {
+  getInsertionSortActiveLine,
   getInsertionSortFrame,
   getInsertionSortVariables,
   INSERTION_SORT_KEY,
   INSERTION_SORT_LEGEND,
-  INSERTION_SORT_PSEUDOCODE,
-  INSERTION_SORT_SOURCE_CODE,
   insertionSort,
 } from "./insertion-sort";
 import {
+  getMergeSortActiveLine,
   getMergeSortFrame,
   getMergeSortVariables,
   MERGE_SORT_KEY,
   MERGE_SORT_LEGEND,
-  MERGE_SORT_PSEUDOCODE,
-  MERGE_SORT_SOURCE_CODE,
   mergeSort,
 } from "./merge-sort";
 import {
+  getQuickSortActiveLine,
   getQuickSortFrame,
   getQuickSortVariables,
   QUICK_SORT_KEY,
   QUICK_SORT_LEGEND,
-  QUICK_SORT_PSEUDOCODE,
-  QUICK_SORT_SOURCE_CODE,
   quickSort,
 } from "./quick-sort";
 import type { SortingCounter } from "./run";
 import {
+  getSelectionSortActiveLine,
   getSelectionSortFrame,
   getSelectionSortVariables,
   SELECTION_SORT_KEY,
   SELECTION_SORT_LEGEND,
-  SELECTION_SORT_PSEUDOCODE,
-  SELECTION_SORT_SOURCE_CODE,
   selectionSort,
 } from "./selection-sort";
 import type { ISortingFrame, SortingEvent } from "./visualization";
 
-interface ISortingPseudocode {
-  readonly lines: readonly string[];
-  getActiveLine(step: SortingEvent["payload"]): number | undefined;
-}
-
 export interface ISortingVisualConfig {
   readonly algorithm: SortingAlgorithm;
-  readonly pseudocode: ISortingPseudocode;
-  readonly sourceCode: SourceCode;
+  getActiveLine(step: SortingEvent["payload"]): number | undefined;
   getFrame(event: SortingEvent): ISortingFrame;
   getVariables(event: SortingEvent): readonly IVariable[];
   readonly legend: readonly ILegendItem[];
@@ -71,8 +60,7 @@ const WRITE_COUNTERS: readonly SortingCounter[] = ["compare", "write"];
 export const SORTING_VISUAL_CONFIGS = {
   [BUBBLE_SORT_KEY]: {
     algorithm: bubbleSort,
-    pseudocode: BUBBLE_SORT_PSEUDOCODE,
-    sourceCode: BUBBLE_SORT_SOURCE_CODE,
+    getActiveLine: getBubbleSortActiveLine,
     getFrame: getBubbleSortFrame,
     getVariables: getBubbleSortVariables,
     legend: BUBBLE_SORT_LEGEND,
@@ -80,8 +68,7 @@ export const SORTING_VISUAL_CONFIGS = {
   },
   [SELECTION_SORT_KEY]: {
     algorithm: selectionSort,
-    pseudocode: SELECTION_SORT_PSEUDOCODE,
-    sourceCode: SELECTION_SORT_SOURCE_CODE,
+    getActiveLine: getSelectionSortActiveLine,
     getFrame: getSelectionSortFrame,
     getVariables: getSelectionSortVariables,
     legend: SELECTION_SORT_LEGEND,
@@ -89,8 +76,7 @@ export const SORTING_VISUAL_CONFIGS = {
   },
   [INSERTION_SORT_KEY]: {
     algorithm: insertionSort,
-    pseudocode: INSERTION_SORT_PSEUDOCODE,
-    sourceCode: INSERTION_SORT_SOURCE_CODE,
+    getActiveLine: getInsertionSortActiveLine,
     getFrame: getInsertionSortFrame,
     getVariables: getInsertionSortVariables,
     legend: INSERTION_SORT_LEGEND,
@@ -98,8 +84,7 @@ export const SORTING_VISUAL_CONFIGS = {
   },
   [QUICK_SORT_KEY]: {
     algorithm: quickSort,
-    pseudocode: QUICK_SORT_PSEUDOCODE,
-    sourceCode: QUICK_SORT_SOURCE_CODE,
+    getActiveLine: getQuickSortActiveLine,
     getFrame: getQuickSortFrame,
     getVariables: getQuickSortVariables,
     legend: QUICK_SORT_LEGEND,
@@ -107,8 +92,7 @@ export const SORTING_VISUAL_CONFIGS = {
   },
   [MERGE_SORT_KEY]: {
     algorithm: mergeSort,
-    pseudocode: MERGE_SORT_PSEUDOCODE,
-    sourceCode: MERGE_SORT_SOURCE_CODE,
+    getActiveLine: getMergeSortActiveLine,
     getFrame: getMergeSortFrame,
     getVariables: getMergeSortVariables,
     legend: MERGE_SORT_LEGEND,

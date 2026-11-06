@@ -2,19 +2,19 @@ import type { ComponentType } from "react";
 import { SEARCHING_VISUALIZERS } from "@/features/searching-algorithms/visualizers";
 import { SORTING_VISUALIZERS } from "@/features/sorting-algorithms/visualizers";
 import type { AlgorithmKey } from "./catalog";
+import type { IAlgorithmCodeContent } from "./code-content";
 
-/*
- * `satisfies` bắt lỗi ngay lúc typecheck khi thêm thuật toán vào registry mà quên trình mô phỏng.
- */
 const VISUALIZERS = {
   ...SORTING_VISUALIZERS,
   ...SEARCHING_VISUALIZERS,
-} satisfies Record<AlgorithmKey, ComponentType>;
+} satisfies Record<AlgorithmKey, ComponentType<IAlgorithmCodeContent>>;
 
-const visualizersByKey = new Map<string, ComponentType>(
+const visualizersByKey = new Map<string, ComponentType<IAlgorithmCodeContent>>(
   Object.entries(VISUALIZERS),
 );
 
-export function findVisualizer(key: string): ComponentType | undefined {
+export function findVisualizer(
+  key: string,
+): ComponentType<IAlgorithmCodeContent> | undefined {
   return visualizersByKey.get(key);
 }

@@ -6,15 +6,15 @@ import {
   type VisualTone,
 } from "@/engine/visualization";
 import { getBaseFrame, type ISortingFrame } from "../visualization";
-import type { SelectionSortEvent } from "./types";
+import type { SelectionSortEvent, SelectionSortStep } from "./types";
 
 export const SELECTION_SORT_LEGEND: readonly ILegendItem[] = [
   { tone: "default", label: "Chưa sắp xếp" },
-  { tone: "pointer", label: "i: đầu đoạn chưa sắp xếp" },
-  { tone: "pivot", label: "min: giá trị nhỏ nhất hiện tại" },
-  { tone: "compare", label: "j: đang so sánh" },
+  { tone: "pointer", label: "Vị trí đang xét" },
+  { tone: "pivot", label: "Giá trị nhỏ nhất" },
+  { tone: "compare", label: "Đang so sánh" },
   { tone: "swap", label: "Đang hoán đổi" },
-  { tone: "sorted", label: "Đã đúng vị trí" },
+  { tone: "sorted", label: "Đã sắp xếp" },
 ];
 
 /**
@@ -110,4 +110,23 @@ export function getSelectionSortVariables(
     { name: "a[j]", value: elementAt(state.array, j) },
     { name: "a[min]", value: elementAt(state.array, min) },
   ];
+}
+
+export function getSelectionSortActiveLine(
+  step: SelectionSortStep,
+): number | undefined {
+  switch (step.type) {
+    case "compare":
+      return 3;
+    case "swap":
+      return 4;
+    case "mark-sorted":
+      return 5;
+    case "complete":
+      return 6;
+    default: {
+      const unreachable: never = step;
+      throw new Error(`Bước không hợp lệ: ${JSON.stringify(unreachable)}`);
+    }
+  }
 }

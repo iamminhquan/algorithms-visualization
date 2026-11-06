@@ -21,7 +21,6 @@ import {
 } from "./helpers";
 
 const VALID_BODY = {
-  provider: "deepseek",
   messages: [
     { role: "assistant", content: "Chào bạn" },
     { role: "user", content: "Bubble Sort là gì?" },
@@ -71,12 +70,14 @@ describe("handleAssistantRequest: kiểm tra đầu vào", () => {
 
   test("sai cấu trúc trả 400 kèm thông báo từ bộ kiểm tra", async () => {
     const response = await handle(
-      createAssistantHttpRequest({ provider: "gpt", messages: [] }),
-      { providers: [createFakeProvider("deepseek")] },
+      createAssistantHttpRequest({ messages: [] }),
+      {
+        providers: [createFakeProvider("deepseek")],
+      },
     );
     expect(response.status).toBe(400);
     expect(parseErrorBody(await response.json())?.message).toBe(
-      "Không nhận ra mô hình AI được chọn.",
+      "Yêu cầu phải có ít nhất một tin nhắn.",
     );
   });
 
@@ -158,11 +159,11 @@ describe("handleAssistantRequest: gọi mô hình", () => {
     ]);
   });
 
-  test("báo mô hình đã chuyển sang khi mô hình được chọn lỗi", async () => {
+  test("mô hình ưu tiên lỗi thì tự chuyển sang mô hình kế tiếp", async () => {
     const response = await handle(createAssistantHttpRequest(VALID_BODY), {
       providers: [
-        createFakeProvider("deepseek", { failBefore: "unavailable" }),
         createFakeProvider("gemini"),
+        createFakeProvider("deepseek", { failBefore: "unavailable" }),
       ],
     });
     const events = await readStreamEvents(response);
@@ -374,7 +375,7 @@ describe("handleAssistantRequest: giới hạn số câu hỏi", () => {
 
   test("yêu cầu sai định dạng không bị tính vào giới hạn", async () => {
     let checks = 0;
-    await handle(createAssistantHttpRequest({ provider: "gpt" }), {
+    await handle(createAssistantHttpRequest({}), {
       providers: [createFakeProvider("deepseek")],
       rateLimiter: {
         check: async () => {

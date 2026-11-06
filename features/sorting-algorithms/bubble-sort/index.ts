@@ -1,6 +1,4 @@
 export { BUBBLE_SORT_KEY, bubbleSort, MAX_INPUT_LENGTH } from "./bubble-sort";
-export { BUBBLE_SORT_PSEUDOCODE } from "./pseudocode";
-export { BUBBLE_SORT_SOURCE_CODE } from "./source-code";
 export type {
   BubbleSortEvent,
   BubbleSortInput,
@@ -11,6 +9,7 @@ export type {
 } from "./types";
 export {
   BUBBLE_SORT_LEGEND,
+  getBubbleSortActiveLine,
   getBubbleSortFrame,
   getBubbleSortVariables,
 } from "./visualization";

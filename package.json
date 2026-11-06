@@ -11,9 +11,14 @@
     "format": "biome format --write",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
+    "db:migrate:prod": "DATABASE_URL=$PROD_DATABASE_URL DATABASE_URL_UNPOOLED=$PROD_DATABASE_URL drizzle-kit migrate",
+    "db:migrate:preview": "DATABASE_URL=$PREVIEW_DATABASE_URL DATABASE_URL_UNPOOLED=$PREVIEW_DATABASE_URL drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:seed": "bun --conditions=react-server db/seed.ts"
+    "db:seed": "bun --conditions=react-server db/seed.ts && bun --conditions=react-server db/seed-snippets.ts",
+    "db:seed:snippets": "bun --conditions=react-server db/seed-snippets.ts",
+    "db:seed:admin": "bun --conditions=react-server db/seed-admin.ts",
+    "db:seed:preview": "DATABASE_URL=$PREVIEW_DATABASE_URL bun --conditions=react-server db/seed.ts && DATABASE_URL=$PREVIEW_DATABASE_URL bun --conditions=react-server db/seed-snippets.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.3.0",

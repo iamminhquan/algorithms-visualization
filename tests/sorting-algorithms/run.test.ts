@@ -1,6 +1,12 @@
 import { describe, expect, test } from "bun:test";
+import { READY_STEP_DESCRIPTION } from "@/engine/visualization";
 import { SORTING_ALGORITHMS } from "@/features/sorting-algorithms";
-import { createSortingRun } from "@/features/sorting-algorithms/run";
+import { bubbleSort } from "@/features/sorting-algorithms/bubble-sort";
+import {
+  createSortingRun,
+  getRunDescription,
+  getRunMetrics,
+} from "@/features/sorting-algorithms/run";
 
 const SAMPLE_INPUTS: readonly (readonly number[])[] = [
   [],
@@ -28,5 +34,27 @@ describe("createSortingRun", () => {
         );
       }
     }
+  });
+});
+
+describe("bước sẵn sàng của một lần chạy", () => {
+  test("bộ đếm bằng 0 trước khi chạy và bắt đầu đếm từ sự kiện đầu tiên", () => {
+    const run = createSortingRun(bubbleSort, [5, 3, 8, 1]);
+
+    expect(getRunMetrics(run, 0, ["compare", "swap"])).toEqual([
+      { label: "So sánh", value: 0 },
+      { label: "Hoán đổi", value: 0 },
+    ]);
+    expect(getRunMetrics(run, 1, ["compare", "swap"])).toEqual([
+      { label: "So sánh", value: 1 },
+      { label: "Hoán đổi", value: 0 },
+    ]);
+  });
+
+  test("lời mô tả sẵn sàng thay cho sự kiện đầu tiên", () => {
+    const run = createSortingRun(bubbleSort, [5, 3, 8, 1]);
+
+    expect(getRunDescription(run, 0)).toBe(READY_STEP_DESCRIPTION);
+    expect(getRunDescription(run, 1)).toBe(run.events[0].description);
   });
 });

@@ -1,19 +1,20 @@
-import { and, eq, notExists, notInArray, sql } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import { db } from ".";
-import { algorithmsTable, categoriesTable } from "./schema";
-import { seedAlgorithms, seedCategories } from "./seed-data";
+import {
+  algorithmComplexitiesTable,
+  algorithmsTable,
+  categoriesTable,
+} from "./schema";
+import { seedAlgorithms, seedCategories, seedComplexities } from "./seed-data";
 
-const categories = await db
+await db
   .insert(categoriesTable)
   .values([...seedCategories])
-  .onConflictDoUpdate({
-    target: categoriesTable.slug,
-    set: {
-      name: sql`excluded.name`,
-      description: sql`excluded.description`,
-    },
-  })
-  .returning({ id: categoriesTable.id, slug: categoriesTable.slug });
+  .onConflictDoNothing();
+
+const categories = await db
+  .select({ id: categoriesTable.id, slug: categoriesTable.slug })
+  .from(categoriesTable);
 
 const categoryIdBySlug = new Map(categories.map(({ id, slug }) => [slug, id]));
 
@@ -40,24 +41,34 @@ await db
     },
   });
 
-/*
- * `CATEGORIES` là nguồn duy nhất của danh mục, nhưng upsert theo slug nên đổi slug sẽ để lại dòng cũ
- * (ví dụ "sap-xep") hiện trên `/visualization`. Xoá các dòng đó, trừ khi còn thuật toán trỏ tới.
- */
-await db.delete(categoriesTable).where(
-  and(
-    notInArray(
-      categoriesTable.slug,
-      seedCategories.map((category) => category.slug),
-    ),
-    notExists(
-      db
-        .select({ id: algorithmsTable.id })
-        .from(algorithmsTable)
-        .where(eq(algorithmsTable.categoryId, categoriesTable.id)),
-    ),
-  ),
-);
+const algorithms = await db
+  .select({ id: algorithmsTable.id, key: algorithmsTable.key })
+  .from(algorithmsTable);
+
+const algorithmIdByKey = new Map(algorithms.map(({ id, key }) => [key, id]));
+
+await db
+  .insert(algorithmComplexitiesTable)
+  .values(
+    seedComplexities.map(({ algorithmKey, ...complexity }) => {
+      const algorithmId = algorithmIdByKey.get(algorithmKey);
+      if (algorithmId === undefined) {
+        throw new Error(`Không tìm thấy thuật toán "${algorithmKey}"`);
+      }
+      return { ...complexity, algorithmId };
+    }),
+  )
+  .onConflictDoUpdate({
+    target: algorithmComplexitiesTable.algorithmId,
+    set: {
+      bestTime: sql`excluded.best_time`,
+      averageTime: sql`excluded.average_time`,
+      worstTime: sql`excluded.worst_time`,
+      space: sql`excluded.space`,
+      isStable: sql`excluded.is_stable`,
+      requiresSorted: sql`excluded.requires_sorted`,
+    },
+  });
 
 await db.$client.end();
 console.log("Đã chạy seed data!!!");

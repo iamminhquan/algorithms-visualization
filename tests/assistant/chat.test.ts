@@ -27,8 +27,8 @@ const SEND: ChatAction = {
 };
 
 describe("chatReducer", () => {
-  test("bắt đầu rỗng với mô hình mặc định DeepSeek", () => {
-    expect(createChatState()).toEqual({ provider: "deepseek", messages: [] });
+  test("bắt đầu với hội thoại rỗng", () => {
+    expect(createChatState()).toEqual({ messages: [] });
   });
 
   test("send thêm câu hỏi đã cắt khoảng trắng và chỗ trống cho câu trả lời", () => {
@@ -157,17 +157,10 @@ describe("chatReducer", () => {
     ).toBe(failedState);
   });
 
-  test("đổi mô hình giữ nguyên hội thoại, reset xoá hội thoại nhưng giữ mô hình", () => {
-    const state = applyAll(createChatState(), [
-      SEND,
-      { type: "set-provider", provider: "gemini" },
-    ]);
-    expect(state.provider).toBe("gemini");
+  test("reset xoá toàn bộ hội thoại", () => {
+    const state = chatReducer(createChatState(), SEND);
     expect(state.messages).toHaveLength(2);
-    expect(chatReducer(state, { type: "reset" })).toEqual({
-      provider: "gemini",
-      messages: [],
-    });
+    expect(chatReducer(state, { type: "reset" })).toEqual({ messages: [] });
   });
 });
 

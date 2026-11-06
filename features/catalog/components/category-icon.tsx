@@ -8,19 +8,22 @@ import {
   Waypoints,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
-import type { CategorySlug } from "../categories";
 
-/*
- * Màu icon lấy đúng màu nhấn trong hình minh hoạ card của danh mục đó trên trang chủ.
- */
-const CATEGORY_ICONS = {
+const CATEGORY_ICONS: Readonly<
+  Record<string, { readonly Icon: LucideIcon; readonly className: string }>
+> = {
   sorting: { Icon: ArrowDownWideNarrow, className: "text-state-swap" },
   "data-structures": { Icon: Layers, className: "text-state-pointer" },
   searching: { Icon: ScanSearch, className: "text-state-pointer" },
   "core-concepts": { Icon: Lightbulb, className: "text-state-sorted" },
   graphs: { Icon: Waypoints, className: "text-state-sorted" },
   trees: { Icon: Network, className: "text-state-compare" },
-} satisfies Record<CategorySlug, { Icon: LucideIcon; className: string }>;
+};
+
+const DEFAULT_CATEGORY_ICON = {
+  Icon: Layers,
+  className: "text-text-muted",
+} as const;
 
 const SIZE_CLASS_NAMES = {
   sm: { box: "size-7 rounded-md", icon: "size-4" },
@@ -28,15 +31,13 @@ const SIZE_CLASS_NAMES = {
 } as const;
 
 type CategoryIconProps = {
-  slug: CategorySlug;
+  slug: string;
   size?: keyof typeof SIZE_CLASS_NAMES;
 };
 
-/**
- * Ô vuông bo góc chứa icon của danh mục, trang trí nên ẩn khỏi trình đọc màn hình.
- */
 export function CategoryIcon({ slug, size = "md" }: CategoryIconProps) {
-  const { Icon, className: toneClassName } = CATEGORY_ICONS[slug];
+  const { Icon, className: toneClassName } =
+    CATEGORY_ICONS[slug] ?? DEFAULT_CATEGORY_ICON;
   return (
     <span
       aria-hidden="true"

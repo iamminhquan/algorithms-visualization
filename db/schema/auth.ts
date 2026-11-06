@@ -1,14 +1,36 @@
-import { boolean, index, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import {
+  boolean,
+  check,
+  index,
+  pgTable,
+  text,
+  timestamp,
+} from "drizzle-orm/pg-core";
 import { timestamps } from "./columns";
 
-export const usersTable = pgTable("users", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  email: text("email").notNull().unique(),
-  emailVerified: boolean("email_verified").default(false).notNull(),
-  image: text("image"),
-  ...timestamps,
-});
+export const USER_ROLE_VALUES = ["admin", "teacher", "student"] as const;
+
+export type UserRole = (typeof USER_ROLE_VALUES)[number];
+
+export const usersTable = pgTable(
+  "users",
+  {
+    id: text("id").primaryKey(),
+    name: text("name").notNull(),
+    email: text("email").notNull().unique(),
+    emailVerified: boolean("email_verified").default(false).notNull(),
+    image: text("image"),
+    role: text("role").$type<UserRole>().notNull().default("student"),
+    ...timestamps,
+  },
+  (table) => [
+    check(
+      "users_role_valid",
+      sql`${table.role} in ('admin', 'teacher', 'student')`,
+    ),
+  ],
+);
 
 export const sessionsTable = pgTable(
   "sessions",

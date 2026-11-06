@@ -28,42 +28,39 @@ async function drain(
 }
 
 describe("orderProviders", () => {
-  test("đưa mô hình được chọn lên đầu, giữ thứ tự phần còn lại", () => {
+  test("xếp mô hình theo thứ tự ưu tiên DeepSeek rồi Gemini", () => {
     const providers = [
-      createFakeProvider("deepseek"),
       createFakeProvider("gemini"),
+      createFakeProvider("deepseek"),
     ];
-    expect(orderProviders(providers, "gemini").map((p) => p.id)).toEqual([
-      "gemini",
+    expect(orderProviders(providers).map((p) => p.id)).toEqual([
       "deepseek",
+      "gemini",
     ]);
-    expect(orderProviders(providers, "deepseek").map((p) => p.id)).toEqual([
+    expect(orderProviders([...providers].reverse()).map((p) => p.id)).toEqual([
       "deepseek",
       "gemini",
     ]);
   });
 
-  test("mô hình được chọn chưa cấu hình thì giữ nguyên danh sách", () => {
-    const providers = [createFakeProvider("deepseek")];
-    expect(orderProviders(providers, "gemini").map((p) => p.id)).toEqual([
-      "deepseek",
-    ]);
+  test("giữ nguyên khi chỉ có một mô hình", () => {
+    const providers = [createFakeProvider("gemini")];
+    expect(orderProviders(providers).map((p) => p.id)).toEqual(["gemini"]);
   });
 });
 
 describe("openProviderStream", () => {
   test("không có mô hình nào thì ném NoProviderConfiguredError", async () => {
     await expect(
-      openProviderStream([], "deepseek", createProviderRequest()),
+      openProviderStream([], createProviderRequest()),
     ).rejects.toBeInstanceOf(NoProviderConfiguredError);
   });
 
-  test("dùng mô hình được chọn khi nó chạy được", async () => {
+  test("dùng mô hình ưu tiên khi nó chạy được", async () => {
     const deepseek = createFakeProvider("deepseek");
     const gemini = createFakeProvider("gemini");
     const opened = await openProviderStream(
-      [deepseek, gemini],
-      "deepseek",
+      [gemini, deepseek],
       createProviderRequest(),
     );
     expect(opened.provider).toBe("deepseek");
@@ -72,42 +69,37 @@ describe("openProviderStream", () => {
     expect(gemini.requests).toHaveLength(0);
   });
 
-  test("chuyển sang mô hình còn lại khi mô hình được chọn lỗi trước khi trả chữ", async () => {
+  test("chuyển sang mô hình kế tiếp khi mô hình ưu tiên lỗi trước khi trả chữ", async () => {
     const deepseek = createFakeProvider("deepseek", {
       failBefore: "rate-limited",
     });
     const gemini = createFakeProvider("gemini");
     const request = createProviderRequest();
-    const opened = await openProviderStream(
-      [deepseek, gemini],
-      "deepseek",
-      request,
-    );
+    const opened = await openProviderStream([gemini, deepseek], request);
     expect(opened.provider).toBe("gemini");
     expect(opened.fallbackFrom).toBe("deepseek");
     expect(gemini.requests).toEqual([request]);
   });
 
-  test("mô hình được chọn chưa cấu hình thì báo là đã chuyển", async () => {
+  test("mô hình ưu tiên chưa cấu hình thì dùng mô hình còn lại", async () => {
     const opened = await openProviderStream(
-      [createFakeProvider("deepseek")],
-      "gemini",
+      [createFakeProvider("gemini")],
       createProviderRequest(),
     );
-    expect(opened.provider).toBe("deepseek");
-    expect(opened.fallbackFrom).toBe("gemini");
+    expect(opened.provider).toBe("gemini");
+    expect(opened.fallbackFrom).toBeUndefined();
   });
 
   test("mô hình không trả về gì thì coi như lỗi và chuyển tiếp", async () => {
     const opened = await openProviderStream(
       [
-        createFakeProvider("deepseek", { chunks: [] }),
         createFakeProvider("gemini"),
+        createFakeProvider("deepseek", { chunks: [] }),
       ],
-      "deepseek",
       createProviderRequest(),
     );
     expect(opened.provider).toBe("gemini");
+    expect(opened.fallbackFrom).toBe("deepseek");
   });
 
   test("mọi mô hình lỗi thì ném AllProvidersFailedError kèm từng lỗi", async () => {
@@ -116,7 +108,6 @@ describe("openProviderStream", () => {
         createFakeProvider("deepseek", { failBefore: "auth" }),
         createFakeProvider("gemini", { failBefore: "unavailable" }),
       ],
-      "gemini",
       createProviderRequest(),
     ).catch((caught: unknown) => caught);
     expect(error).toBeInstanceOf(AllProvidersFailedError);
@@ -126,8 +117,8 @@ describe("openProviderStream", () => {
     expect(
       error.failures.map((failure) => [failure.provider, failure.failure]),
     ).toEqual([
-      ["gemini", "unavailable"],
       ["deepseek", "auth"],
+      ["gemini", "unavailable"],
     ]);
   });
 
@@ -135,7 +126,6 @@ describe("openProviderStream", () => {
     const gemini = createFakeProvider("gemini");
     const error = await openProviderStream(
       [createFakeProvider("deepseek", { failBefore: "aborted" }), gemini],
-      "deepseek",
       createProviderRequest(),
     ).catch((caught: unknown) => caught);
     expect(error).toBeInstanceOf(AssistantProviderError);
@@ -153,7 +143,6 @@ describe("openProviderStream", () => {
     };
     const error = await openProviderStream(
       [broken],
-      "deepseek",
       createProviderRequest(),
     ).catch((caught: unknown) => caught);
     expect(error).toBeInstanceOf(AllProvidersFailedError);

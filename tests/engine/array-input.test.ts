@@ -6,6 +6,8 @@ import {
   parseIntegerInput,
   RANDOM_MAX_VALUE,
   RANDOM_MIN_VALUE,
+  sanitizeArrayInput,
+  sanitizeIntegerInput,
 } from "@/engine/visualization";
 
 const MAX_LENGTH = 20;
@@ -52,6 +54,30 @@ describe("parseArrayInput", () => {
       type: "valid",
       values,
     });
+  });
+});
+
+describe("sanitizeArrayInput", () => {
+  test("giữ chữ số, dấu trừ và các dấu phân cách", () => {
+    expect(sanitizeArrayInput("38 27, -43; 3 9")).toBe("38 27, -43; 3 9");
+  });
+
+  test("bỏ chữ cái, dấu chấm và ký tự đặc biệt ngay khi nhập", () => {
+    expect(sanitizeArrayInput("6.5a")).toBe("65");
+    expect(sanitizeArrayInput("1e3 + 4")).toBe("13  4");
+    expect(sanitizeArrayInput("abc")).toBe("");
+  });
+});
+
+describe("sanitizeIntegerInput", () => {
+  test("giữ chữ số và dấu trừ", () => {
+    expect(sanitizeIntegerInput("-42")).toBe("-42");
+  });
+
+  test("bỏ mọi ký tự khác", () => {
+    expect(sanitizeIntegerInput("6.5a")).toBe("65");
+    expect(sanitizeIntegerInput("+7")).toBe("7");
+    expect(sanitizeIntegerInput("1 2")).toBe("12");
   });
 });
 

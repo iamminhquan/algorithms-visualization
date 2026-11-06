@@ -6,20 +6,26 @@ import { Select } from "@/components/ui/select";
 import { ArrayInputForm } from "@/components/visualization/array-input-form";
 import { ComparisonLane } from "@/components/visualization/comparison-lane";
 import { PlaybackControls } from "@/components/visualization/playback-controls";
-import { usePlayback } from "@/components/visualization/use-playback";
+import { useEventPlayback } from "@/components/visualization/use-playback";
 import {
   COMPARISON_PARAMS,
   DEFAULT_ARRAY,
   getComparisonTotal,
   getLaneIndex,
+  getStepCount,
   isLaneFinished,
   nearlySorted,
-  resolveComparisonPair,
+  resolveComparisonLanes,
   sortAscending,
   sortDescending,
 } from "@/engine/visualization";
 import { MAX_ARRAY_LENGTH } from "../array-input";
-import { createSortingRun, getRunMetrics, type ISortingRun } from "../run";
+import {
+  createSortingRun,
+  getRunDescription,
+  getRunMetrics,
+  type ISortingRun,
+} from "../run";
 import {
   findSortingVisualConfig,
   type ISortingVisualConfig,
@@ -34,10 +40,8 @@ export interface ISortingComparisonOption {
 
 type SortingComparisonProps = {
   options: readonly ISortingComparisonOption[];
-  initialPair: readonly [string, string];
+  initialLanes: readonly string[];
 };
-
-type LaneSide = "left" | "right";
 
 interface ILaneState {
   readonly option: ISortingComparisonOption;
@@ -47,14 +51,7 @@ interface ILaneState {
 
 interface IComparisonState {
   readonly values: readonly number[];
-  readonly left: ILaneState;
-  readonly right: ILaneState;
-}
-
-interface ILaneDisplay {
-  readonly side: LaneSide;
-  readonly label: string;
-  readonly selectLabel: string;
+  readonly lanes: readonly ILaneState[];
 }
 
 const ARRAY_PRESETS = [
@@ -62,11 +59,6 @@ const ARRAY_PRESETS = [
   { label: "Ngược", transform: sortDescending },
   { label: "Gần sắp xếp", transform: nearlySorted },
 ] as const;
-
-const LANE_DISPLAYS: readonly ILaneDisplay[] = [
-  { side: "left", label: "Bên trái", selectLabel: "Thuật toán bên trái" },
-  { side: "right", label: "Bên phải", selectLabel: "Thuật toán bên phải" },
-];
 
 function createLane(
   options: readonly ISortingComparisonOption[],
@@ -92,70 +84,77 @@ function rerunLane(lane: ILaneState, values: readonly number[]): ILaneState {
 
 export function SortingComparison({
   options,
-  initialPair,
+  initialLanes,
 }: SortingComparisonProps) {
   const idPrefix = useId();
   const [state, setState] = useState<IComparisonState>(() => ({
     values: DEFAULT_ARRAY,
-    left: createLane(options, initialPair[0], DEFAULT_ARRAY),
-    right: createLane(options, initialPair[1], DEFAULT_ARRAY),
+    lanes: initialLanes.map((slug) => createLane(options, slug, DEFAULT_ARRAY)),
   }));
-  const controls = usePlayback(
-    getComparisonTotal([
-      state.left.run.events.length,
-      state.right.run.events.length,
-    ]),
+  const controls = useEventPlayback(
+    getComparisonTotal(state.lanes.map((lane) => lane.run.events.length)),
   );
   const sharedIndex = controls.state.index;
   const searchParams = useSearchParams();
-  const urlLeft = searchParams.get(COMPARISON_PARAMS.left) ?? undefined;
-  const urlRight = searchParams.get(COMPARISON_PARAMS.right) ?? undefined;
-  const leftSlug = state.left.option.slug;
-  const rightSlug = state.right.option.slug;
 
   useEffect(() => {
-    const resolved = resolveComparisonPair(
-      options.map((option) => option.slug),
-      urlLeft,
-      urlRight,
+    const requested = COMPARISON_PARAMS.map(
+      (param) => searchParams.get(param) ?? undefined,
     );
-    if (resolved?.[0] === leftSlug && resolved[1] === rightSlug) {
+    const resolved = resolveComparisonLanes(
+      options.map((option) => option.slug),
+      requested,
+    );
+    if (resolved === undefined) {
+      return;
+    }
+    const current = state.lanes.map((lane) => lane.option.slug);
+    if (
+      resolved.length === current.length &&
+      resolved.every((slug, index) => slug === current[index])
+    ) {
       return;
     }
     const params = new URLSearchParams(window.location.search);
-    params.set(COMPARISON_PARAMS.left, leftSlug);
-    params.set(COMPARISON_PARAMS.right, rightSlug);
+    COMPARISON_PARAMS.forEach((param, index) => {
+      const slug = resolved[index];
+      if (slug !== undefined) {
+        params.set(param, slug);
+      }
+    });
     window.history.replaceState(null, "", `?${params}${window.location.hash}`);
-  }, [options, urlLeft, urlRight, leftSlug, rightSlug]);
+  }, [options, searchParams, state]);
 
   const applyState = (next: IComparisonState) => {
     setState(next);
     controls.load(
-      getComparisonTotal([
-        next.left.run.events.length,
-        next.right.run.events.length,
-      ]),
+      getComparisonTotal(next.lanes.map((lane) => lane.run.events.length)),
     );
   };
 
   const changeValues = (values: readonly number[]) => {
     applyState({
       values,
-      left: rerunLane(state.left, values),
-      right: rerunLane(state.right, values),
+      lanes: state.lanes.map((lane) => rerunLane(lane, values)),
     });
   };
 
-  const changeAlgorithm = (side: LaneSide, slug: string) => {
-    const otherSide = side === "left" ? "right" : "left";
-    if (slug === state[side].option.slug) {
+  const changeAlgorithm = (index: number, slug: string) => {
+    const current = state.lanes[index];
+    if (current === undefined || slug === current.option.slug) {
       return;
     }
-    applyState(
-      slug === state[otherSide].option.slug
-        ? { ...state, left: state.right, right: state.left }
-        : { ...state, [side]: createLane(options, slug, state.values) },
+    const duplicateIndex = state.lanes.findIndex(
+      (lane) => lane.option.slug === slug,
     );
+    const nextLanes = [...state.lanes];
+    if (duplicateIndex === -1) {
+      nextLanes[index] = createLane(options, slug, state.values);
+    } else {
+      nextLanes[index] = state.lanes[duplicateIndex];
+      nextLanes[duplicateIndex] = current;
+    }
+    applyState({ ...state, lanes: nextLanes });
   };
 
   return (
@@ -167,26 +166,27 @@ export function SortingComparison({
         onChange={changeValues}
       />
       <div className="grid gap-4 lg:grid-cols-2">
-        {LANE_DISPLAYS.map(({ side, label, selectLabel }) => {
-          const lane = state[side];
+        {state.lanes.map((lane, index) => {
           const { run } = lane;
-          const laneIndex = getLaneIndex(sharedIndex, run.events.length);
-          const selectId = `${idPrefix}-${side}`;
+          const laneTotal = getStepCount(run.events.length);
+          const laneIndex = getLaneIndex(sharedIndex, laneTotal);
+          const selectId = `${idPrefix}-lane-${index}`;
+          const label = `Mô phỏng ${index + 1}`;
 
           return (
             <ComparisonLane
-              key={side}
+              key={COMPARISON_PARAMS[index]}
               label={`${label}: ${lane.option.name}`}
               heading={
                 <>
                   <label htmlFor={selectId} className="sr-only">
-                    {selectLabel}
+                    {`Thuật toán mô phỏng ${index + 1}`}
                   </label>
                   <Select
                     id={selectId}
                     value={lane.option.slug}
                     onChange={(event) =>
-                      changeAlgorithm(side, event.target.value)
+                      changeAlgorithm(index, event.target.value)
                     }
                   >
                     {options.map((option) => (
@@ -198,9 +198,9 @@ export function SortingComparison({
                 </>
               }
               metrics={getRunMetrics(run, laneIndex, lane.config.counters)}
-              description={run.events[laneIndex].description}
+              description={getRunDescription(run, laneIndex)}
               finishedLabel={
-                isLaneFinished(sharedIndex, run.events.length)
+                isLaneFinished(sharedIndex, laneTotal)
                   ? `Xong sau ${run.events.length} bước`
                   : undefined
               }

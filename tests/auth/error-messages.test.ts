@@ -28,6 +28,15 @@ describe("getAuthErrorMessage", () => {
     );
   });
 
+  test("đổi mã lỗi thêm mật khẩu sang câu tiếng Việt", () => {
+    expect(getAuthErrorMessage({ code: "PASSWORD_ALREADY_SET" })).toContain(
+      "đã có mật khẩu",
+    );
+    expect(getAuthErrorMessage({ code: "UNAUTHORIZED" })).toContain(
+      "đăng nhập lại",
+    );
+  });
+
   test("ưu tiên báo giới hạn tần suất khi status là 429", () => {
     expect(getAuthErrorMessage({ code: "INVALID_OTP", status: 429 })).toContain(
       "quá nhanh",

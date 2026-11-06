@@ -1,14 +1,18 @@
 import { describe, expect, test } from "bun:test";
 import {
-  BINARY_SEARCH_PSEUDOCODE,
   type BinarySearchStep,
   binarySearch,
+  getBinarySearchActiveLine,
 } from "@/features/searching-algorithms/binary-search";
 import {
-  LINEAR_SEARCH_PSEUDOCODE,
+  getLinearSearchActiveLine,
   type LinearSearchStep,
   linearSearch,
 } from "@/features/searching-algorithms/linear-search";
+import { getSeedPseudocodeLines } from "../helpers/seed-snippets";
+
+const LINEAR_SEARCH_LINES = getSeedPseudocodeLines("linear-search");
+const BINARY_SEARCH_LINES = getSeedPseudocodeLines("binary-search");
 
 const SORTED_ARRAYS: readonly (readonly number[])[] = [
   [],
@@ -49,10 +53,7 @@ function getBinaryKeyword(step: BinarySearchStep): string {
 
 describe("mã giả tìm kiếm", () => {
   test("các dòng không trùng nhau vì panel dùng nội dung dòng làm key", () => {
-    for (const { lines } of [
-      LINEAR_SEARCH_PSEUDOCODE,
-      BINARY_SEARCH_PSEUDOCODE,
-    ]) {
+    for (const lines of [LINEAR_SEARCH_LINES, BINARY_SEARCH_LINES]) {
       expect(new Set(lines).size).toBe(lines.length);
       expect(lines.at(-1)).toBe("kết thúc");
     }
@@ -63,9 +64,9 @@ describe("mã giả tìm kiếm", () => {
       for (const target of [...array, 100]) {
         for (const { payload } of linearSearch.execute({ array, target })
           .events) {
-          const line = LINEAR_SEARCH_PSEUDOCODE.getActiveLine(payload);
+          const line = getLinearSearchActiveLine(payload);
           expect(line).toBeDefined();
-          expect(LINEAR_SEARCH_PSEUDOCODE.lines[line ?? -1]).toContain(
+          expect(LINEAR_SEARCH_LINES[line ?? -1]).toContain(
             LINEAR_SEARCH_KEYWORDS[payload.type],
           );
         }
@@ -78,9 +79,9 @@ describe("mã giả tìm kiếm", () => {
       for (const target of [...array, 0, 100]) {
         for (const { payload } of binarySearch.execute({ array, target })
           .events) {
-          const line = BINARY_SEARCH_PSEUDOCODE.getActiveLine(payload);
+          const line = getBinarySearchActiveLine(payload);
           expect(line).toBeDefined();
-          expect(BINARY_SEARCH_PSEUDOCODE.lines[line ?? -1]).toContain(
+          expect(BINARY_SEARCH_LINES[line ?? -1]).toContain(
             getBinaryKeyword(payload),
           );
         }

@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowRight, ChevronDown, GitCompare } from "lucide-react";
 import { AnimatePresence, m } from "motion/react";
 import Link from "next/link";
 import {
@@ -14,12 +14,13 @@ import {
 } from "react";
 import { flushSync } from "react-dom";
 import { CategoryIcon } from "@/features/catalog/components/category-icon";
-import { VISUALIZATION_PATH } from "@/features/catalog/routes";
+import { getCompareHref, VISUALIZATION_PATH } from "@/features/catalog/routes";
 import { cn } from "@/lib/cn";
 import { ComingSoonBadge } from "./coming-soon-badge";
 import { FOCUS_RING_CLASS_NAME, type IHeaderCategory } from "./nav-items";
 
 const CLOSE_DELAY_MS = 150;
+const COMPARE_HREF = getCompareHref("sorting");
 
 type SimulationMenuProps = {
   categories: readonly IHeaderCategory[];
@@ -206,24 +207,37 @@ export function SimulationMenu({
                   </li>
                 ))}
               </ul>
-              <div className="flex items-center justify-between gap-4 border-t border-border-default bg-bg-page px-4 py-3">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border-default bg-bg-page px-4 py-3">
                 <p className="text-xs text-text-secondary">
                   {categories.length} danh mục · {simulationCount} mô phỏng
                 </p>
-                <Link
-                  href={VISUALIZATION_PATH}
-                  onClick={close}
-                  className={cn(
-                    "group/all inline-flex items-center gap-1 rounded-md text-xs font-medium text-accent-text",
-                    FOCUS_RING_CLASS_NAME,
-                  )}
-                >
-                  Xem tất cả mô phỏng
-                  <ArrowRight
-                    aria-hidden="true"
-                    className="size-3.5 transition-transform group-hover/all:translate-x-0.5 motion-reduce:transition-none"
-                  />
-                </Link>
+                <div className="flex flex-wrap items-center gap-4">
+                  <Link
+                    href={COMPARE_HREF}
+                    onClick={close}
+                    className={cn(
+                      "group/compare inline-flex items-center gap-1 rounded-md text-xs font-medium text-accent-text",
+                      FOCUS_RING_CLASS_NAME,
+                    )}
+                  >
+                    <GitCompare aria-hidden="true" className="size-3.5" />
+                    So sánh thuật toán
+                  </Link>
+                  <Link
+                    href={VISUALIZATION_PATH}
+                    onClick={close}
+                    className={cn(
+                      "group/all inline-flex items-center gap-1 rounded-md text-xs font-medium text-accent-text",
+                      FOCUS_RING_CLASS_NAME,
+                    )}
+                  >
+                    Xem tất cả mô phỏng
+                    <ArrowRight
+                      aria-hidden="true"
+                      className="size-3.5 transition-transform group-hover/all:translate-x-0.5 motion-reduce:transition-none"
+                    />
+                  </Link>
+                </div>
               </div>
             </div>
           </m.div>

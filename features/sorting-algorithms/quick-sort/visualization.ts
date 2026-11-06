@@ -6,15 +6,15 @@ import {
   type VisualTone,
 } from "@/engine/visualization";
 import { getBaseFrame, type ISortingFrame } from "../visualization";
-import type { QuickSortEvent } from "./types";
+import type { QuickSortEvent, QuickSortStep } from "./types";
 
 export const QUICK_SORT_LEGEND: readonly ILegendItem[] = [
   { tone: "default", label: "Chưa sắp xếp" },
-  { tone: "pointer", label: "Khung: đoạn a[lo..hi], i: cuối vùng ≤ pivot" },
-  { tone: "pivot", label: "pivot: phần tử cuối đoạn" },
-  { tone: "compare", label: "j: đang so sánh với pivot" },
+  { tone: "pointer", label: "Vị trí đang xét" },
+  { tone: "pivot", label: "Pivot" },
+  { tone: "compare", label: "Đang so sánh" },
   { tone: "swap", label: "Đang hoán đổi" },
-  { tone: "sorted", label: "Đã đúng vị trí" },
+  { tone: "sorted", label: "Đã sắp xếp" },
 ];
 
 function createMarkers(
@@ -144,4 +144,23 @@ export function getQuickSortVariables(
     { name: "j", value: j },
     { name: "p", value: p },
   ];
+}
+
+export function getQuickSortActiveLine(
+  step: QuickSortStep,
+): number | undefined {
+  switch (step.type) {
+    case "compare":
+      return 4;
+    case "swap":
+      return step.indices[1] === step.hi ? 6 : 5;
+    case "mark-sorted":
+      return 7;
+    case "complete":
+      return 11;
+    default: {
+      const unreachable: never = step;
+      throw new Error(`Bước không hợp lệ: ${JSON.stringify(unreachable)}`);
+    }
+  }
 }

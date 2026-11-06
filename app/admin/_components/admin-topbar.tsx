@@ -1,14 +1,11 @@
 import { Bell, Search } from "lucide-react";
+import { headers } from "next/headers";
 import { Suspense } from "react";
 import { getButtonClassName } from "@/components/ui/button";
+import { auth } from "@/lib/auth";
 import { ThemeToggle } from "../../_components/header/theme-toggle";
 import { AdminMobileNav, CurrentAdminMobileNav } from "./admin-mobile-nav";
 import { UserAvatar } from "./user-avatar";
-
-const CURRENT_ADMIN = {
-  name: "Quản trị viên",
-  email: "admin@algoviz.dev",
-} as const;
 
 export function AdminTopbar() {
   return (
@@ -45,18 +42,42 @@ export function AdminTopbar() {
             className="absolute top-2 right-2 size-2 rounded-full bg-danger-default ring-2 ring-bg-surface"
           />
         </button>
-        <div className="ml-2 flex items-center gap-3 border-l border-border-default pl-3">
-          <UserAvatar name={CURRENT_ADMIN.name} />
-          <div className="hidden flex-col sm:flex">
-            <span className="text-sm font-medium text-text-primary">
-              {CURRENT_ADMIN.name}
-            </span>
-            <span className="text-xs text-text-muted">
-              {CURRENT_ADMIN.email}
-            </span>
-          </div>
-        </div>
+        <Suspense fallback={<CurrentAdminSkeleton />}>
+          <CurrentAdminSummary />
+        </Suspense>
       </div>
     </header>
+  );
+}
+
+async function CurrentAdminSummary() {
+  const session = await auth.api.getSession({ headers: await headers() });
+  const currentUser = session?.user;
+  const name = currentUser?.name ?? "Chưa đăng nhập";
+  const email = currentUser?.email ?? "Đăng nhập để xem thông tin";
+
+  return (
+    <div className="ml-2 flex items-center gap-3 border-l border-border-default pl-3">
+      <UserAvatar name={name} />
+      <div className="hidden flex-col sm:flex">
+        <span className="text-sm font-medium text-text-primary">{name}</span>
+        <span className="text-xs text-text-muted">{email}</span>
+      </div>
+    </div>
+  );
+}
+
+function CurrentAdminSkeleton() {
+  return (
+    <div
+      aria-hidden="true"
+      className="ml-2 flex animate-pulse items-center gap-3 border-l border-border-default pl-3"
+    >
+      <span className="size-8 rounded-full bg-bg-subtle" />
+      <div className="hidden flex-col gap-1 sm:flex">
+        <span className="h-4 w-24 rounded bg-bg-subtle" />
+        <span className="h-3 w-32 rounded bg-bg-subtle" />
+      </div>
+    </div>
   );
 }

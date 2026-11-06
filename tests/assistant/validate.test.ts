@@ -20,7 +20,6 @@ describe("parseAssistantRequest", () => {
   test("chấp nhận yêu cầu hợp lệ và cắt khoảng trắng hai đầu", () => {
     expect(
       parseAssistantRequest({
-        provider: "gemini",
         messages: [
           { role: "user", content: "  Xin chào  " },
           { role: "assistant", content: "Chào bạn" },
@@ -30,7 +29,6 @@ describe("parseAssistantRequest", () => {
     ).toEqual({
       type: "valid",
       request: {
-        provider: "gemini",
         messages: [
           { role: "user", content: "Xin chào" },
           { role: "assistant", content: "Chào bạn" },
@@ -42,12 +40,11 @@ describe("parseAssistantRequest", () => {
 
   test("bỏ qua trường thừa trong tin nhắn", () => {
     const result = parseAssistantRequest({
-      provider: "deepseek",
       messages: [{ ...QUESTION, id: 1, extra: true }],
     });
     expect(result).toEqual({
       type: "valid",
-      request: { provider: "deepseek", messages: [QUESTION] },
+      request: { messages: [QUESTION] },
     });
   });
 
@@ -57,17 +54,9 @@ describe("parseAssistantRequest", () => {
     }
   });
 
-  test("từ chối mô hình không được hỗ trợ", () => {
-    expect(expectInvalid({ provider: "claude", messages: [QUESTION] })).toBe(
-      "Không nhận ra mô hình AI được chọn.",
-    );
-  });
-
   test("từ chối khi thiếu hoặc rỗng danh sách tin nhắn", () => {
-    expect(expectInvalid({ provider: "gemini" })).toContain("ít nhất một");
-    expect(expectInvalid({ provider: "gemini", messages: [] })).toContain(
-      "ít nhất một",
-    );
+    expect(expectInvalid({})).toContain("ít nhất một");
+    expect(expectInvalid({ messages: [] })).toContain("ít nhất một");
   });
 
   test("từ chối lịch sử dài hơn giới hạn", () => {
@@ -75,7 +64,7 @@ describe("parseAssistantRequest", () => {
       { length: MAX_HISTORY_MESSAGES + 1 },
       () => QUESTION,
     );
-    expect(expectInvalid({ provider: "gemini", messages })).toContain(
+    expect(expectInvalid({ messages })).toContain(
       `tối đa ${MAX_HISTORY_MESSAGES}`,
     );
   });
@@ -85,24 +74,20 @@ describe("parseAssistantRequest", () => {
       { length: MAX_HISTORY_MESSAGES },
       () => QUESTION,
     );
-    expect(parseAssistantRequest({ provider: "gemini", messages }).type).toBe(
-      "valid",
-    );
+    expect(parseAssistantRequest({ messages }).type).toBe("valid");
   });
 
   test("báo đúng vị trí tin nhắn sai vai trò hoặc nội dung", () => {
     expect(
       expectInvalid({
-        provider: "gemini",
         messages: [QUESTION, { role: "system", content: "x" }],
       }),
     ).toBe("Tin nhắn thứ 2 không đúng định dạng.");
-    expect(
-      expectInvalid({ provider: "gemini", messages: [{ role: "user" }] }),
-    ).toBe("Tin nhắn thứ 1 không có nội dung dạng chữ.");
+    expect(expectInvalid({ messages: [{ role: "user" }] })).toBe(
+      "Tin nhắn thứ 1 không có nội dung dạng chữ.",
+    );
     expect(
       expectInvalid({
-        provider: "gemini",
         messages: [{ role: "user", content: "   " }],
       }),
     ).toBe("Tin nhắn thứ 1 đang để trống.");
@@ -111,13 +96,11 @@ describe("parseAssistantRequest", () => {
   test("giới hạn độ dài riêng cho câu hỏi và câu trả lời", () => {
     expect(
       parseAssistantRequest({
-        provider: "gemini",
         messages: [{ role: "user", content: "a".repeat(MAX_QUESTION_LENGTH) }],
       }).type,
     ).toBe("valid");
     expect(
       expectInvalid({
-        provider: "gemini",
         messages: [
           { role: "user", content: "a".repeat(MAX_QUESTION_LENGTH + 1) },
         ],
@@ -125,7 +108,6 @@ describe("parseAssistantRequest", () => {
     ).toContain(`giới hạn ${MAX_QUESTION_LENGTH}`);
     expect(
       parseAssistantRequest({
-        provider: "gemini",
         messages: [
           QUESTION,
           { role: "assistant", content: "b".repeat(MAX_ANSWER_LENGTH) },
@@ -135,7 +117,6 @@ describe("parseAssistantRequest", () => {
     ).toBe("valid");
     expect(
       expectInvalid({
-        provider: "gemini",
         messages: [
           QUESTION,
           { role: "assistant", content: "b".repeat(MAX_ANSWER_LENGTH + 1) },
@@ -148,7 +129,6 @@ describe("parseAssistantRequest", () => {
   test("tin nhắn cuối phải là câu hỏi của người dùng", () => {
     expect(
       expectInvalid({
-        provider: "gemini",
         messages: [QUESTION, { role: "assistant", content: "Trả lời" }],
       }),
     ).toBe("Tin nhắn cuối cùng phải là câu hỏi của người dùng.");

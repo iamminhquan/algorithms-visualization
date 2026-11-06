@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import {
   COMPARISON_PARAMS,
-  resolveComparisonPair,
+  resolveComparisonLanes,
 } from "@/engine/visualization";
 import { getCategoryBySlug } from "@/features/catalog/queries";
 import { getCategoryHref, VISUALIZATION_PATH } from "@/features/catalog/routes";
@@ -34,10 +34,9 @@ export async function CompareView({ params, searchParams }: CompareViewProps) {
   const options: ISortingComparisonOption[] = category.algorithms
     .filter((algorithm) => findSortingVisualConfig(algorithm.key))
     .map(({ key, slug, name }) => ({ key, slug, name }));
-  const pair = resolveComparisonPair(
+  const lanes = resolveComparisonLanes(
     options.map((option) => option.slug),
-    firstValue(query[COMPARISON_PARAMS.left]),
-    firstValue(query[COMPARISON_PARAMS.right]),
+    COMPARISON_PARAMS.map((param) => firstValue(query[param])),
   );
 
   return (
@@ -54,15 +53,16 @@ export async function CompareView({ params, searchParams }: CompareViewProps) {
           So sánh thuật toán sắp xếp
         </h1>
         <p className="max-w-160 text-lg leading-7.5 text-text-secondary">
-          Chạy hai thuật toán trên cùng một mảng để xem bên nào cần ít bước, ít
-          so sánh và ít hoán đổi hơn.
+          {lanes
+            ? `Chạy ${lanes.length} thuật toán trên cùng một mảng để xem thuật toán nào cần ít bước, ít so sánh và ít hoán đổi hơn.`
+            : "Chạy các thuật toán trên cùng một mảng để so sánh số bước, số lần so sánh và số lần hoán đổi."}
         </p>
       </header>
-      {pair ? (
+      {lanes ? (
         <SortingComparison
-          key={pair.join(",")}
+          key={lanes.join(",")}
           options={options}
-          initialPair={pair}
+          initialLanes={lanes}
         />
       ) : (
         <p className="rounded-xl border border-dashed border-border-strong bg-bg-subtle p-6 text-center text-text-secondary">
@@ -84,6 +84,8 @@ export function CompareViewSkeleton() {
       <div className="flex flex-col gap-4">
         <div className="h-32 rounded-xl bg-bg-subtle sm:h-24" />
         <div className="grid gap-4 lg:grid-cols-2">
+          <div className="h-120 rounded-xl bg-bg-subtle" />
+          <div className="h-120 rounded-xl bg-bg-subtle" />
           <div className="h-120 rounded-xl bg-bg-subtle" />
           <div className="h-120 rounded-xl bg-bg-subtle" />
         </div>

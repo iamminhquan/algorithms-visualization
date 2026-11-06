@@ -1,12 +1,11 @@
 import { Suspense } from "react";
-import { CATEGORIES } from "@/features/catalog/categories";
 import { getCategoryCatalog } from "@/features/catalog/queries";
 import { getAlgorithmHref, getCategoryHref } from "@/features/catalog/routes";
 import { Logo } from "../logo";
 import { CommandPalette } from "./command-palette";
 import { HeaderShell } from "./header-shell";
 import { CurrentMobileMenu, MobileMenu } from "./mobile-menu";
-import { CATEGORY_TAGLINES, type IHeaderCategory } from "./nav-items";
+import type { IHeaderCategory } from "./nav-items";
 import { CurrentNavLinks, NavLinks } from "./nav-links";
 import { ThemeToggle } from "./theme-toggle";
 import { UserMenu } from "./user-menu";
@@ -14,25 +13,19 @@ import { UserMenu } from "./user-menu";
 async function getHeaderCategories(): Promise<IHeaderCategory[]> {
   const catalog = await getCategoryCatalog().catch((error: unknown) => {
     console.error("Không đọc được danh mục cho header", error);
-    return null;
+    return [];
   });
-  const algorithmsBySlug = new Map(
-    catalog?.map((category) => [category.slug, category.algorithms]),
-  );
-  return CATEGORIES.map((category) => {
-    const algorithms = algorithmsBySlug.get(category.slug) ?? [];
-    return {
-      slug: category.slug,
-      name: category.name,
-      tagline: CATEGORY_TAGLINES[category.slug],
-      href: getCategoryHref(category.slug),
-      isComingSoon: catalog !== null && algorithms.length === 0,
-      algorithms: algorithms.map((algorithm) => ({
-        name: algorithm.name,
-        href: getAlgorithmHref(category.slug, algorithm.slug),
-      })),
-    };
-  });
+  return catalog.map((category) => ({
+    slug: category.slug,
+    name: category.name,
+    tagline: category.description ?? "",
+    href: getCategoryHref(category.slug),
+    isComingSoon: category.algorithms.length === 0,
+    algorithms: category.algorithms.map((algorithm) => ({
+      name: algorithm.name,
+      href: getAlgorithmHref(category.slug, algorithm.slug),
+    })),
+  }));
 }
 
 export async function SiteHeader() {

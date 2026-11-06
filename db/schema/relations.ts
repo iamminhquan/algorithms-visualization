@@ -1,6 +1,8 @@
 import { relations } from "drizzle-orm";
 import { algorithmsTable, categoriesTable, runsTable } from "./algorithms";
 import { accountsTable, sessionsTable, usersTable } from "./auth";
+import { algorithmComplexitiesTable } from "./complexities";
+import { algorithmSourceCodesTable } from "./sources";
 
 export const categoriesRelations = relations(categoriesTable, ({ many }) => ({
   algorithms: many(algorithmsTable),
@@ -13,7 +15,32 @@ export const algorithmsRelations = relations(
       fields: [algorithmsTable.categoryId],
       references: [categoriesTable.id],
     }),
+    complexity: one(algorithmComplexitiesTable, {
+      fields: [algorithmsTable.id],
+      references: [algorithmComplexitiesTable.algorithmId],
+    }),
     runs: many(runsTable),
+    sourceCodes: many(algorithmSourceCodesTable),
+  }),
+);
+
+export const algorithmComplexitiesRelations = relations(
+  algorithmComplexitiesTable,
+  ({ one }) => ({
+    algorithm: one(algorithmsTable, {
+      fields: [algorithmComplexitiesTable.algorithmId],
+      references: [algorithmsTable.id],
+    }),
+  }),
+);
+
+export const algorithmSourceCodesRelations = relations(
+  algorithmSourceCodesTable,
+  ({ one }) => ({
+    algorithm: one(algorithmsTable, {
+      fields: [algorithmSourceCodesTable.algorithmId],
+      references: [algorithmsTable.id],
+    }),
   }),
 );
 

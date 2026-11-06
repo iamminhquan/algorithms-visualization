@@ -149,14 +149,12 @@ describe("parseAssistantRequest với ngữ cảnh", () => {
 
   test("ngữ cảnh hợp lệ được giữ trong yêu cầu", () => {
     const result = parseAssistantRequest({
-      provider: "deepseek",
       messages,
       context: structuredClone(BUBBLE_SORT_CONTEXT),
     });
     expect(result).toEqual({
       type: "valid",
       request: {
-        provider: "deepseek",
         messages,
         context: BUBBLE_SORT_CONTEXT,
       },
@@ -165,7 +163,6 @@ describe("parseAssistantRequest với ngữ cảnh", () => {
 
   test("ngữ cảnh sai làm cả yêu cầu bị từ chối", () => {
     const result = parseAssistantRequest({
-      provider: "deepseek",
       messages,
       context: { algorithmKey: "bubble-sort" },
     });

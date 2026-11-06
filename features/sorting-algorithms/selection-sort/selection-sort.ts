@@ -53,11 +53,14 @@ function executeSelectionSort(input: SelectionSortInput): SelectionSortResult {
       const min = array[minIndex];
       const current = array[j];
       const isSmaller = current < min;
+      const relation = current < min ? "<" : current > min ? ">" : "=";
 
       comparisons++;
       record(
         { type: "compare", indices: [minIndex, j] },
-        `Đang so sánh ${min} và ${current}`,
+        `Đang so sánh a[${j}] = ${current} với min = ${min}: vì ${current} ${relation} ${min} nên ${
+          isSmaller ? `chọn ${current} làm min mới` : `giữ nguyên min là ${min}`
+        }`,
       );
 
       if (isSmaller) {
@@ -73,14 +76,14 @@ function executeSelectionSort(input: SelectionSortInput): SelectionSortResult {
       swaps++;
       record(
         { type: "swap", indices: [i, minIndex] },
-        `Đang hoán đổi ${first} và ${min}`,
+        `Đã hoán đổi ${first} và ${min} vì ${min} nhỏ hơn ${first}`,
       );
     }
 
     sortedUntil = i + 1;
     record(
       { type: "mark-sorted", indices: [i] },
-      `${array[i]} đã vào đúng vị trí`,
+      `Đã chốt ${array[i]} vào đúng vị trí ${i} vì ${array[i]} là nhỏ nhất trong đoạn còn lại`,
     );
   }
 
@@ -89,7 +92,7 @@ function executeSelectionSort(input: SelectionSortInput): SelectionSortResult {
     sortedUntil = array.length;
     record(
       { type: "mark-sorted", indices: [last] },
-      `${array[last]} đã vào đúng vị trí`,
+      `Đã chốt ${array[last]} vào đúng vị trí ${last} vì chỉ còn một phần tử`,
     );
   }
 

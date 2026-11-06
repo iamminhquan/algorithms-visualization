@@ -2,7 +2,6 @@ import { ExternalLink, Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getButtonClassName } from "@/components/ui/button";
-import { isCategorySlug } from "@/features/catalog/categories";
 import { CategoryIcon } from "@/features/catalog/components/category-icon";
 import { getCategoryCatalog } from "@/features/catalog/queries";
 import { getCategoryHref } from "@/features/catalog/routes";
@@ -68,9 +67,7 @@ export default async function AdminCategoriesPage() {
           <tr key={category.id} className={TABLE_ROW_CLASS_NAME}>
             <td className={TABLE_CELL_CLASS_NAME}>
               <div className="flex items-center gap-3">
-                {isCategorySlug(category.slug) && (
-                  <CategoryIcon slug={category.slug} size="sm" />
-                )}
+                <CategoryIcon slug={category.slug} size="sm" />
                 <div className="flex flex-col">
                   <span className="font-medium text-text-primary">
                     {category.name}

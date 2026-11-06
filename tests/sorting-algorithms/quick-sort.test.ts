@@ -1,8 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import {
+  getQuickSortActiveLine,
   getQuickSortFrame,
   getQuickSortVariables,
-  QUICK_SORT_PSEUDOCODE,
   quickSort,
 } from "@/features/sorting-algorithms/quick-sort";
 
@@ -56,7 +56,7 @@ describe("quickSort", () => {
       { type: "complete" },
     ]);
     expect(
-      events.map((event) => QUICK_SORT_PSEUDOCODE.getActiveLine(event.payload)),
+      events.map((event) => getQuickSortActiveLine(event.payload)),
     ).toEqual([4, 4, 5, 6, 7, 7, 7, 11]);
   });
 

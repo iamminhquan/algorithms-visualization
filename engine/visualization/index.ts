@@ -12,14 +12,17 @@ export {
   parseIntegerInput,
   RANDOM_MAX_VALUE,
   RANDOM_MIN_VALUE,
+  sanitizeArrayInput,
+  sanitizeIntegerInput,
 } from "./array-input";
 export { nearlySorted, sortAscending, sortDescending } from "./array-presets";
 export {
+  COMPARISON_LANE_COUNT,
   COMPARISON_PARAMS,
   getComparisonTotal,
   getLaneIndex,
   isLaneFinished,
-  resolveComparisonPair,
+  resolveComparisonLanes,
 } from "./comparison";
 export {
   BASE_STEP_INTERVAL_MS,
@@ -43,6 +46,12 @@ export {
   type CodeLanguage,
   type SourceCode,
 } from "./source-code";
+export {
+  getEventIndex,
+  getStepCount,
+  isReadyStep,
+  READY_STEP_DESCRIPTION,
+} from "./steps";
 export { countPayloadTypes, type PayloadTypeCounts } from "./timeline";
 export type { VisualTone } from "./tones";
 export { elementAt, type IVariable } from "./variables";

@@ -1,4 +1,5 @@
 import { type ComponentType, lazy } from "react";
+import type { IAlgorithmCodeContent } from "@/features/catalog/code-content";
 import { BINARY_SEARCH_KEY } from "./binary-search";
 import type { SearchingAlgorithm } from "./index";
 import { LINEAR_SEARCH_KEY } from "./linear-search";
@@ -20,4 +21,7 @@ const BinarySearchVisualizer = lazy(() =>
 export const SEARCHING_VISUALIZERS = {
   [LINEAR_SEARCH_KEY]: LinearSearchVisualizer,
   [BINARY_SEARCH_KEY]: BinarySearchVisualizer,
-} satisfies Record<SearchingAlgorithm["metadata"]["key"], ComponentType>;
+} satisfies Record<
+  SearchingAlgorithm["metadata"]["key"],
+  ComponentType<IAlgorithmCodeContent>
+>;

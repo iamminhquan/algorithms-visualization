@@ -2,14 +2,14 @@ import type { IBarMarker } from "@/components/visualization/array-bars";
 import type { ILegendItem } from "@/components/visualization/visualizer-frame";
 import { elementAt, type IVariable } from "@/engine/visualization";
 import { getBaseFrame, type ISortingFrame } from "../visualization";
-import type { MergeSortEvent } from "./types";
+import type { MergeSortEvent, MergeSortStep } from "./types";
 
 export const MERGE_SORT_LEGEND: readonly ILegendItem[] = [
   { tone: "default", label: "Chưa trộn" },
-  { tone: "pointer", label: "Khung: đoạn a[lo..hi] đang trộn, k: ô đang ghi" },
-  { tone: "compare", label: "i, j: đầu nửa trái left và nửa phải right" },
-  { tone: "swap", label: "Đang ghi vào a[k]" },
-  { tone: "sorted", label: "Đã sắp xếp xong" },
+  { tone: "pointer", label: "Ô đang ghi" },
+  { tone: "compare", label: "Đang so sánh" },
+  { tone: "swap", label: "Vừa ghi" },
+  { tone: "sorted", label: "Đã sắp xếp" },
 ];
 
 function createMarkers(
@@ -125,4 +125,23 @@ export function getMergeSortVariables(
     { name: "left[i]", value: elementAt(state.array, leftPosition) },
     { name: "right[j]", value: elementAt(state.array, rightPosition) },
   ];
+}
+
+export function getMergeSortActiveLine(
+  step: MergeSortStep,
+): number | undefined {
+  switch (step.type) {
+    case "compare":
+      return 7;
+    case "write":
+      return step.side === "left" ? 8 : 10;
+    case "mark-sorted":
+      return 12;
+    case "complete":
+      return 13;
+    default: {
+      const unreachable: never = step;
+      throw new Error(`Bước không hợp lệ: ${JSON.stringify(unreachable)}`);
+    }
+  }
 }

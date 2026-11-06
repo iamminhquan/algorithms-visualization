@@ -52,10 +52,16 @@ function executeMergeSort(input: MergeSortInput): MergeSortResult {
       const rightPosition = mid + 1 + j;
       const scope = { lo, mid, hi, i, j };
       let side: MergeSortSide = i < leftLength ? "left" : "right";
+      let compared = false;
 
       if (i < leftLength && j < rightLength) {
         const left = array[leftPosition];
         const right = array[rightPosition];
+        const takeLeft = left <= right;
+        const relation = left < right ? "<" : left > right ? ">" : "=";
+        const chosenSide = takeLeft ? "left" : "right";
+        const chosenIndex = takeLeft ? i : j;
+        const chosenValue = takeLeft ? left : right;
         comparisons++;
         record(
           {
@@ -63,9 +69,10 @@ function executeMergeSort(input: MergeSortInput): MergeSortResult {
             indices: [leftPosition, rightPosition],
             ...scope,
           },
-          `Đang so sánh left[${i}] = ${left} và right[${j}] = ${right}`,
+          `Đang so sánh left[${i}] = ${left} với right[${j}] = ${right}: vì ${left} ${relation} ${right} nên lấy ${chosenSide}[${chosenIndex}] là ${chosenValue} để ghi vào a[${k}]`,
         );
-        side = left <= right ? "left" : "right";
+        side = chosenSide;
+        compared = true;
       }
 
       const from = side === "left" ? leftPosition : rightPosition;
@@ -74,9 +81,9 @@ function executeMergeSort(input: MergeSortInput): MergeSortResult {
       writes++;
       record(
         { type: "write", from, to: k, side, ...scope },
-        side === "left"
-          ? `Ghi left[${i}] = ${value} vào a[${k}]`
-          : `Ghi right[${j}] = ${value} vào a[${k}]`,
+        compared
+          ? `Đã ghi ${value} vào a[${k}]`
+          : `Đã ghi ${value} vào a[${k}] vì nửa ${i >= leftLength ? "trái" : "phải"} đã hết`,
       );
 
       if (side === "left") {
@@ -104,7 +111,7 @@ function executeMergeSort(input: MergeSortInput): MergeSortResult {
     isDone = true;
     record(
       { type: "mark-sorted", indices: range(0, array.length) },
-      "Toàn bộ mảng đã được sắp xếp",
+      "Toàn bộ mảng đã được sắp xếp vì mọi đoạn đã được trộn",
     );
   }
 

@@ -211,17 +211,17 @@ describe("bubbleSort: vết thực thi", () => {
   test("mô tả phản ánh đúng thao tác và giá trị", () => {
     const { events } = bubbleSort.execute([5, 3]);
     expect(events.map((event) => event.description)).toEqual([
-      "Đang so sánh 5 và 3",
-      "Đang hoán đổi 5 và 3",
-      "5 đã vào đúng vị trí",
-      "3 đã vào đúng vị trí",
+      "Đang so sánh a[0] = 5 với a[1] = 3: vì 5 > 3 nên hoán đổi",
+      "Đã hoán đổi 5 và 3",
+      "Đã chốt 5 vào đúng vị trí 1 vì 5 là lớn nhất trong đoạn còn lại",
+      "3 đã vào đúng vị trí vì chỉ còn một phần tử",
       "Hoàn tất: 1 lần so sánh, 1 lần hoán đổi",
     ]);
     expect(
       bubbleSort.execute([1, 2]).events.map((event) => event.description),
     ).toEqual([
-      "Đang so sánh 1 và 2",
-      "Không còn hoán đổi, các phần tử còn lại đã đúng thứ tự",
+      "Đang so sánh a[0] = 1 với a[1] = 2: vì 1 < 2 nên không hoán đổi",
+      "Các phần tử còn lại đã đúng thứ tự vì không còn cặp nào sai thứ tự",
       "Hoàn tất: 1 lần so sánh, 0 lần hoán đổi",
     ]);
   });

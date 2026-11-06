@@ -1,15 +1,26 @@
 import { useState } from "react";
 import { ArrayInputForm } from "@/components/visualization/array-input-form";
-import { CodePanel } from "@/components/visualization/code-panel";
 import { PlaybackControls } from "@/components/visualization/playback-controls";
-import { usePlayback } from "@/components/visualization/use-playback";
+import { useEventPlayback } from "@/components/visualization/use-playback";
 import { VariablesPanel } from "@/components/visualization/variables-panel";
 import { VisualizerFrame } from "@/components/visualization/visualizer-frame";
 import { createStepContext } from "@/engine/assistant";
-import { DEFAULT_ARRAY } from "@/engine/visualization";
+import {
+  DEFAULT_ARRAY,
+  getEventIndex,
+  type IPseudocode,
+  type IVariable,
+  type SourceCode,
+} from "@/engine/visualization";
 import { MAX_ARRAY_LENGTH } from "../array-input";
-import { createSortingRun, getRunMetrics } from "../run";
+import {
+  createSortingRun,
+  getRunDescription,
+  getRunEvent,
+  getRunMetrics,
+} from "../run";
 import type { ISortingVisualConfig } from "../visual-configs";
+import type { SortingEvent } from "../visualization";
 import { SortingStage } from "./sorting-stage";
 
 const SORTING_ASSISTANT_SUGGESTIONS: readonly string[] = [
@@ -18,7 +29,10 @@ const SORTING_ASSISTANT_SUGGESTIONS: readonly string[] = [
   "Độ phức tạp của thuật toán là bao nhiêu?",
 ];
 
-type SortingVisualizerProps = ISortingVisualConfig;
+type SortingVisualizerProps = ISortingVisualConfig & {
+  readonly pseudocode: IPseudocode<SortingEvent["payload"]>;
+  readonly sourceCode: SourceCode;
+};
 
 export function SortingVisualizer({
   algorithm,
@@ -32,10 +46,15 @@ export function SortingVisualizer({
   const [run, setRun] = useState(() =>
     createSortingRun(algorithm, DEFAULT_ARRAY),
   );
-  const controls = usePlayback(run.events.length);
+  const controls = useEventPlayback(run.events.length);
   const { index } = controls.state;
-  const event = run.events[index];
+  const eventIndex = getEventIndex(index);
+  const event = getRunEvent(run, index);
   const metrics = getRunMetrics(run, index, counters);
+  const variables: readonly IVariable[] =
+    event === undefined
+      ? [{ name: "n", value: run.values.length }]
+      : getVariables(event);
 
   return (
     <VisualizerFrame
@@ -50,27 +69,31 @@ export function SortingVisualizer({
           }}
         />
       }
-      description={event.description}
-      code={
-        <CodePanel
-          pseudocode={pseudocode.lines}
-          sourceCode={sourceCode}
-          activeLine={pseudocode.getActiveLine(event.payload)}
-        />
-      }
-      variables={<VariablesPanel variables={getVariables(event)} />}
+      description={getRunDescription(run, index)}
+      code={{
+        pseudocode: pseudocode.lines,
+        sourceCode,
+        activeLine:
+          event === undefined
+            ? undefined
+            : pseudocode.getActiveLine(event.payload),
+      }}
+      variables={<VariablesPanel variables={variables} compact />}
       controls={<PlaybackControls controls={controls} />}
       legend={legend}
       metrics={metrics}
       assistant={{
-        context: createStepContext({
-          algorithmKey: algorithm.metadata.key,
-          input: run.values,
-          events: run.events,
-          index,
-          pseudocode,
-          metrics,
-        }),
+        context:
+          event === undefined
+            ? undefined
+            : createStepContext({
+                algorithmKey: algorithm.metadata.key,
+                input: run.values,
+                events: run.events,
+                index: eventIndex,
+                pseudocode,
+                metrics,
+              }),
         suggestions: SORTING_ASSISTANT_SUGGESTIONS,
         onAsk: controls.pause,
       }}

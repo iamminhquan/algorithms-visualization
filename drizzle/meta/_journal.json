@@ -22,6 +22,27 @@
       "when": 1793682605941,
       "tag": "0002_mixed_deathstrike",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793949467620,
+      "tag": "0003_overjoyed_namora",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793958787622,
+      "tag": "0004_modern_ink",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793958802219,
+      "tag": "0005_rename_algorithm_source_codes",
+      "breakpoints": true
     }
   ]
 }
