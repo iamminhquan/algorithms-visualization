@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   experimental: {
     agentFeedback: true,
+    authInterrupts: true,
   },
   images: {
     remotePatterns: [new URL("https://lh3.googleusercontent.com/**")],

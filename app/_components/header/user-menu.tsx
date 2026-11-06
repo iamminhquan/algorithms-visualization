@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut } from "lucide-react";
+import { LayoutDashboard, LogOut } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { getButtonClassName } from "@/components/ui/button";
@@ -65,6 +65,18 @@ export function UserMenu({ className, onNavigate }: UserMenuProps) {
           {user.name}
         </span>
       </Link>
+      {(user as { role?: string }).role === "admin" ||
+      (user as { role?: string }).role === "teacher" ? (
+        <Link
+          href="/admin"
+          onClick={onNavigate}
+          aria-label="Trang quản trị"
+          title="Quản trị"
+          className={getButtonClassName("ghost", "icon")}
+        >
+          <LayoutDashboard />
+        </Link>
+      ) : null}
       <button
         type="button"
         aria-label="Đăng xuất"

@@ -38,6 +38,16 @@ function sendVerificationOtpEmail(email: string, otp: string): void {
 }
 
 export const auth = betterAuth({
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        required: true,
+        defaultValue: "student",
+        input: false,
+      },
+    },
+  },
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {
