@@ -1,0 +1,38 @@
+[
+  {
+    "slug": "sorting",
+    "name": "Thuật toán sắp xếp",
+    "description": "Xem các thuật toán sắp xếp chạy từng bước: so sánh, hoán đổi và đặt phần tử vào đúng vị trí.",
+    "sortOrder": 0
+  },
+  {
+    "slug": "searching",
+    "name": "Thuật toán tìm kiếm",
+    "description": "Theo dõi tìm kiếm tuyến tính và nhị phân truy tìm giá trị mục tiêu qua từng phép so sánh.",
+    "sortOrder": 1
+  },
+  {
+    "slug": "data-structures",
+    "name": "Cấu trúc dữ liệu",
+    "description": "Mô phỏng tương tác cách danh sách liên kết, stack, queue và array lưu trữ và sắp xếp lại dữ liệu.",
+    "sortOrder": 2
+  },
+  {
+    "slug": "core-concepts",
+    "name": "Khái niệm cốt lõi",
+    "description": "Đi qua các ý tưởng nền tảng: lời gọi đệ quy rẽ nhánh và quy hoạch động tái sử dụng kết quả.",
+    "sortOrder": 3
+  },
+  {
+    "slug": "graphs",
+    "name": "Đồ thị",
+    "description": "Quan sát BFS, DFS và tìm đường đi ngắn nhất lan dần qua từng đỉnh và từng cạnh của đồ thị.",
+    "sortOrder": 4
+  },
+  {
+    "slug": "trees",
+    "name": "Cấu trúc cây",
+    "description": "Thêm, xoá, tìm kiếm trên cây nhị phân tìm kiếm và xem cây tự cân bằng lại sau mỗi thao tác.",
+    "sortOrder": 5
+  }
+]
