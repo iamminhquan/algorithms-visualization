@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { VisualizerSkeleton } from "@/components/visualization/visualizer-frame";
+import { getAlgorithmSourceCode } from "@/features/catalog/code-queries";
 import { AlgorithmVisualizer } from "@/features/catalog/components/algorithm-visualizer";
 import {
   getAlgorithmBySlug,
@@ -28,6 +29,8 @@ export async function AlgorithmView({ params }: AlgorithmViewProps) {
     notFound();
   }
 
+  const code = await getAlgorithmSourceCode(algorithm.key);
+
   return (
     <article className="flex flex-col gap-10">
       <header className="flex flex-col gap-4">
@@ -54,7 +57,11 @@ export async function AlgorithmView({ params }: AlgorithmViewProps) {
           </p>
         )}
       </header>
-      <AlgorithmVisualizer algorithmKey={algorithm.key} />
+      <AlgorithmVisualizer
+        algorithmKey={algorithm.key}
+        pseudocode={code.pseudocode}
+        sourceCode={code.sourceCode}
+      />
     </article>
   );
 }

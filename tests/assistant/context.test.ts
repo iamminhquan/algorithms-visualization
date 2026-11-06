@@ -4,17 +4,32 @@ import {
   formatStepLabel,
   MAX_CONTEXT_LENGTH,
 } from "@/engine/assistant";
-import { DEFAULT_ARRAY } from "@/engine/visualization";
+import { DEFAULT_ARRAY, type IPseudocode } from "@/engine/visualization";
 import { parseAssistantContext } from "@/features/assistant/validate-context";
 import {
-  BINARY_SEARCH_PSEUDOCODE,
+  BINARY_SEARCH_KEY,
+  type BinarySearchStep,
   binarySearch,
+  getBinarySearchActiveLine,
 } from "@/features/searching-algorithms/binary-search";
 import { MAX_ARRAY_LENGTH } from "@/features/sorting-algorithms/array-input";
 import {
-  BUBBLE_SORT_PSEUDOCODE,
+  BUBBLE_SORT_KEY,
+  type BubbleSortStep,
   bubbleSort,
+  getBubbleSortActiveLine,
 } from "@/features/sorting-algorithms/bubble-sort";
+import { getSeedPseudocodeLines } from "../helpers/seed-snippets";
+
+const BUBBLE_SORT_PSEUDOCODE: IPseudocode<BubbleSortStep> = {
+  lines: getSeedPseudocodeLines(BUBBLE_SORT_KEY),
+  getActiveLine: getBubbleSortActiveLine,
+};
+
+const BINARY_SEARCH_PSEUDOCODE: IPseudocode<BinarySearchStep> = {
+  lines: getSeedPseudocodeLines(BINARY_SEARCH_KEY),
+  getActiveLine: getBinarySearchActiveLine,
+};
 
 describe("createStepContext", () => {
   const { events } = bubbleSort.execute(DEFAULT_ARRAY);

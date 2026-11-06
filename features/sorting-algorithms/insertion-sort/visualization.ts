@@ -2,7 +2,7 @@ import type { IBarMarker } from "@/components/visualization/array-bars";
 import type { ILegendItem } from "@/components/visualization/visualizer-frame";
 import { elementAt, type IVariable } from "@/engine/visualization";
 import { getBaseFrame, type ISortingFrame } from "../visualization";
-import type { InsertionSortEvent } from "./types";
+import type { InsertionSortEvent, InsertionSortStep } from "./types";
 
 export const INSERTION_SORT_LEGEND: readonly ILegendItem[] = [
   { tone: "default", label: "Chưa xét" },
@@ -98,4 +98,23 @@ export function getInsertionSortVariables(
     },
     { name: "a[j]", value: elementAt(state.array, j) },
   ];
+}
+
+export function getInsertionSortActiveLine(
+  step: InsertionSortStep,
+): number | undefined {
+  switch (step.type) {
+    case "compare":
+      return 2;
+    case "swap":
+      return 3;
+    case "mark-sorted":
+      return 4;
+    case "complete":
+      return 5;
+    default: {
+      const unreachable: never = step;
+      throw new Error(`Bước không hợp lệ: ${JSON.stringify(unreachable)}`);
+    }
+  }
 }

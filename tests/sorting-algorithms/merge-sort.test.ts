@@ -1,8 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import {
+  getMergeSortActiveLine,
   getMergeSortFrame,
   getMergeSortVariables,
-  MERGE_SORT_PSEUDOCODE,
   mergeSort,
 } from "@/features/sorting-algorithms/merge-sort";
 import { trackElementIds } from "@/features/sorting-algorithms/visualization";
@@ -108,7 +108,7 @@ describe("mergeSort", () => {
       [1, 2, 3],
     ]);
     expect(
-      events.map((event) => MERGE_SORT_PSEUDOCODE.getActiveLine(event.payload)),
+      events.map((event) => getMergeSortActiveLine(event.payload)),
     ).toEqual([7, 10, 8, 7, 8, 7, 10, 8, 12, 13]);
   });
 

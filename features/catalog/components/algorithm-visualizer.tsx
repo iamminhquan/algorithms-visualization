@@ -2,14 +2,17 @@
 
 import { Suspense } from "react";
 import { VisualizerSkeleton } from "@/components/visualization/visualizer-frame";
+import type { IAlgorithmCodeContent } from "../code-content";
 import { findVisualizer } from "../visualizers";
 
-type AlgorithmVisualizerProps = {
+type AlgorithmVisualizerProps = IAlgorithmCodeContent & {
   algorithmKey: string;
 };
 
 export function AlgorithmVisualizer({
   algorithmKey,
+  pseudocode,
+  sourceCode,
 }: AlgorithmVisualizerProps) {
   const Visualizer = findVisualizer(algorithmKey);
   if (!Visualizer) {
@@ -22,7 +25,11 @@ export function AlgorithmVisualizer({
 
   return (
     <Suspense fallback={<VisualizerSkeleton />}>
-      <Visualizer key={algorithmKey} />
+      <Visualizer
+        key={algorithmKey}
+        pseudocode={pseudocode}
+        sourceCode={sourceCode}
+      />
     </Suspense>
   );
 }

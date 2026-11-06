@@ -9,7 +9,9 @@ import { createStepContext } from "@/engine/assistant";
 import {
   DEFAULT_ARRAY,
   getEventIndex,
+  type IPseudocode,
   type IVariable,
+  type SourceCode,
 } from "@/engine/visualization";
 import { MAX_ARRAY_LENGTH } from "../array-input";
 import {
@@ -19,6 +21,7 @@ import {
   getRunMetrics,
 } from "../run";
 import type { ISortingVisualConfig } from "../visual-configs";
+import type { SortingEvent } from "../visualization";
 import { SortingStage } from "./sorting-stage";
 
 const SORTING_ASSISTANT_SUGGESTIONS: readonly string[] = [
@@ -27,7 +30,10 @@ const SORTING_ASSISTANT_SUGGESTIONS: readonly string[] = [
   "Độ phức tạp của thuật toán là bao nhiêu?",
 ];
 
-type SortingVisualizerProps = ISortingVisualConfig;
+type SortingVisualizerProps = ISortingVisualConfig & {
+  readonly pseudocode: IPseudocode<SortingEvent["payload"]>;
+  readonly sourceCode: SourceCode;
+};
 
 export function SortingVisualizer({
   algorithm,

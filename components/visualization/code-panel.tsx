@@ -90,7 +90,11 @@ function PseudocodeLines({ lines, activeLine }: PseudocodeLinesProps) {
         const indent = Math.floor(
           (line.length - line.trimStart().length) / SPACES_PER_INDENT,
         );
-        const active = index === activeLine;
+        const active =
+          activeLine !== undefined &&
+          activeLine >= 0 &&
+          activeLine < lines.length &&
+          index === activeLine;
         return (
           <li
             key={line}
