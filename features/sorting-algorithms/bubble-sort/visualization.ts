@@ -7,7 +7,7 @@ export const BUBBLE_SORT_LEGEND: readonly ILegendItem[] = [
   { tone: "default", label: "Chưa sắp xếp" },
   { tone: "compare", label: "Đang so sánh" },
   { tone: "swap", label: "Đang hoán đổi" },
-  { tone: "sorted", label: "Đã đúng vị trí" },
+  { tone: "sorted", label: "Đã sắp xếp" },
 ];
 
 /**

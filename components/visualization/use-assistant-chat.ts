@@ -1,6 +1,5 @@
 import { useEffect, useReducer, useRef } from "react";
 import {
-  type AssistantProviderId,
   buildChatHistory,
   chatReducer,
   createChatState,
@@ -11,14 +10,12 @@ import {
 import { requestAssistantReply } from "./assistant-client";
 
 export interface IAssistantChat {
-  readonly provider: AssistantProviderId;
   readonly messages: readonly IChatMessage[];
   readonly isStreaming: boolean;
   readonly send: (question: string, context?: IAssistantContext) => void;
   readonly stop: () => void;
   readonly retry: () => void;
   readonly reset: () => void;
-  readonly setProvider: (provider: AssistantProviderId) => void;
 }
 
 function createMessageId(): string {
@@ -43,7 +40,6 @@ export function useAssistantChat(): IAssistantChat {
     abortRef.current = controller;
     const outcome = await requestAssistantReply(
       {
-        provider: state.provider,
         messages: buildChatHistory(history),
         context,
       },
@@ -110,7 +106,6 @@ export function useAssistantChat(): IAssistantChat {
   };
 
   return {
-    provider: state.provider,
     messages: state.messages,
     isStreaming,
     send,
@@ -120,6 +115,5 @@ export function useAssistantChat(): IAssistantChat {
       abortRef.current?.abort();
       dispatch({ type: "reset" });
     },
-    setProvider: (provider) => dispatch({ type: "set-provider", provider }),
   };
 }

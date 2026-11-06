@@ -69,6 +69,17 @@ export function parseArrayInput(
   return { type: "valid", values };
 }
 
+const INVALID_ARRAY_INPUT_CHARS = /[^0-9\s,;-]/g;
+const INVALID_INTEGER_INPUT_CHARS = /[^0-9-]/g;
+
+export function sanitizeArrayInput(text: string): string {
+  return text.replace(INVALID_ARRAY_INPUT_CHARS, "");
+}
+
+export function sanitizeIntegerInput(text: string): string {
+  return text.replace(INVALID_INTEGER_INPUT_CHARS, "");
+}
+
 export function formatArrayInput(values: readonly number[]): string {
   return values.join(" ");
 }

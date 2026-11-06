@@ -1,6 +1,9 @@
 import { CircleAlert, Shuffle } from "lucide-react";
 import { useId, useState } from "react";
-import { parseIntegerInput } from "@/engine/visualization";
+import {
+  parseIntegerInput,
+  sanitizeIntegerInput,
+} from "@/engine/visualization";
 
 type TargetInputFormProps = {
   value: number;
@@ -55,7 +58,9 @@ export function TargetInputForm({
           autoComplete="off"
           spellCheck={false}
           value={text}
-          onChange={(event) => setText(event.currentTarget.value)}
+          onChange={(event) =>
+            setText(sanitizeIntegerInput(event.currentTarget.value))
+          }
           aria-invalid={error !== undefined}
           aria-describedby={error ? errorId : undefined}
           className="h-10 w-20 min-w-0 rounded-lg border border-border-strong bg-bg-surface px-3 font-mono text-sm text-text-primary outline-none focus-visible:ring-2 focus-visible:ring-accent-default"

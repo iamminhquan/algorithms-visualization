@@ -9,6 +9,7 @@ const SIZE_CLASS_NAMES = {
   sm: "max-w-md",
   md: "max-w-lg",
   lg: "max-w-2xl",
+  xl: "max-w-5xl",
 } as const;
 
 type DialogProps = {

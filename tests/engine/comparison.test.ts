@@ -4,20 +4,26 @@ import {
   getComparisonTotal,
   getLaneIndex,
   isLaneFinished,
-  resolveComparisonPair,
+  resolveComparisonLanes,
 } from "@/engine/visualization";
 
-const SLUGS = ["bubble-sort", "selection-sort", "insertion-sort"];
+const SLUGS = [
+  "bubble-sort",
+  "selection-sort",
+  "insertion-sort",
+  "quick-sort",
+  "merge-sort",
+];
 
 describe("COMPARISON_PARAMS", () => {
-  test("tên tham số URL của hai bên", () => {
-    expect(COMPARISON_PARAMS).toEqual({ left: "a", right: "b" });
+  test("tên tham số URL của bốn bên", () => {
+    expect(COMPARISON_PARAMS).toEqual(["a", "b", "c", "d"]);
   });
 });
 
 describe("getComparisonTotal", () => {
   test("lấy tổng số bước lớn nhất, mảng rỗng ra 0", () => {
-    expect(getComparisonTotal([12, 30])).toBe(30);
+    expect(getComparisonTotal([12, 30, 18, 24])).toBe(30);
     expect(getComparisonTotal([0, 5])).toBe(5);
     expect(getComparisonTotal([])).toBe(0);
   });
@@ -42,46 +48,80 @@ describe("isLaneFinished", () => {
   });
 });
 
-describe("resolveComparisonPair", () => {
-  test("không chọn gì thì lấy hai thuật toán đầu", () => {
-    expect(resolveComparisonPair(SLUGS, undefined, undefined)).toEqual([
+describe("resolveComparisonLanes", () => {
+  test("không chọn gì thì lấy bốn thuật toán đầu", () => {
+    expect(resolveComparisonLanes(SLUGS, [])).toEqual([
       "bubble-sort",
       "selection-sort",
-    ]);
-  });
-
-  test("giữ bên trái hợp lệ và chọn bên phải khác bên trái", () => {
-    expect(resolveComparisonPair(SLUGS, "selection-sort", undefined)).toEqual([
-      "selection-sort",
-      "bubble-sort",
+      "insertion-sort",
+      "quick-sort",
     ]);
     expect(
-      resolveComparisonPair(SLUGS, "selection-sort", "selection-sort"),
-    ).toEqual(["selection-sort", "bubble-sort"]);
+      resolveComparisonLanes(SLUGS, [
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+      ]),
+    ).toEqual([
+      "bubble-sort",
+      "selection-sort",
+      "insertion-sort",
+      "quick-sort",
+    ]);
   });
 
-  test("bên trái trống thì lấy mặc định rồi tránh trùng bên phải", () => {
-    expect(resolveComparisonPair(SLUGS, undefined, "bubble-sort")).toEqual([
+  test("giữ thứ tự đã chọn và bù các thuật toán còn thiếu", () => {
+    expect(
+      resolveComparisonLanes(SLUGS, [
+        "quick-sort",
+        undefined,
+        "bubble-sort",
+        undefined,
+      ]),
+    ).toEqual([
+      "quick-sort",
+      "bubble-sort",
+      "selection-sort",
+      "insertion-sort",
+    ]);
+  });
+
+  test("bỏ qua lựa chọn trùng và slug không tồn tại", () => {
+    expect(
+      resolveComparisonLanes(SLUGS, [
+        "merge-sort",
+        "merge-sort",
+        "khong-co",
+        "insertion-sort",
+      ]),
+    ).toEqual([
+      "merge-sort",
+      "insertion-sort",
       "bubble-sort",
       "selection-sort",
     ]);
   });
 
-  test("slug không tồn tại thì rơi về mặc định", () => {
-    expect(resolveComparisonPair(SLUGS, "khong-co", "insertion-sort")).toEqual([
+  test("danh mục có ít hơn bốn thuật toán thì trả đủ số hiện có", () => {
+    expect(
+      resolveComparisonLanes(SLUGS.slice(0, 3), [
+        "insertion-sort",
+        undefined,
+        undefined,
+        undefined,
+      ]),
+    ).toEqual(["insertion-sort", "bubble-sort", "selection-sort"]);
+    expect(resolveComparisonLanes(SLUGS.slice(0, 2), [])).toEqual([
       "bubble-sort",
-      "insertion-sort",
-    ]);
-    expect(resolveComparisonPair(SLUGS, "insertion-sort", "khong-co")).toEqual([
-      "insertion-sort",
-      "bubble-sort",
+      "selection-sort",
     ]);
   });
 
   test("dưới hai thuật toán thì không ghép được", () => {
     expect(
-      resolveComparisonPair(["bubble-sort"], undefined, undefined),
+      resolveComparisonLanes(["bubble-sort"], [undefined, undefined]),
     ).toBeUndefined();
-    expect(resolveComparisonPair([], undefined, undefined)).toBeUndefined();
+    expect(resolveComparisonLanes([], [])).toBeUndefined();
   });
 });

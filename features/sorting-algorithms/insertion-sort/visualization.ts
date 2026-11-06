@@ -5,11 +5,11 @@ import { getBaseFrame, type ISortingFrame } from "../visualization";
 import type { InsertionSortEvent, InsertionSortStep } from "./types";
 
 export const INSERTION_SORT_LEGEND: readonly ILegendItem[] = [
-  { tone: "default", label: "Chưa xét" },
-  { tone: "pointer", label: "i: vị trí ban đầu của phần tử đang chèn" },
-  { tone: "compare", label: "j: đang so sánh a[j - 1] và a[j]" },
+  { tone: "default", label: "Chưa sắp xếp" },
+  { tone: "pointer", label: "Đang chèn" },
+  { tone: "compare", label: "Đang so sánh" },
   { tone: "swap", label: "Đang hoán đổi" },
-  { tone: "sorted", label: "Đoạn đã sắp xếp" },
+  { tone: "sorted", label: "Đã sắp xếp" },
 ];
 
 function getPointerMarkers(

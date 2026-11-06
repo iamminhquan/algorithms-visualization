@@ -236,7 +236,7 @@ export async function handleAssistantRequest(
   if (decision.type === "limited") {
     return rateLimitedResponse(decision.retryAfterSeconds);
   }
-  const { provider, messages, context } = parsed.request;
+  const { messages, context } = parsed.request;
   const lookup = await lookupContextAlgorithm(
     context?.algorithmKey,
     lookupAlgorithm,
@@ -255,7 +255,7 @@ export async function handleAssistantRequest(
 
   let opened: IOpenedProviderStream;
   try {
-    opened = await openProviderStream(providers, provider, {
+    opened = await openProviderStream(providers, {
       system: buildSystemPrompt(lookup.algorithm),
       messages: attachContext(normalizeConversation(messages), context),
       maxOutputTokens: MAX_OUTPUT_TOKENS,

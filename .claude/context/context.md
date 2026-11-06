@@ -108,9 +108,10 @@ bun run db:seed:preview        # nạp seed cho DB preview (cần PREVIEW_DATABA
   `algorithm.key`.
 - `engine/visualization/` là TypeScript thuần: `playbackReducer` (phát, tua, tốc độ), `countPayloadTypes` (bộ đếm theo
   bước), `scaleBarHeights`, `elementAt` (đọc `a[i]` an toàn khi `i` chưa có), kiểu `VisualTone`, `IPseudocode` và
-  `IVariable`, cùng phần so sánh hai thuật toán: `COMPARISON_PARAMS` (tên tham số URL `a`/`b`), `resolveComparisonPair`
-  (chuẩn hoá cặp slug từ URL), `getComparisonTotal`, `getLaneIndex`, `isLaneFinished`, và các mẫu mảng `sortAscending`/
-  `sortDescending`/`nearlySorted`.
+  `IVariable`, cùng phần so sánh bốn thuật toán: `COMPARISON_PARAMS` (tên tham số URL `a`/`b`/`c`/`d`),
+  `COMPARISON_LANE_COUNT`, `resolveComparisonLanes` (chuẩn hoá danh sách slug từ URL, bù thuật toán còn thiếu và bỏ
+  trùng), `getComparisonTotal`, `getLaneIndex`, `isLaneFinished`, và các mẫu mảng `sortAscending`/`sortDescending`/
+  `nearlySorted`.
 - `components/visualization/` là React dùng chung, không biết thuật toán cụ thể: `usePlayback` (gọi `load` khi đổi vết),
   `usePlaybackShortcuts`, `PlaybackControls`, `VisualizerFrame` (nút toàn màn hình qua `useFullscreen`: dùng Fullscreen
   API, trình duyệt không hỗ trợ như Safari iPhone thì phủ `fixed` lên khung nhìn; khi toàn màn hình chỉ ẩn form nhập và
@@ -140,9 +141,13 @@ bun run db:seed:preview        # nạp seed cho DB preview (cần PREVIEW_DATABA
   xem (đầu vào, payload, state, mã giả, dòng đang chạy, chỉ số).
 - `POST /api/assistant` (`app/api/assistant/route.ts`) gọi `handleAssistantRequest` trong `features/assistant/`: kiểm
   tra body, giới hạn 20 câu hỏi/10 phút theo IP (Redis, Redis lỗi thì đếm trong bộ nhớ), tra thông tin thuật toán qua
-  `getAlgorithmCatalog`, rồi stream từ mô hình được chọn và tự chuyển sang mô hình còn lại nếu lỗi trước khi có chữ.
+  `getAlgorithmCatalog`, rồi stream từ mô hình đầu tiên chạy được theo thứ tự ưu tiên trong `ASSISTANT_PROVIDERS`
+  (DeepSeek rồi Gemini); người dùng không chọn mô hình, lỗi trước khi có chữ thì tự chuyển mô hình kế tiếp.
 - DeepSeek gọi qua Anthropic SDK tới endpoint tương thích Anthropic, Gemini qua `@google/genai` (Google không có
-  endpoint kiểu Anthropic); cả hai cài `IAssistantProvider` trong `features/assistant/providers/`.
+  endpoint kiểu Anthropic); cả hai cài `IAssistantProvider` trong `features/assistant/providers/` và khai báo trong
+  `PROVIDER_DEFINITIONS` (`providers/registry.ts`). Thêm mô hình mới chỉ cần thêm mục vào `ASSISTANT_PROVIDERS`
+  (`engine/assistant/types.ts`), viết provider rồi thêm vào registry; biến môi trường theo mẫu `<ID>_API_KEY`,
+  `<ID>_MODEL`, `<ID>_BASE_URL`.
 - Chỉ `features/assistant/server.ts` đọc `process.env` và DB (`server-only`); các file khác nhận cấu hình qua tham số
   nên test bằng provider giả và server SSE giả trong `tests/assistant/`, không gọi API thật.
 - Chưa dùng RabbitMQ vì chat là luồng hỏi–đáp đồng bộ stream thẳng về trình duyệt, chưa có việc chạy nền.
@@ -206,13 +211,15 @@ bun run db:seed:preview        # nạp seed cho DB preview (cần PREVIEW_DATABA
 
 - `/` là trang chủ, `/visualization` liệt kê mọi danh mục, `/visualization/[category]` là trang danh mục,
   `/visualization/[category]/[algorithm]` là trang thuật toán.
-- `/visualization/[category]/compare` là trang so sánh song song hai thuật toán (hiện chỉ danh mục `sorting`, danh mục
-  khác `notFound()`); cặp thuật toán lấy từ query `?a=<slug>&b=<slug>` qua `resolveComparisonPair`, dựng link bằng
-  `getCompareHref()`, và trang này đọc `searchParams` trong `<Suspense>` giống cách đọc `params`.
-- Không có tuỳ chọn nào bị vô hiệu hoá: chọn ở một bên thuật toán đang ở bên kia thì hai bên đổi chỗ (dùng lại lần chạy
-  trên mảng hiện tại), chọn thuật toán khác thì chỉ thay bên đó, và mọi thay đổi đều đặt lại phát.
-- URL luôn phản chiếu cặp đang hiển thị: `SortingComparison` có effect so `useSearchParams()` với cặp hiện tại và gọi
-  `history.replaceState` (giữ tham số khác và hash) khi chúng lệch, còn URL sạch đang hiện cặp mặc định thì giữ nguyên.
+- `/visualization/[category]/compare` là trang so sánh song song bốn thuật toán (hiện chỉ danh mục `sorting`, danh mục
+  khác `notFound()`); danh sách thuật toán lấy từ query `?a=<slug>&b=<slug>&c=<slug>&d=<slug>` qua
+  `resolveComparisonLanes`, dựng link bằng `getCompareHref()`, và trang này đọc `searchParams` trong `<Suspense>` giống
+  cách đọc `params`.
+- Không có tuỳ chọn nào bị vô hiệu hoá: chọn thuật toán đang ở một làn khác thì hai làn đổi chỗ (dùng lại lần chạy trên
+  mảng hiện tại), chọn thuật toán khác thì chỉ thay làn đó, và mọi thay đổi đều đặt lại phát.
+- URL luôn phản chiếu các làn đang hiển thị: `SortingComparison` có effect so `useSearchParams()` với danh sách làn hiện
+  tại và gọi `history.replaceState` (giữ tham số khác và hash) khi chúng lệch, còn URL sạch đang hiện danh sách mặc định
+  thì giữ nguyên.
 - `/learn` liệt kê các lộ trình học (chưa có bài, đều "Sắp ra mắt"); `/login`, `/register` và `/verify-email` nằm trong
   route group `app/(site)/(auth)/`; `/verify-email?email=...` đọc `searchParams` trong `<Suspense>`, thiếu email thì
   `redirect` về `/register`. `/profile` nằm ngoài route group auth, đọc session trong `<Suspense>` và chuyển về

@@ -13,7 +13,7 @@ import type { LinearSearchEvent, LinearSearchStep } from "./types";
 
 export const LINEAR_SEARCH_LEGEND: readonly ILegendItem[] = [
   { tone: "default", label: "Chưa xét" },
-  { tone: "compare", label: "i: đang so sánh với key" },
+  { tone: "compare", label: "Đang so sánh" },
   { tone: "discarded", label: "Đã loại" },
   { tone: "found", label: "Tìm thấy" },
 ];

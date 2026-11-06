@@ -12,14 +12,17 @@ export {
   parseIntegerInput,
   RANDOM_MAX_VALUE,
   RANDOM_MIN_VALUE,
+  sanitizeArrayInput,
+  sanitizeIntegerInput,
 } from "./array-input";
 export { nearlySorted, sortAscending, sortDescending } from "./array-presets";
 export {
+  COMPARISON_LANE_COUNT,
   COMPARISON_PARAMS,
   getComparisonTotal,
   getLaneIndex,
   isLaneFinished,
-  resolveComparisonPair,
+  resolveComparisonLanes,
 } from "./comparison";
 export {
   BASE_STEP_INTERVAL_MS,

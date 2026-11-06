@@ -1,15 +1,18 @@
-import { DEEPSEEK_DEFAULT_MODEL } from "./providers/deepseek";
-import { GEMINI_DEFAULT_MODEL } from "./providers/gemini";
+import {
+  ASSISTANT_PROVIDERS,
+  type AssistantProviderId,
+} from "@/engine/assistant";
+import {
+  type IProviderConfig,
+  PROVIDER_DEFINITIONS,
+} from "./providers/registry";
 
-export interface IProviderConfig {
-  readonly apiKey: string;
-  readonly model: string;
-  readonly baseURL?: string;
-}
+export type { IProviderConfig } from "./providers/registry";
 
 export interface IAssistantConfig {
-  readonly deepseek?: IProviderConfig;
-  readonly gemini?: IProviderConfig;
+  readonly providers: Readonly<
+    Partial<Record<AssistantProviderId, IProviderConfig>>
+  >;
   readonly redisUrl?: string;
 }
 
@@ -25,9 +28,10 @@ function readValue(
 
 function readProviderConfig(
   env: EnvironmentVariables,
-  prefix: string,
+  provider: AssistantProviderId,
   defaultModel: string,
 ): IProviderConfig | undefined {
+  const prefix = provider.toUpperCase();
   const apiKey = readValue(env, `${prefix}_API_KEY`);
   if (apiKey === undefined) {
     return undefined;
@@ -42,9 +46,19 @@ function readProviderConfig(
 export function readAssistantConfig(
   env: EnvironmentVariables,
 ): IAssistantConfig {
+  const providers: Partial<Record<AssistantProviderId, IProviderConfig>> = {};
+  for (const { id } of ASSISTANT_PROVIDERS) {
+    const provider = readProviderConfig(
+      env,
+      id,
+      PROVIDER_DEFINITIONS[id].defaultModel,
+    );
+    if (provider !== undefined) {
+      providers[id] = provider;
+    }
+  }
   return {
-    deepseek: readProviderConfig(env, "DEEPSEEK", DEEPSEEK_DEFAULT_MODEL),
-    gemini: readProviderConfig(env, "GEMINI", GEMINI_DEFAULT_MODEL),
+    providers,
     redisUrl: readValue(env, "REDIS_URL"),
   };
 }

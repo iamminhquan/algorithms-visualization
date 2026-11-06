@@ -44,11 +44,10 @@ export {
   parseStreamEvent,
 } from "./stream-protocol";
 export {
-  ASSISTANT_PROVIDER_LABELS,
   ASSISTANT_PROVIDERS,
   type AssistantProviderId,
   type AssistantRole,
-  DEFAULT_ASSISTANT_PROVIDER,
+  getAssistantProviderLabel,
   type IAssistantContext,
   type IAssistantMessage,
   type IAssistantMetric,

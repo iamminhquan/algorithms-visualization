@@ -1,11 +1,10 @@
 import { MAX_ANSWER_LENGTH, MAX_HISTORY_MESSAGES } from "./limits";
 import type { AssistantFinishReason } from "./stream-protocol";
-import {
-  type AssistantProviderId,
-  type AssistantRole,
-  DEFAULT_ASSISTANT_PROVIDER,
-  type IAssistantContext,
-  type IAssistantMessage,
+import type {
+  AssistantProviderId,
+  AssistantRole,
+  IAssistantContext,
+  IAssistantMessage,
 } from "./types";
 
 export type ChatMessageStatus = "streaming" | "done" | "stopped" | "error";
@@ -23,12 +22,10 @@ export interface IChatMessage {
 }
 
 export interface IChatState {
-  readonly provider: AssistantProviderId;
   readonly messages: readonly IChatMessage[];
 }
 
 export type ChatAction =
-  | { readonly type: "set-provider"; readonly provider: AssistantProviderId }
   | {
       readonly type: "send";
       readonly userId: string;
@@ -57,10 +54,8 @@ export type ChatAction =
   | { readonly type: "stop"; readonly id: string }
   | { readonly type: "reset" };
 
-export function createChatState(
-  provider: AssistantProviderId = DEFAULT_ASSISTANT_PROVIDER,
-): IChatState {
-  return { provider, messages: [] };
+export function createChatState(): IChatState {
+  return { messages: [] };
 }
 
 export function isChatStreaming(state: IChatState): boolean {
@@ -89,8 +84,6 @@ function updateStreaming(
 
 export function chatReducer(state: IChatState, action: ChatAction): IChatState {
   switch (action.type) {
-    case "set-provider":
-      return { ...state, provider: action.provider };
     case "send": {
       const question = action.question.trim();
       if (question === "" || isChatStreaming(state)) {
@@ -153,7 +146,7 @@ export function chatReducer(state: IChatState, action: ChatAction): IChatState {
         status: "stopped",
       }));
     case "reset":
-      return createChatState(state.provider);
+      return createChatState();
     default: {
       const unreachable: never = action;
       throw new Error(

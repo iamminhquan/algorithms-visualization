@@ -12,7 +12,6 @@ import {
 } from "@/engine/assistant";
 
 const REQUEST: IAssistantRequest = {
-  provider: "deepseek",
   messages: [{ role: "user", content: "Bubble Sort là gì?" }],
 };
 
