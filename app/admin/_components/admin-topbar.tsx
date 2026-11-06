@@ -1,5 +1,6 @@
 import { Bell, Search } from "lucide-react";
 import { headers } from "next/headers";
+import { connection } from "next/server";
 import { Suspense } from "react";
 import { getButtonClassName } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
@@ -51,6 +52,7 @@ export function AdminTopbar() {
 }
 
 async function CurrentAdminSummary() {
+  await connection();
   const session = await auth.api.getSession({ headers: await headers() });
   const currentUser = session?.user;
   const name = currentUser?.name ?? "Chưa đăng nhập";
