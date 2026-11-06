@@ -2,7 +2,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import "server-only";
 import { db } from "@/db";
 
-const USERS_CACHE_TAG = "users";
+export const USERS_CACHE_TAG = "users";
 
 export async function getUserCatalog() {
   "use cache";

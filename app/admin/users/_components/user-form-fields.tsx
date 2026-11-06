@@ -2,6 +2,7 @@ import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import type { User } from "@/db/schema";
+import { MIN_PASSWORD_LENGTH } from "@/features/auth/limits";
 import {
   USER_ROLES,
   USER_STATUSES,
@@ -39,7 +40,50 @@ export function UserFormFields({
           defaultValue={user?.email}
           placeholder="ban@example.com"
           autoComplete="off"
+          readOnly={user !== undefined}
           required
+        />
+      </FormField>
+      <FormField
+        label={user === undefined ? "Mật khẩu" : "Mật khẩu mới"}
+        htmlFor={`${idPrefix}-password`}
+        hint={
+          user === undefined
+            ? `Tối thiểu ${MIN_PASSWORD_LENGTH} ký tự. Người dùng dùng mật khẩu này để đăng nhập.`
+            : `Để trống nếu không đổi mật khẩu. Tối thiểu ${MIN_PASSWORD_LENGTH} ký tự.`
+        }
+      >
+        <Input
+          id={`${idPrefix}-password`}
+          name="password"
+          type="password"
+          placeholder={
+            user === undefined
+              ? `Ít nhất ${MIN_PASSWORD_LENGTH} ký tự`
+              : "Nhập mật khẩu mới"
+          }
+          autoComplete="new-password"
+          minLength={MIN_PASSWORD_LENGTH}
+          required={user === undefined}
+        />
+      </FormField>
+      <FormField
+        label="Nhập lại mật khẩu"
+        htmlFor={`${idPrefix}-password-confirm`}
+        hint={
+          user === undefined
+            ? undefined
+            : "Chỉ nhập khi muốn đặt lại mật khẩu cho người dùng."
+        }
+      >
+        <Input
+          id={`${idPrefix}-password-confirm`}
+          name="passwordConfirm"
+          type="password"
+          placeholder="Nhập lại mật khẩu"
+          autoComplete="new-password"
+          minLength={MIN_PASSWORD_LENGTH}
+          required={user === undefined}
         />
       </FormField>
       <div className="grid gap-4 sm:grid-cols-2">
@@ -56,20 +100,28 @@ export function UserFormFields({
             ))}
           </Select>
         </FormField>
-        <FormField label="Trạng thái" htmlFor={`${idPrefix}-status`}>
-          <Select
-            id={`${idPrefix}-status`}
-            name="status"
-            defaultValue={status ?? "invited"}
-          >
-            {Object.entries(USER_STATUSES).map(([value, option]) => (
-              <option key={value} value={value}>
-                {option.label}
-              </option>
-            ))}
-          </Select>
-        </FormField>
+        {status !== undefined && (
+          <FormField label="Trạng thái" htmlFor={`${idPrefix}-status`}>
+            <Select
+              id={`${idPrefix}-status`}
+              name="status"
+              defaultValue={status}
+            >
+              {Object.entries(USER_STATUSES).map(([value, option]) => (
+                <option key={value} value={value}>
+                  {option.label}
+                </option>
+              ))}
+            </Select>
+          </FormField>
+        )}
       </div>
+      {user !== undefined && (
+        <p className="text-xs text-text-muted">
+          Đổi trạng thái sang “Chờ kích hoạt” sẽ thu hồi trạng thái đã xác thực
+          email của tài khoản.
+        </p>
+      )}
     </>
   );
 }

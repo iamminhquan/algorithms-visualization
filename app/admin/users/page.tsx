@@ -1,28 +1,32 @@
-import { UserPlus } from "lucide-react";
+import { Pencil, UserPlus } from "lucide-react";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Badge } from "@/components/ui/badge";
 import { getButtonClassName } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { getUserCatalog } from "@/features/auth/queries";
+import {
+  createUserAction,
+  deleteUserAction,
+  updateUserAction,
+} from "@/features/auth/user-actions";
+import { getUserStatus } from "@/features/auth/user-types";
+import { requireAdminUser } from "@/features/learning/auth";
 import { cn } from "@/lib/cn";
 import { formatDate } from "@/lib/format";
-import { ConfirmDeleteDialog } from "../_components/confirm-delete-dialog";
+import { AdminPageSkeleton } from "../_components/admin-page-skeleton";
 import {
   DataTable,
   type ITableColumn,
   TABLE_CELL_CLASS_NAME,
   TABLE_ROW_CLASS_NAME,
 } from "../_components/data-table";
-import { EditDialog, FormDialog } from "../_components/form-dialog";
 import { PageHeader } from "../_components/page-header";
 import { RowActions } from "../_components/row-actions";
 import { UserAvatar } from "../_components/user-avatar";
-import {
-  USER_ROLES,
-  USER_STATUSES,
-  type UserStatus,
-} from "../_components/user-meta";
-import { UserFormFields } from "./_components/user-form-fields";
+import { USER_ROLES, USER_STATUSES } from "../_components/user-meta";
+import { DeleteUserDialog } from "./_components/delete-user-dialog";
+import { UserFormDialog } from "./_components/user-form-dialog";
 
 export const metadata: Metadata = {
   title: "Người dùng",
@@ -36,20 +40,28 @@ const COLUMNS: readonly ITableColumn[] = [
   { label: "Thao tác", align: "right", isLabelHidden: true },
 ];
 
-export default async function AdminUsersPage() {
+export default function AdminUsersPage() {
+  return (
+    <Suspense fallback={<AdminPageSkeleton />}>
+      <AdminUsersContent />
+    </Suspense>
+  );
+}
+
+async function AdminUsersContent() {
+  const actor = await requireAdminUser();
   const users = await getUserCatalog();
 
   return (
     <>
       <PageHeader
         title="Người dùng"
-        description="Tài khoản quản trị, giáo viên và học viên. Vai trò quyết định ai được tạo lớp, giao bài và vào trang quản trị."
+        description="Tài khoản quản trị, giảng viên và học viên. Vai trò quyết định ai được tạo lớp, giao bài và vào trang quản trị."
         breadcrumb={[{ label: "Người dùng" }]}
-        isSampleData
         actions={
-          <FormDialog
-            title="Thêm người dùng"
-            description="Người dùng nhận email mời và tự đặt mật khẩu khi kích hoạt."
+          <UserFormDialog
+            action={createUserAction}
+            mode="invite"
             trigger={
               <>
                 <UserPlus aria-hidden="true" />
@@ -57,10 +69,8 @@ export default async function AdminUsersPage() {
               </>
             }
             triggerClassName={getButtonClassName("primary")}
-            submitLabel="Gửi lời mời"
-          >
-            <UserFormFields idPrefix="user-new" />
-          </FormDialog>
+            idPrefix="user-new"
+          />
         }
       />
       <DataTable
@@ -99,8 +109,9 @@ export default async function AdminUsersPage() {
         }
       >
         {users.map((user) => {
-          const status: UserStatus = user.emailVerified ? "active" : "invited";
+          const status = getUserStatus(user);
           const role = USER_ROLES[user.role];
+          const isSelf = user.id === actor.id;
 
           return (
             <tr key={user.id} className={TABLE_ROW_CLASS_NAME}>
@@ -110,6 +121,11 @@ export default async function AdminUsersPage() {
                   <div className="flex flex-col">
                     <span className="font-medium text-text-primary">
                       {user.name}
+                      {isSelf && (
+                        <span className="ml-1.5 text-xs font-normal text-text-muted">
+                          (bạn)
+                        </span>
+                      )}
                     </span>
                     <span className="text-xs text-text-muted">
                       {user.email}
@@ -135,17 +151,23 @@ export default async function AdminUsersPage() {
               </td>
               <td className={TABLE_CELL_CLASS_NAME}>
                 <RowActions>
-                  <EditDialog entityLabel="người dùng" itemName={user.name}>
-                    <UserFormFields
-                      idPrefix={`user-${user.id}`}
-                      user={user}
-                      status={status}
-                    />
-                  </EditDialog>
-                  <ConfirmDeleteDialog
-                    entityLabel="người dùng"
-                    itemName={user.name}
+                  <UserFormDialog
+                    action={updateUserAction}
+                    mode="edit"
+                    trigger={<Pencil aria-hidden="true" />}
+                    triggerLabel={`Sửa người dùng ${user.name}`}
+                    triggerClassName={getButtonClassName("ghost", "icon")}
+                    idPrefix={`user-${user.id}`}
+                    user={user}
+                    status={status}
                   />
+                  {!isSelf && (
+                    <DeleteUserDialog
+                      action={deleteUserAction}
+                      userId={user.id}
+                      userName={user.name}
+                    />
+                  )}
                 </RowActions>
               </td>
             </tr>

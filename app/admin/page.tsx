@@ -64,7 +64,7 @@ const QUICK_ACTIONS: readonly IQuickAction[] = [
   },
   {
     label: "Mời người dùng",
-    description: "Thêm giáo viên hoặc học viên",
+    description: "Thêm giảng viên hoặc học viên",
     href: ADMIN_ROUTES.users,
     icon: UserPlus,
   },

@@ -1,7 +1,8 @@
 import "server-only";
-import { betterAuth } from "better-auth";
+import { APIError, betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { emailOTP } from "better-auth/plugins";
+import { eq } from "drizzle-orm";
 import { after } from "next/server";
 import { db } from "@/db";
 import {
@@ -62,6 +63,30 @@ export const auth = betterAuth({
         required: true,
         defaultValue: "student",
         input: false,
+      },
+      isLocked: {
+        type: "boolean",
+        required: false,
+        defaultValue: false,
+        input: false,
+      },
+    },
+  },
+  databaseHooks: {
+    session: {
+      create: {
+        before: async (session) => {
+          const user = await db.query.usersTable.findFirst({
+            where: eq(usersTable.id, session.userId),
+            columns: { isLocked: true },
+          });
+          if (user?.isLocked) {
+            throw APIError.from("FORBIDDEN", {
+              message: "Tài khoản đã bị khoá.",
+              code: "LOCKED_USER",
+            });
+          }
+        },
       },
     },
   },

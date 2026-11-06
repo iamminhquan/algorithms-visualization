@@ -17,7 +17,7 @@ export async function getLearningUser(): Promise<ILearningUser | null> {
   await connection();
   const session = await auth.api.getSession({ headers: await headers() });
   const user = session?.user;
-  if (!user) {
+  if (!user || user.isLocked) {
     return null;
   }
   if (
@@ -54,6 +54,14 @@ export async function requireStaffUser(): Promise<ILearningUser> {
 export async function requireStudentUser(): Promise<ILearningUser> {
   const user = await requireLearningUser();
   if (user.role !== "student") {
+    forbidden();
+  }
+  return user;
+}
+
+export async function requireAdminUser(): Promise<ILearningUser> {
+  const user = await requireLearningUser();
+  if (user.role !== "admin") {
     forbidden();
   }
   return user;
