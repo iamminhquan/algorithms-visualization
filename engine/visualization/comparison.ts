@@ -1,4 +1,6 @@
-export const COMPARISON_PARAMS = { left: "a", right: "b" } as const;
+export const COMPARISON_PARAMS = ["a", "b", "c", "d"] as const;
+
+export const COMPARISON_LANE_COUNT = COMPARISON_PARAMS.length;
 
 /**
  * Tổng số bước của thanh tua chung.
@@ -18,22 +20,34 @@ export function isLaneFinished(
   return laneTotal > 0 && sharedIndex >= laneTotal - 1;
 }
 
-export function resolveComparisonPair(
+export function resolveComparisonLanes(
   available: readonly string[],
-  left: string | undefined,
-  right: string | undefined,
-): readonly [string, string] | undefined {
+  requested: readonly (string | undefined)[],
+): readonly string[] | undefined {
   if (available.length < 2) {
     return undefined;
   }
-  const resolvedLeft =
-    left !== undefined && available.includes(left) ? left : available[0];
-  const resolvedRight =
-    right !== undefined && right !== resolvedLeft && available.includes(right)
-      ? right
-      : available.find((slug) => slug !== resolvedLeft);
-  if (resolvedLeft === undefined || resolvedRight === undefined) {
-    return undefined;
+  const limit = Math.min(COMPARISON_LANE_COUNT, available.length);
+  const lanes: string[] = [];
+  for (const slug of requested) {
+    if (lanes.length >= limit) {
+      break;
+    }
+    if (
+      slug !== undefined &&
+      available.includes(slug) &&
+      !lanes.includes(slug)
+    ) {
+      lanes.push(slug);
+    }
   }
-  return [resolvedLeft, resolvedRight];
+  for (const slug of available) {
+    if (lanes.length >= limit) {
+      break;
+    }
+    if (!lanes.includes(slug)) {
+      lanes.push(slug);
+    }
+  }
+  return lanes;
 }

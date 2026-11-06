@@ -15,15 +15,18 @@ export function getAlgorithmHref(
 
 export function getCompareHref(
   categorySlug: string,
-  pair?: readonly [string, string],
+  lanes?: readonly string[],
 ): string {
   const href = `${getCategoryHref(categorySlug)}/compare`;
-  if (!pair) {
+  if (!lanes || lanes.length === 0) {
     return href;
   }
-  const query = new URLSearchParams({
-    [COMPARISON_PARAMS.left]: pair[0],
-    [COMPARISON_PARAMS.right]: pair[1],
+  const query = new URLSearchParams();
+  COMPARISON_PARAMS.forEach((param, index) => {
+    const slug = lanes[index];
+    if (slug !== undefined) {
+      query.set(param, slug);
+    }
   });
   return `${href}?${query.toString()}`;
 }

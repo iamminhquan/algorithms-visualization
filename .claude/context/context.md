@@ -108,9 +108,10 @@ bun run db:seed:preview        # nạp seed cho DB preview (cần PREVIEW_DATABA
   `algorithm.key`.
 - `engine/visualization/` là TypeScript thuần: `playbackReducer` (phát, tua, tốc độ), `countPayloadTypes` (bộ đếm theo
   bước), `scaleBarHeights`, `elementAt` (đọc `a[i]` an toàn khi `i` chưa có), kiểu `VisualTone`, `IPseudocode` và
-  `IVariable`, cùng phần so sánh hai thuật toán: `COMPARISON_PARAMS` (tên tham số URL `a`/`b`), `resolveComparisonPair`
-  (chuẩn hoá cặp slug từ URL), `getComparisonTotal`, `getLaneIndex`, `isLaneFinished`, và các mẫu mảng `sortAscending`/
-  `sortDescending`/`nearlySorted`.
+  `IVariable`, cùng phần so sánh bốn thuật toán: `COMPARISON_PARAMS` (tên tham số URL `a`/`b`/`c`/`d`),
+  `COMPARISON_LANE_COUNT`, `resolveComparisonLanes` (chuẩn hoá danh sách slug từ URL, bù thuật toán còn thiếu và bỏ
+  trùng), `getComparisonTotal`, `getLaneIndex`, `isLaneFinished`, và các mẫu mảng `sortAscending`/`sortDescending`/
+  `nearlySorted`.
 - `components/visualization/` là React dùng chung, không biết thuật toán cụ thể: `usePlayback` (gọi `load` khi đổi vết),
   `usePlaybackShortcuts`, `PlaybackControls`, `VisualizerFrame` (nút toàn màn hình qua `useFullscreen`: dùng Fullscreen
   API, trình duyệt không hỗ trợ như Safari iPhone thì phủ `fixed` lên khung nhìn; khi toàn màn hình chỉ ẩn form nhập và
@@ -196,13 +197,15 @@ bun run db:seed:preview        # nạp seed cho DB preview (cần PREVIEW_DATABA
 
 - `/` là trang chủ, `/visualization` liệt kê mọi danh mục, `/visualization/[category]` là trang danh mục,
   `/visualization/[category]/[algorithm]` là trang thuật toán.
-- `/visualization/[category]/compare` là trang so sánh song song hai thuật toán (hiện chỉ danh mục `sorting`, danh mục
-  khác `notFound()`); cặp thuật toán lấy từ query `?a=<slug>&b=<slug>` qua `resolveComparisonPair`, dựng link bằng
-  `getCompareHref()`, và trang này đọc `searchParams` trong `<Suspense>` giống cách đọc `params`.
-- Không có tuỳ chọn nào bị vô hiệu hoá: chọn ở một bên thuật toán đang ở bên kia thì hai bên đổi chỗ (dùng lại lần chạy
-  trên mảng hiện tại), chọn thuật toán khác thì chỉ thay bên đó, và mọi thay đổi đều đặt lại phát.
-- URL luôn phản chiếu cặp đang hiển thị: `SortingComparison` có effect so `useSearchParams()` với cặp hiện tại và gọi
-  `history.replaceState` (giữ tham số khác và hash) khi chúng lệch, còn URL sạch đang hiện cặp mặc định thì giữ nguyên.
+- `/visualization/[category]/compare` là trang so sánh song song bốn thuật toán (hiện chỉ danh mục `sorting`, danh mục
+  khác `notFound()`); danh sách thuật toán lấy từ query `?a=<slug>&b=<slug>&c=<slug>&d=<slug>` qua
+  `resolveComparisonLanes`, dựng link bằng `getCompareHref()`, và trang này đọc `searchParams` trong `<Suspense>` giống
+  cách đọc `params`.
+- Không có tuỳ chọn nào bị vô hiệu hoá: chọn thuật toán đang ở một làn khác thì hai làn đổi chỗ (dùng lại lần chạy trên
+  mảng hiện tại), chọn thuật toán khác thì chỉ thay làn đó, và mọi thay đổi đều đặt lại phát.
+- URL luôn phản chiếu các làn đang hiển thị: `SortingComparison` có effect so `useSearchParams()` với danh sách làn hiện
+  tại và gọi `history.replaceState` (giữ tham số khác và hash) khi chúng lệch, còn URL sạch đang hiện danh sách mặc định
+  thì giữ nguyên.
 - `/learn` liệt kê các lộ trình học (chưa có bài, đều "Sắp ra mắt"); `/login`, `/register` và `/verify-email` nằm trong
   route group `app/(site)/(auth)/`; `/verify-email?email=...` đọc `searchParams` trong `<Suspense>`, thiếu email thì
   `redirect` về `/register`.
