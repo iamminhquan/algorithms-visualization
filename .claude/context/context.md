@@ -220,7 +220,7 @@ bun run db:seed:preview        # nạp seed cho DB preview (cần PREVIEW_DATABA
 - URL luôn phản chiếu các làn đang hiển thị: `SortingComparison` có effect so `useSearchParams()` với danh sách làn hiện
   tại và gọi `history.replaceState` (giữ tham số khác và hash) khi chúng lệch, còn URL sạch đang hiện danh sách mặc định
   thì giữ nguyên.
-- `/learn` liệt kê các lộ trình học (chưa có bài, đều "Sắp ra mắt"); `/login`, `/register` và `/verify-email` nằm trong
+- `/learning` là thư viện thuật toán kèm khu lớp học của sinh viên; `/login`, `/register` và `/verify-email` nằm trong
   route group `app/(site)/(auth)/`; `/verify-email?email=...` đọc `searchParams` trong `<Suspense>`, thiếu email thì
   `redirect` về `/register`. `/profile` nằm ngoài route group auth, đọc session trong `<Suspense>` và chuyển về
   `/login` khi chưa đăng nhập.

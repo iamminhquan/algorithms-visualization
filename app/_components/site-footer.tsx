@@ -30,7 +30,7 @@ const STATIC_FOOTER_COLUMNS: readonly IFooterColumn[] = [
     title: "Khám phá",
     links: [
       { label: "Trang chủ", href: "/" },
-      { label: "Lộ trình học", href: "/learn" },
+      { label: "Học tập", href: "/learning" },
       { label: "Giới thiệu", href: "/#about" },
     ],
   },

@@ -10,22 +10,24 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { getUserCatalog } from "@/features/auth/queries";
 import { CategoryIcon } from "@/features/catalog/components/category-icon";
 import {
   getAlgorithmCatalog,
   getCategoryCatalog,
 } from "@/features/catalog/queries";
+import { requireStaffUser } from "@/features/learning/auth";
+import { getStaffClasses } from "@/features/learning/queries";
 import { cn } from "@/lib/cn";
 import { formatDate, formatNumber } from "@/lib/format";
+import { AdminPageSkeleton } from "./_components/admin-page-skeleton";
 import {
   ADMIN_ROUTES,
   getAdminAlgorithmHref,
 } from "./_components/admin-routes";
 import { PageHeader } from "./_components/page-header";
 import { Panel } from "./_components/panel";
-import { SAMPLE_CLASSES } from "./_components/sample-data";
-import { SampleDataBadge } from "./_components/sample-data-badge";
 import { StatCard } from "./_components/stat-card";
 
 export const metadata: Metadata = {
@@ -71,17 +73,27 @@ const QUICK_ACTIONS: readonly IQuickAction[] = [
 const LINK_FOCUS_CLASS_NAME =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default";
 
-export default async function AdminOverviewPage() {
-  const [algorithms, categories, users] = await Promise.all([
+export default function AdminOverviewPage() {
+  return (
+    <Suspense fallback={<AdminPageSkeleton />}>
+      <AdminOverviewContent />
+    </Suspense>
+  );
+}
+
+async function AdminOverviewContent() {
+  const user = await requireStaffUser();
+  const [algorithms, categories, users, classes] = await Promise.all([
     getAlgorithmCatalog(),
     getCategoryCatalog(),
     getUserCatalog(),
+    getStaffClasses(user),
   ]);
   const activeCategoryCount = categories.filter(
     (category) => category.algorithms.length > 0,
   ).length;
-  const ongoingClasses = SAMPLE_CLASSES.filter(
-    (sampleClass) => sampleClass.status === "ongoing",
+  const ongoingClasses = classes.filter(
+    (classRow) => classRow.status === "active",
   );
   const activeUserCount = users.filter((user) => user.emailVerified).length;
   const categoriesBySize = categories
@@ -127,10 +139,9 @@ export default async function AdminOverviewPage() {
         />
         <StatCard
           label="Lớp học"
-          value={SAMPLE_CLASSES.length}
-          hint={`${formatNumber(ongoingClasses.length)} lớp đang diễn ra`}
+          value={classes.length}
+          hint={`${formatNumber(ongoingClasses.length)} lớp đang hoạt động`}
           icon={School}
-          isSampleData
         />
       </div>
 
@@ -255,27 +266,46 @@ export default async function AdminOverviewPage() {
           )}
         </Panel>
 
-        <Panel title="Lớp đang diễn ra" actions={<SampleDataBadge />}>
-          <ul className="divide-y divide-border-default">
-            {ongoingClasses.map((sampleClass) => (
-              <li
-                key={sampleClass.id}
-                className="flex items-center justify-between gap-4 px-5 py-3"
-              >
-                <span className="flex min-w-0 flex-col">
-                  <span className="truncate text-sm font-medium text-text-primary">
-                    {sampleClass.name}
+        <Panel
+          title="Lớp đang hoạt động"
+          actions={
+            <Link
+              href={ADMIN_ROUTES.classes}
+              className={cn(
+                "rounded-sm text-sm font-medium text-accent-text hover:text-accent-hover",
+                LINK_FOCUS_CLASS_NAME,
+              )}
+            >
+              Xem tất cả
+            </Link>
+          }
+        >
+          {ongoingClasses.length === 0 ? (
+            <p className="px-5 py-10 text-center text-sm text-text-secondary">
+              Chưa có lớp nào đang hoạt động.
+            </p>
+          ) : (
+            <ul className="divide-y divide-border-default">
+              {ongoingClasses.slice(0, 6).map((classRow) => (
+                <li
+                  key={classRow.id}
+                  className="flex items-center justify-between gap-4 px-5 py-3"
+                >
+                  <span className="flex min-w-0 flex-col">
+                    <span className="truncate text-sm font-medium text-text-primary">
+                      {classRow.name}
+                    </span>
+                    <span className="truncate text-xs text-text-secondary">
+                      {classRow.owner.name}
+                    </span>
                   </span>
-                  <span className="truncate text-xs text-text-secondary">
-                    {sampleClass.teacherName}
+                  <span className="shrink-0 text-xs text-text-muted tabular-nums">
+                    {formatNumber(classRow.members.length)} sinh viên
                   </span>
-                </span>
-                <span className="shrink-0 text-xs text-text-muted tabular-nums">
-                  {formatNumber(sampleClass.studentCount)} học viên
-                </span>
-              </li>
-            ))}
-          </ul>
+                </li>
+              ))}
+            </ul>
+          )}
         </Panel>
       </div>
     </>

@@ -2,6 +2,7 @@ import {
   BookOpen,
   FolderTree,
   LayoutDashboard,
+  ListChecks,
   type LucideIcon,
   School,
   Users,
@@ -15,6 +16,7 @@ export const ADMIN_ROUTES = {
   newAlgorithm: "/admin/algorithms/new",
   lessons: "/admin/lessons",
   classes: "/admin/classes",
+  questions: "/admin/questions",
   users: "/admin/users",
 } as const;
 
@@ -56,6 +58,11 @@ export const ADMIN_NAV_GROUPS: readonly IAdminNavGroup[] = [
     label: "Đào tạo",
     items: [
       { label: "Lớp học", href: ADMIN_ROUTES.classes, icon: School },
+      {
+        label: "Ngân hàng câu hỏi",
+        href: ADMIN_ROUTES.questions,
+        icon: ListChecks,
+      },
       { label: "Người dùng", href: ADMIN_ROUTES.users, icon: Users },
     ],
   },

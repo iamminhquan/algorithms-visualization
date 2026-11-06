@@ -79,7 +79,7 @@ Route của website:
 | `/visualization/[category]`             | Danh sách thuật toán của một danh mục       |
 | `/visualization/[category]/[algorithm]` | Trang mô phỏng một thuật toán               |
 | `/visualization/[category]/compare`     | So sánh song song hai thuật toán (`?a=&b=`) |
-| `/learn`                                | Danh sách lộ trình học                      |
+| `/learning`                             | Thư viện thuật toán và lớp học của tôi      |
 | `/login`, `/register`                   | Đăng nhập, đăng ký                          |
 | `/verify-email`                         | Xác thực email bằng mã OTP                  |
 | `/admin`                                | Trang quản trị (layout riêng)               |
