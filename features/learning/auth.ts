@@ -1,6 +1,7 @@
 import "server-only";
 import { headers } from "next/headers";
 import { forbidden, redirect } from "next/navigation";
+import { connection } from "next/server";
 import type { UserRole } from "@/db/schema";
 import { LOGIN_PATH } from "@/features/auth/routes";
 import { auth } from "@/lib/auth";
@@ -13,6 +14,7 @@ export interface ILearningUser {
 }
 
 export async function getLearningUser(): Promise<ILearningUser | null> {
+  await connection();
   const session = await auth.api.getSession({ headers: await headers() });
   const user = session?.user;
   if (!user) {
