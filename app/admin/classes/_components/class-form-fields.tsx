@@ -1,19 +1,19 @@
 import { FormField } from "@/components/ui/form-field";
 import { Input, Textarea } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import {
-  type ISampleClass,
-  SAMPLE_TEACHERS,
-} from "../../_components/sample-data";
+import type { User } from "@/db/schema";
+import type { ISampleClass } from "../../_components/sample-data";
 
 type ClassFormFieldsProps = {
   idPrefix: string;
   sampleClass?: ISampleClass;
+  teachers: readonly Pick<User, "id" | "name">[];
 };
 
 export function ClassFormFields({
   idPrefix,
   sampleClass,
+  teachers,
 }: ClassFormFieldsProps) {
   return (
     <>
@@ -47,7 +47,7 @@ export function ClassFormFields({
             <option value="" disabled>
               Chọn giáo viên
             </option>
-            {SAMPLE_TEACHERS.map((teacher) => (
+            {teachers.map((teacher) => (
               <option key={teacher.id} value={teacher.name}>
                 {teacher.name}
               </option>
