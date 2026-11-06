@@ -26,9 +26,6 @@ export async function ProfileView() {
         <h1 className="text-3xl font-semibold tracking-tight text-text-primary sm:text-4xl">
           Hồ sơ của bạn
         </h1>
-        <p className="max-w-160 text-lg leading-7.5 text-text-secondary">
-          Quản lý thông tin tài khoản và các cách đăng nhập.
-        </p>
       </header>
 
       <section className="rounded-2xl border border-border-default bg-bg-surface p-5 sm:p-6">
