@@ -157,10 +157,18 @@ bun run db:seed:preview        # nạp seed cho DB preview (cần PREVIEW_DATABA
   (`autoSignInAfterVerification`).
 - Đăng nhập bằng email chưa xác thực trả `EMAIL_NOT_VERIFIED`: `LoginForm` gửi mã mới rồi chuyển sang `/verify-email`.
 - `features/auth/` là TypeScript thuần: `limits.ts` (độ dài mật khẩu, mã, thời gian chờ gửi lại), `routes.ts`,
+  `password.ts` (`getPasswordLengthError`/`getNewPasswordError` dùng chung cho đăng ký và thêm mật khẩu),
   `error-messages.ts` (`getAuthErrorMessage` đổi mã lỗi Better Auth sang tiếng Việt), `emails/verification-otp.ts` (nội
   dung mail); `lib/mailer.ts` gửi qua Gmail SMTP bằng nodemailer, transporter tạo lười nên build không cần biến SMTP.
 - Các form (`login-form.tsx`, `register-form.tsx`, `verify-email-form.tsx`) là client component trong
   `app/(site)/(auth)/_components/`, gọi `authClient` trực tiếp; chưa có quên mật khẩu.
+- `/profile` là trang hồ sơ: Server Component đọc session và danh sách account qua `auth.api.getSession` /
+  `auth.api.listUserAccounts`, chưa đăng nhập thì `redirect` về `/login`; `PasswordSection` (client) hiện trạng thái
+  email + mật khẩu và cho user đăng nhập bằng Google thêm mật khẩu qua Server Action `addPasswordAction`
+  (`features/auth/actions.ts`) gọi `auth.api.setPassword`; thêm xong cập nhật ngay giao diện, không cần tải lại trang.
+  Tên/avatar trên header là link tới `/profile`.
+- Better Auth đang dùng mặc định `accountLinking`: user local đã xác thực email + Google trả email đã xác thực thì tự
+  động liên kết và đăng nhập; local chưa xác thực thì từ chối (`account_not_linked`), chưa có thông báo riêng trong app.
 
 **Feature theo danh mục**
 
@@ -205,7 +213,8 @@ bun run db:seed:preview        # nạp seed cho DB preview (cần PREVIEW_DATABA
   `history.replaceState` (giữ tham số khác và hash) khi chúng lệch, còn URL sạch đang hiện cặp mặc định thì giữ nguyên.
 - `/learn` liệt kê các lộ trình học (chưa có bài, đều "Sắp ra mắt"); `/login`, `/register` và `/verify-email` nằm trong
   route group `app/(site)/(auth)/`; `/verify-email?email=...` đọc `searchParams` trong `<Suspense>`, thiếu email thì
-  `redirect` về `/register`.
+  `redirect` về `/register`. `/profile` nằm ngoài route group auth, đọc session trong `<Suspense>` và chuyển về
+  `/login` khi chưa đăng nhập.
 - Các trang công khai nằm trong route group `app/(site)/`, layout của group này gắn header và footer; root layout chỉ có
   `<html>`, `<body>` và theme.
 - `/admin` là trang quản trị với layout riêng (sidebar, thanh trên cùng, `noindex`), chưa có đăng nhập nên ai cũng vào

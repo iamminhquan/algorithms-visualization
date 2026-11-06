@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
 import { getAuthErrorMessage } from "@/features/auth/error-messages";
 import { MIN_PASSWORD_LENGTH } from "@/features/auth/limits";
+import { getNewPasswordError } from "@/features/auth/password";
 import { getVerifyEmailHref } from "@/features/auth/routes";
 import { authClient } from "@/lib/auth-client";
 import { AuthField } from "./auth-field";
@@ -24,12 +25,9 @@ export function RegisterForm() {
     const password = getFormText(formData, "password");
     const passwordConfirm = getFormText(formData, "passwordConfirm");
 
-    if (password.length < MIN_PASSWORD_LENGTH) {
-      setError(`Mật khẩu phải có ít nhất ${MIN_PASSWORD_LENGTH} ký tự.`);
-      return;
-    }
-    if (password !== passwordConfirm) {
-      setError("Hai lần nhập mật khẩu không khớp.");
+    const passwordError = getNewPasswordError(password, passwordConfirm);
+    if (passwordError !== undefined) {
+      setError(passwordError);
       return;
     }
 
