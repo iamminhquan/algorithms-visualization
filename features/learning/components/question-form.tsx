@@ -53,6 +53,11 @@ type QuestionFormDialogProps = {
   submitLabel: string;
   idPrefix: string;
   initialValues?: IQuestionFormValues;
+  /**
+   * Khi có giá trị, câu hỏi vừa tạo được gắn luôn vào bài kiểm tra này với số điểm nhập
+   * trong form, thay vì chỉ lưu vào ngân hàng câu hỏi.
+   */
+  examId?: number;
 };
 
 export function QuestionFormDialog({
@@ -65,6 +70,7 @@ export function QuestionFormDialog({
   submitLabel,
   idPrefix,
   initialValues,
+  examId,
 }: QuestionFormDialogProps) {
   const [state, formAction, isPending] = useActionState(
     action,
@@ -151,6 +157,26 @@ export function QuestionFormDialog({
         <div className="flex flex-col gap-4 px-5 py-5">
           {initialValues?.id !== undefined && (
             <input type="hidden" name="questionId" value={initialValues.id} />
+          )}
+          {examId !== undefined && (
+            <input type="hidden" name="examId" value={examId} />
+          )}
+          {examId !== undefined && (
+            <FormField
+              label="Điểm trong bài kiểm tra"
+              htmlFor={`${idPrefix}-points`}
+              hint="Câu hỏi được lưu vào ngân hàng của bạn và thêm ngay vào đề với số điểm này."
+            >
+              <Input
+                id={`${idPrefix}-points`}
+                name="points"
+                type="number"
+                min={0.25}
+                step={0.25}
+                defaultValue={1}
+                required
+              />
+            </FormField>
           )}
           <FormField label="Loại câu hỏi" htmlFor={`${idPrefix}-type`}>
             <Select

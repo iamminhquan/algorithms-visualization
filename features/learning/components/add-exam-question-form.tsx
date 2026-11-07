@@ -1,9 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { getButtonClassName } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
+import { getAdminQuestionsHref } from "../routes";
 import type { ILearningActionState } from "../types";
 import { INITIAL_LEARNING_ACTION_STATE } from "../types";
 import { FormMessage } from "./form-message";
@@ -21,12 +23,15 @@ type AddExamQuestionFormProps = {
   ) => Promise<ILearningActionState>;
   examId: number;
   questions: readonly QuestionOption[];
+  /** Tổng số câu trong ngân hàng, dùng để phân biệt "ngân hàng trống" với "đã thêm hết". */
+  bankCount: number;
 };
 
 export function AddExamQuestionForm({
   action,
   examId,
   questions,
+  bankCount,
 }: AddExamQuestionFormProps) {
   const [state, formAction, isPending] = useActionState(
     action,
@@ -35,9 +40,19 @@ export function AddExamQuestionForm({
 
   if (questions.length === 0) {
     return (
-      <p className="px-5 py-6 text-sm text-text-secondary">
-        Tất cả câu hỏi trong ngân hàng đã có trong đề này.
-      </p>
+      <div className="flex flex-col gap-1 px-5 py-6">
+        <p className="text-sm text-text-secondary">
+          {bankCount === 0
+            ? "Ngân hàng câu hỏi đang trống. Dùng nút “Tạo câu hỏi” ở trên để thêm câu hỏi đầu tiên cho đề này."
+            : "Tất cả câu hỏi trong ngân hàng đã có trong đề này. Tạo thêm câu hỏi mới nếu cần."}
+        </p>
+        <Link
+          href={getAdminQuestionsHref()}
+          className="self-start text-sm font-medium text-accent-text hover:underline"
+        >
+          Quản lý ngân hàng câu hỏi
+        </Link>
+      </div>
     );
   }
 

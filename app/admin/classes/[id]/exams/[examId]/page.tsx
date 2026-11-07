@@ -1,4 +1,4 @@
-import { ArrowLeft, Pencil } from "lucide-react";
+import { ArrowLeft, Pencil, Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -8,6 +8,8 @@ import { requireStaffUser } from "@/features/learning/auth";
 import { ActionButtonForm } from "@/features/learning/components/action-button-form";
 import { AddExamQuestionForm } from "@/features/learning/components/add-exam-question-form";
 import { ExamFormDialog } from "@/features/learning/components/exam-form";
+import { ImportQuestionsDialog } from "@/features/learning/components/import-questions-dialog";
+import { QuestionFormDialog } from "@/features/learning/components/question-form";
 import {
   addExamQuestionAction,
   closeExamAction,
@@ -20,6 +22,10 @@ import {
   getQuestionBank,
   getStaffExamDetail,
 } from "@/features/learning/queries";
+import {
+  createQuestionAction,
+  importQuestionsAction,
+} from "@/features/learning/question-actions";
 import { getAdminClassHref } from "@/features/learning/routes";
 import { cn } from "@/lib/cn";
 import { formatDateTime } from "@/lib/format";
@@ -178,7 +184,34 @@ async function AdminExamDetailContent({
 
       <Panel
         title="Câu hỏi"
-        actions={<Badge tone={status.tone}>{status.label}</Badge>}
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            {isDraft && (
+              <>
+                <ImportQuestionsDialog
+                  action={importQuestionsAction}
+                  examId={exam.id}
+                />
+                <QuestionFormDialog
+                  action={createQuestionAction}
+                  title="Tạo câu hỏi mới"
+                  description="Câu hỏi được lưu vào ngân hàng của bạn và thêm ngay vào đề này."
+                  trigger={
+                    <>
+                      <Plus aria-hidden="true" />
+                      Tạo câu hỏi
+                    </>
+                  }
+                  triggerClassName={getButtonClassName("secondary", "sm")}
+                  submitLabel="Tạo và thêm vào đề"
+                  idPrefix={`exam-${exam.id}-new-question`}
+                  examId={exam.id}
+                />
+              </>
+            )}
+            <Badge tone={status.tone}>{status.label}</Badge>
+          </div>
+        }
       >
         {exam.examQuestions.length === 0 ? (
           <p className="px-5 py-6 text-sm text-text-secondary">
@@ -221,6 +254,7 @@ async function AdminExamDetailContent({
               action={addExamQuestionAction}
               examId={exam.id}
               questions={availableQuestions}
+              bankCount={questionBank.length}
             />
           </div>
         )}

@@ -3,51 +3,45 @@
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect, unstable_rethrow } from "next/navigation";
+import * as XLSX from "xlsx";
 import { db } from "@/db";
-import type { AnswerMatchMode, QuestionType } from "@/db/schema";
+import type { QuestionType } from "@/db/schema";
 import {
+  examsTable,
   questionAnswerKeysTable,
   questionOptionsTable,
   questionsTable,
 } from "@/db/schema";
 import { actionError, getUnknownErrorMessage } from "./action-helpers";
-import { requireStaffUser } from "./auth";
-import { getAdminQuestionsHref } from "./routes";
-import type { ILearningActionState } from "./types";
+import { canManageClass, type ILearningUser, requireStaffUser } from "./auth";
 import {
-  extractBlankIndexes,
+  type IParsedAnswerKey,
+  type IParsedOption,
+  parseMatchMode,
+  parseQuestionRows,
+  parseQuestionType,
+  validateQuestionInput,
+} from "./question-file";
+import { insertQuestion, insertQuestionContent } from "./question-store";
+import {
+  getAdminClassHref,
+  getAdminExamHref,
+  getAdminQuestionsHref,
+} from "./routes";
+import type {
+  ILearningActionState,
+  IQuestionImportActionState,
+  IQuestionImportError,
+} from "./types";
+import {
+  getFormFile,
   getFormInt,
+  getFormNumber,
   getFormText,
   isUniqueViolation,
 } from "./validation";
 
-interface IParsedOption {
-  readonly content: string;
-  readonly isCorrect: boolean;
-}
-
-interface IParsedAnswerKey {
-  readonly blankIndex: number;
-  readonly acceptedValue: string;
-}
-
-function parseQuestionType(value: string): QuestionType | null {
-  if (
-    value === "multiple_choice" ||
-    value === "fill_blank" ||
-    value === "final_answer"
-  ) {
-    return value;
-  }
-  return null;
-}
-
-function parseMatchMode(value: string): AnswerMatchMode {
-  if (value === "case_insensitive" || value === "numeric") {
-    return value;
-  }
-  return "exact";
-}
+const MAX_IMPORT_FILE_SIZE = 5 * 1024 * 1024;
 
 function parseOptions(formData: FormData): readonly IParsedOption[] {
   const options = new Map<number, IParsedOption>();
@@ -100,90 +94,56 @@ function parseAnswerKeys(
     .filter((key): key is IParsedAnswerKey => key !== null);
 }
 
-function validateQuestionInput(
-  type: QuestionType,
-  content: string,
-  options: readonly IParsedOption[],
-  answerKeys: readonly IParsedAnswerKey[],
-  allowMultiple: boolean,
-): string | null {
-  if (content === "") {
-    return "Nội dung câu hỏi không được để trống.";
-  }
+/** Điểm mặc định của câu hỏi khi được tạo ngay trong một bài kiểm tra. */
+const DEFAULT_EXAM_POINTS = 1;
 
-  if (type === "multiple_choice") {
-    if (options.length < 2) {
-      return "Câu trắc nghiệm cần ít nhất 2 lựa chọn.";
-    }
-    if (options.some((option) => option.content === "")) {
-      return "Nội dung lựa chọn không được để trống.";
-    }
-    const correctCount = options.filter((option) => option.isCorrect).length;
-    if (correctCount === 0) {
-      return "Cần chọn ít nhất một đáp án đúng.";
-    }
-    if (!allowMultiple && correctCount !== 1) {
-      return "Câu chọn một đáp án chỉ được có đúng một đáp án đúng.";
-    }
-    return null;
-  }
-
-  if (answerKeys.length === 0) {
-    return "Cần nhập ít nhất một đáp án chấp nhận.";
-  }
-  if (answerKeys.some((key) => key.acceptedValue === "")) {
-    return "Đáp án chấp nhận không được để trống.";
-  }
-
-  if (type === "fill_blank") {
-    const blankIndexes = extractBlankIndexes(content);
-    if (blankIndexes.length === 0) {
-      return "Nội dung điền khuyết cần có chỗ trống dạng {{1}}, {{2}}...";
-    }
-    const keyIndexes = new Set(answerKeys.map((key) => key.blankIndex));
-    for (const blankIndex of blankIndexes) {
-      if (!keyIndexes.has(blankIndex)) {
-        return `Chỗ trống {{${blankIndex}}} chưa có đáp án.`;
-      }
-    }
-    for (const keyIndex of keyIndexes) {
-      if (!blankIndexes.includes(keyIndex)) {
-        return `Đáp án cho chỗ trống ${keyIndex} không tồn tại trong nội dung.`;
-      }
-    }
-  }
-
-  return null;
+interface IExamQuestionTarget {
+  readonly examId: number;
+  readonly classId: number;
+  readonly position: number;
 }
 
-async function insertQuestionContent(
-  questionId: number,
-  type: QuestionType,
-  options: readonly IParsedOption[],
-  answerKeys: readonly IParsedAnswerKey[],
-  matchMode: AnswerMatchMode,
-  tx: Parameters<Parameters<typeof db.transaction>[0]>[0],
-): Promise<void> {
-  if (type === "multiple_choice") {
-    await tx.insert(questionOptionsTable).values(
-      options.map((option, index) => ({
-        questionId,
-        content: option.content,
-        isCorrect: option.isCorrect,
-        position: index,
-      })),
-    );
-    return;
+type ExamQuestionTargetResult =
+  | { readonly target: IExamQuestionTarget }
+  | { readonly error: string };
+
+/**
+ * Kiểm tra quyền và trạng thái của bài kiểm tra trước khi gắn câu hỏi mới vào đề.
+ * Chỉ đề nháp thuộc lớp đang hoạt động và do chính giáo viên phụ trách mới nhận câu hỏi.
+ */
+async function resolveExamQuestionTarget(
+  examId: number,
+  user: ILearningUser,
+): Promise<ExamQuestionTargetResult> {
+  const exam = await db.query.examsTable.findFirst({
+    where: eq(examsTable.id, examId),
+    with: {
+      class: { columns: { ownerId: true, status: true } },
+      examQuestions: { columns: { position: true } },
+    },
+  });
+  if (!exam) {
+    return { error: "Không tìm thấy bài kiểm tra." };
+  }
+  if (!canManageClass(user, exam.class.ownerId)) {
+    return { error: "Bạn không có quyền thêm câu hỏi vào bài kiểm tra này." };
+  }
+  if (exam.status !== "draft") {
+    return { error: "Chỉ có thể thêm câu hỏi khi bài kiểm tra còn nháp." };
+  }
+  if (exam.class.status !== "active") {
+    return { error: "Lớp đã lưu trữ, không thể thêm câu hỏi." };
   }
 
-  await tx.insert(questionAnswerKeysTable).values(
-    answerKeys.map((key) => ({
-      questionId,
-      blankIndex: key.blankIndex,
-      acceptedValue: key.acceptedValue,
-      matchMode,
-    })),
-  );
+  const position =
+    exam.examQuestions.reduce(
+      (max, examQuestion) => Math.max(max, examQuestion.position),
+      -1,
+    ) + 1;
+
+  return {
+    target: { examId: exam.id, classId: exam.classId, position },
+  };
 }
 
 export async function createQuestionAction(
@@ -212,29 +172,41 @@ export async function createQuestionAction(
     return actionError(validationError);
   }
 
+  /*
+   * Trang ngân hàng câu hỏi gửi form không kèm `examId`, còn nút "Tạo câu hỏi" trong trang
+   * bài kiểm tra gửi kèm `examId` + `points` để câu hỏi vừa tạo được gắn luôn vào đề.
+   */
+  const examId = getFormInt(formData, "examId");
+  const points = getFormNumber(formData, "points") ?? DEFAULT_EXAM_POINTS;
+  if (examId !== undefined && points <= 0) {
+    return actionError("Điểm của câu hỏi phải lớn hơn 0.");
+  }
+  const targetResult =
+    examId === undefined ? null : await resolveExamQuestionTarget(examId, user);
+  if (targetResult && "error" in targetResult) {
+    return actionError(targetResult.error);
+  }
+  const examTarget = targetResult?.target ?? null;
+
   try {
-    await db.transaction(async (tx) => {
-      const [question] = await tx
-        .insert(questionsTable)
-        .values({
-          createdBy: user.id,
-          type,
-          content,
-          allowMultiple: type === "multiple_choice" ? allowMultiple : false,
-        })
-        .returning({ id: questionsTable.id });
-      await insertQuestionContent(
-        question.id,
+    await insertQuestion(
+      {
+        createdBy: user.id,
         type,
+        content,
+        allowMultiple,
+        matchMode,
         options,
         answerKeys,
-        matchMode,
-        tx,
-      );
-    });
-
-    revalidatePath(getAdminQuestionsHref());
-    redirect(getAdminQuestionsHref());
+      },
+      examTarget === null
+        ? null
+        : {
+            examId: examTarget.examId,
+            points,
+            position: examTarget.position,
+          },
+    );
   } catch (error) {
     unstable_rethrow(error);
     if (isUniqueViolation(error)) {
@@ -242,6 +214,14 @@ export async function createQuestionAction(
     }
     return actionError(getUnknownErrorMessage(error));
   }
+
+  revalidatePath(getAdminQuestionsHref());
+  if (examTarget !== null) {
+    revalidatePath(getAdminClassHref(examTarget.classId));
+    revalidatePath(getAdminExamHref(examTarget.classId, examTarget.examId));
+    redirect(getAdminExamHref(examTarget.classId, examTarget.examId));
+  }
+  redirect(getAdminQuestionsHref());
 }
 
 export async function updateQuestionAction(
@@ -368,4 +348,117 @@ export async function deleteQuestionAction(
   await db.delete(questionsTable).where(eq(questionsTable.id, questionId));
   revalidatePath(getAdminQuestionsHref());
   return { success: "Đã xoá câu hỏi." };
+}
+
+export async function importQuestionsAction(
+  _previousState: IQuestionImportActionState,
+  formData: FormData,
+): Promise<IQuestionImportActionState> {
+  const user = await requireStaffUser();
+  const file = getFormFile(formData, "file");
+  if (!file) {
+    return { error: "Vui lòng chọn file Excel hoặc CSV chứa câu hỏi." };
+  }
+  if (file.size > MAX_IMPORT_FILE_SIZE) {
+    return { error: "File vượt quá dung lượng 5MB." };
+  }
+
+  /*
+   * Trang ngân hàng câu hỏi import vào ngân hàng; trang bài kiểm tra gửi kèm `examId`
+   * để mỗi câu hỏi được gắn luôn vào đề nháp với số điểm trong file.
+   */
+  const examId = getFormInt(formData, "examId");
+  const targetResult =
+    examId === undefined ? null : await resolveExamQuestionTarget(examId, user);
+  if (targetResult && "error" in targetResult) {
+    return { error: targetResult.error };
+  }
+  const examTarget = targetResult?.target ?? null;
+
+  let rows: readonly Readonly<Record<string, unknown>>[];
+  try {
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const workbook = XLSX.read(buffer, { type: "buffer" });
+    const firstSheetName = workbook.SheetNames[0];
+    if (!firstSheetName) {
+      return { error: "File không có sheet dữ liệu." };
+    }
+    const sheet = workbook.Sheets[firstSheetName];
+    rows = XLSX.utils.sheet_to_json<Readonly<Record<string, unknown>>>(sheet, {
+      defval: "",
+    });
+  } catch {
+    return {
+      error: "Không đọc được file. Vui lòng kiểm tra định dạng Excel/CSV.",
+    };
+  }
+
+  const dataRows = rows.filter((row) =>
+    Object.values(row).some((value) => String(value).trim() !== ""),
+  );
+  if (dataRows.length === 0) {
+    return { error: "File không có dữ liệu câu hỏi." };
+  }
+
+  const parsed = parseQuestionRows(dataRows);
+  const errors: IQuestionImportError[] = [...parsed.errors];
+  let successRows = 0;
+  let position = examTarget?.position ?? 0;
+
+  for (const question of parsed.questions) {
+    try {
+      await insertQuestion(
+        {
+          createdBy: user.id,
+          type: question.type,
+          content: question.content,
+          allowMultiple: question.allowMultiple,
+          matchMode: question.matchMode,
+          options: question.options,
+          answerKeys: question.answerKeys,
+        },
+        examTarget === null
+          ? null
+          : {
+              examId: examTarget.examId,
+              points: question.points,
+              position,
+            },
+      );
+      successRows += 1;
+      position += 1;
+    } catch (error) {
+      unstable_rethrow(error);
+      errors.push({
+        row: question.row,
+        code: "INSERT_FAILED",
+        message: getUnknownErrorMessage(error),
+      });
+    }
+  }
+
+  revalidatePath(getAdminQuestionsHref());
+  if (examTarget !== null) {
+    revalidatePath(getAdminClassHref(examTarget.classId));
+    revalidatePath(getAdminExamHref(examTarget.classId, examTarget.examId));
+  }
+
+  const summary = {
+    totalRows: dataRows.length,
+    successRows,
+    failedRows: dataRows.length - successRows,
+    errors,
+  };
+
+  if (successRows === 0) {
+    return { error: "Không import được câu hỏi nào.", summary };
+  }
+
+  return {
+    success:
+      examTarget === null
+        ? `Đã import ${successRows} câu hỏi vào ngân hàng.`
+        : `Đã import ${successRows} câu hỏi và thêm vào bài kiểm tra.`,
+    summary,
+  };
 }
