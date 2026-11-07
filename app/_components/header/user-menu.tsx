@@ -3,6 +3,7 @@
 import { ChevronDown, LayoutDashboard, LogOut, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { PROFILE_PATH } from "@/features/auth/routes";
 import { authClient } from "@/lib/auth-client";
@@ -22,6 +23,7 @@ const MENU_ITEM_CLASS_NAME =
   "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-text-secondary transition-colors hover:bg-bg-subtle hover:text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default";
 
 export function UserMenu({ className, onNavigate }: UserMenuProps) {
+  const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -136,9 +138,10 @@ export function UserMenu({ className, onNavigate }: UserMenuProps) {
           <button
             type="button"
             role="menuitem"
-            onClick={() => {
-              setIsOpen(false);
-              authClient.signOut();
+            onClick={async () => {
+              closeMenu();
+              await authClient.signOut();
+              router.replace("/");
             }}
             className={cn(
               MENU_ITEM_CLASS_NAME,

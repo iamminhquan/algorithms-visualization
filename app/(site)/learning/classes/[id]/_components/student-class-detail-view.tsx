@@ -9,7 +9,6 @@ import {
   STUDENT_CLASSES_PATH,
 } from "@/features/learning/routes";
 import { cn } from "@/lib/cn";
-import { formatDateTime } from "@/lib/format";
 
 function isDeadlinePassed(deadline: Date | null): boolean {
   return deadline !== null && deadline.getTime() <= Date.now();
@@ -103,12 +102,6 @@ export async function StudentClassDetailView({
                                 : "Chưa làm"}
                         </Badge>
                       </div>
-                      <p className="text-sm text-text-secondary">
-                        {exam.examQuestions.length} câu hỏi ·{" "}
-                        {exam.deadline
-                          ? `Hạn nộp ${formatDateTime(exam.deadline)}`
-                          : "Không có hạn nộp"}
-                      </p>
                       {submission?.status === "submitted" && (
                         <p className="text-sm text-text-secondary">
                           Điểm:{" "}
