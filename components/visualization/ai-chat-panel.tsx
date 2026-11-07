@@ -144,7 +144,7 @@ export function AiChatPanel({
                     <button
                       type="button"
                       onClick={() => ask(question)}
-                      className="rounded-full border border-border-default px-3 py-1 text-left text-xs text-text-secondary transition-colors hover:bg-bg-subtle hover:text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default"
+                      className="rounded-lg border border-border-default px-3 py-1 text-left text-xs text-text-secondary transition-colors hover:bg-bg-subtle hover:text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default"
                     >
                       {question}
                     </button>

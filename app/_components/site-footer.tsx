@@ -1,4 +1,3 @@
-import { ArrowRight, GitCompare } from "lucide-react";
 import Link from "next/link";
 import { getCategoryCatalog } from "@/features/catalog/queries";
 import {
@@ -30,7 +29,7 @@ const STATIC_FOOTER_COLUMNS: readonly IFooterColumn[] = [
     title: "Khám phá",
     links: [
       { label: "Trang chủ", href: "/" },
-      { label: "Lộ trình học", href: "/learn" },
+      { label: "Học tập", href: "/learning" },
       { label: "Giới thiệu", href: "/#about" },
     ],
   },
@@ -66,9 +65,6 @@ const LINK_CLASS_NAME =
 
 const SOCIAL_CLASS_NAME =
   "flex size-10 items-center justify-center rounded-full bg-text-inverse/10 text-text-muted transition-colors hover:text-text-inverse focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default dark:bg-bg-subtle dark:text-text-secondary dark:hover:text-text-primary";
-
-const COMPARE_CLASS_NAME =
-  "group inline-flex items-center gap-2 rounded-lg border border-text-inverse/20 px-4 py-2.5 text-sm font-medium text-text-inverse transition-colors hover:border-text-inverse/40 hover:bg-text-inverse/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default dark:border-border-default dark:text-text-primary dark:hover:border-border-strong dark:hover:bg-bg-subtle";
 
 function FooterLink({ link }: { link: IFooterLink }) {
   return (
@@ -114,14 +110,6 @@ export async function SiteFooter() {
               Nền tảng học thuật toán và cấu trúc dữ liệu qua mô phỏng trực
               quan, giúp bạn hiểu từng bước chạy thay vì chỉ đọc lý thuyết.
             </p>
-            <Link href={COMPARE_HREF} className={COMPARE_CLASS_NAME}>
-              <GitCompare aria-hidden="true" className="size-4" />
-              So sánh thuật toán
-              <ArrowRight
-                aria-hidden="true"
-                className="size-4 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none"
-              />
-            </Link>
             <div className="flex gap-3">
               <Link
                 href={GITHUB_URL}

@@ -79,9 +79,10 @@ Route của website:
 | `/visualization/[category]`             | Danh sách thuật toán của một danh mục       |
 | `/visualization/[category]/[algorithm]` | Trang mô phỏng một thuật toán               |
 | `/visualization/[category]/compare`     | So sánh song song hai thuật toán (`?a=&b=`) |
-| `/learn`                                | Danh sách lộ trình học                      |
+| `/learning`                             | Thư viện thuật toán và lớp học của tôi      |
 | `/login`, `/register`                   | Đăng nhập, đăng ký                          |
 | `/verify-email`                         | Xác thực email bằng mã OTP                  |
+| `/reset-password`                       | Đặt hoặc khôi phục mật khẩu bằng mã OTP     |
 | `/admin`                                | Trang quản trị (layout riêng)               |
 | `/api/assistant`                        | API chat với trợ lý AI (POST, stream)       |
 | `/api/auth/[...all]`                    | Route xác thực của Better Auth              |

@@ -22,6 +22,7 @@ export const usersTable = pgTable(
     emailVerified: boolean("email_verified").default(false).notNull(),
     image: text("image"),
     role: text("role").$type<UserRole>().notNull().default("student"),
+    isLocked: boolean("is_locked").default(false).notNull(),
     ...timestamps,
   },
   (table) => [
