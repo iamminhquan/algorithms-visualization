@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { getButtonClassName } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { getAdminQuestionsHref } from "../routes";
 import type { ILearningActionState } from "../types";
@@ -43,8 +42,8 @@ export function AddExamQuestionForm({
       <div className="flex flex-col gap-1 px-5 py-6">
         <p className="text-sm text-text-secondary">
           {bankCount === 0
-            ? "Ngân hàng câu hỏi đang trống. Dùng nút “Tạo câu hỏi” ở trên để thêm câu hỏi đầu tiên cho đề này."
-            : "Tất cả câu hỏi trong ngân hàng đã có trong đề này. Tạo thêm câu hỏi mới nếu cần."}
+            ? "Ngân hàng câu hỏi đang trống. Hãy tạo câu hỏi trong ngân hàng câu hỏi trước."
+            : "Tất cả câu hỏi trong ngân hàng đã có trong đề này. Import thêm câu hỏi nếu cần."}
         </p>
         <Link
           href={getAdminQuestionsHref()}
@@ -59,47 +58,28 @@ export function AddExamQuestionForm({
   return (
     <form action={formAction} className="flex flex-col gap-4 px-5 py-5">
       <input type="hidden" name="examId" value={examId} />
-      <div className="grid gap-4 sm:grid-cols-[1fr_8rem]">
-        <div className="flex flex-col gap-1.5">
-          <label
-            htmlFor={`exam-${examId}-question`}
-            className="text-sm font-medium text-text-primary"
-          >
-            Câu hỏi
-          </label>
-          <Select
-            id={`exam-${examId}-question`}
-            name="questionId"
-            required
-            defaultValue=""
-          >
-            <option value="" disabled>
-              Chọn câu hỏi từ ngân hàng
+      <div className="flex flex-col gap-1.5">
+        <label
+          htmlFor={`exam-${examId}-question`}
+          className="text-sm font-medium text-text-primary"
+        >
+          Câu hỏi
+        </label>
+        <Select
+          id={`exam-${examId}-question`}
+          name="questionId"
+          required
+          defaultValue=""
+        >
+          <option value="" disabled>
+            Chọn câu hỏi từ ngân hàng
+          </option>
+          {questions.map((question) => (
+            <option key={question.id} value={question.id}>
+              {question.content.slice(0, 80)}
             </option>
-            {questions.map((question) => (
-              <option key={question.id} value={question.id}>
-                {question.content.slice(0, 80)}
-              </option>
-            ))}
-          </Select>
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <label
-            htmlFor={`exam-${examId}-points`}
-            className="text-sm font-medium text-text-primary"
-          >
-            Điểm
-          </label>
-          <Input
-            id={`exam-${examId}-points`}
-            name="points"
-            type="number"
-            min={0.25}
-            step={0.25}
-            defaultValue={1}
-            required
-          />
-        </div>
+          ))}
+        </Select>
       </div>
       <div className="flex flex-wrap items-center gap-3">
         <button
