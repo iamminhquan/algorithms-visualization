@@ -23,8 +23,8 @@ export function Panel({
         className,
       )}
     >
-      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border-default px-5 py-4">
-        <div className="flex flex-col gap-1">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border-default px-5 py-4">
+        <div className="min-w-0">
           <h2 className="text-base font-semibold text-text-primary">{title}</h2>
           {description && (
             <p className="text-sm text-text-secondary">{description}</p>

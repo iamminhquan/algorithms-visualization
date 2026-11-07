@@ -31,14 +31,12 @@ export function CategoryCard({
       </p>
       <p className="mt-auto pt-1 text-xs font-medium">
         {simulationCount > 0 ? (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-bg-subtle px-2.5 py-1 text-text-secondary">
+          <span className="inline-flex items-center gap-1.5 text-text-secondary">
             <Play aria-hidden="true" className="size-3" />
             {simulationCount} mô phỏng
           </span>
         ) : (
-          <span className="inline-flex rounded-full border border-dashed border-border-strong px-2.5 py-1 text-text-muted">
-            Sắp ra mắt
-          </span>
+          <span className="text-text-muted">Sắp ra mắt</span>
         )}
       </p>
     </Link>

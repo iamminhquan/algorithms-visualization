@@ -1,4 +1,4 @@
-import { ArrowLeft, Pencil, Plus } from "lucide-react";
+import { ArrowLeft, Pencil } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -22,7 +22,7 @@ import {
 } from "@/features/learning/queries";
 import { getAdminClassHref } from "@/features/learning/routes";
 import { cn } from "@/lib/cn";
-import { formatDateTime, formatNumber } from "@/lib/format";
+import { formatDateTime } from "@/lib/format";
 import { AdminPageSkeleton } from "../../../../_components/admin-page-skeleton";
 import {
   DataTable,
@@ -35,12 +35,6 @@ import { Panel } from "../../../../_components/panel";
 
 export const metadata: Metadata = {
   title: "Chi tiết bài kiểm tra",
-};
-
-const QUESTION_TYPE_LABELS = {
-  multiple_choice: "Trắc nghiệm",
-  fill_blank: "Điền khuyết",
-  final_answer: "Kết quả cuối cùng",
 };
 
 const EXAM_STATUS_LABELS = {
@@ -101,7 +95,6 @@ async function AdminExamDetailContent({
     <>
       <PageHeader
         title={exam.title}
-        description={`Lớp ${exam.class.name} · ${exam.examQuestions.length} câu hỏi · ${formatNumber(exam.submissions.length)} bài nộp`}
         breadcrumb={[
           { label: "Lớp học", href: "/admin/classes" },
           {
@@ -185,11 +178,6 @@ async function AdminExamDetailContent({
 
       <Panel
         title="Câu hỏi"
-        description={
-          isDraft
-            ? "Thêm câu hỏi từ ngân hàng, đặt điểm rồi công bố đề."
-            : "Đề đã công bố, danh sách câu hỏi được giữ cố định."
-        }
         actions={<Badge tone={status.tone}>{status.label}</Badge>}
       >
         {exam.examQuestions.length === 0 ? (
@@ -204,17 +192,9 @@ async function AdminExamDetailContent({
                 className="flex flex-wrap items-start justify-between gap-3 px-5 py-3"
               >
                 <div className="flex min-w-0 flex-1 flex-col gap-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-xs font-medium text-text-muted">
-                      Câu {index + 1}
-                    </span>
-                    <Badge tone="neutral">
-                      {QUESTION_TYPE_LABELS[examQuestion.question.type]}
-                    </Badge>
-                    <span className="text-xs text-text-secondary">
-                      {examQuestion.points} điểm
-                    </span>
-                  </div>
+                  <span className="text-xs font-medium text-text-muted">
+                    Câu {index + 1}
+                  </span>
                   <p className="truncate text-sm text-text-primary">
                     {examQuestion.question.content}
                   </p>
@@ -246,17 +226,10 @@ async function AdminExamDetailContent({
         )}
       </Panel>
 
-      <Panel
-        title="Bài nộp"
-        description="Danh sách bài làm của sinh viên trong lớp."
-        actions={
-          <span className="inline-flex items-center gap-1.5 text-sm text-text-secondary">
-            <Plus aria-hidden="true" className="size-4" />
-            {exam.submissions.length} bài
-          </span>
-        }
-      >
+      <Panel title="Bài nộp">
         <DataTable
+          isEmbedded
+          isFooterHidden
           columns={SUBMISSION_COLUMNS}
           rowCount={exam.submissions.length}
           itemLabel="bài nộp"

@@ -44,16 +44,6 @@ export async function StudentClassDetailView({
               Giảng viên {classRow.owner.name}
             </p>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <Badge
-              tone={classRow.status === "archived" ? "neutral" : "success"}
-            >
-              {classRow.status === "archived" ? "Đã lưu trữ" : "Đang học"}
-            </Badge>
-            <span className="rounded-full bg-bg-subtle px-2.5 py-1 font-mono text-xs text-text-secondary">
-              {classRow.code}
-            </span>
-          </div>
         </div>
       </div>
 
@@ -144,11 +134,6 @@ export async function StudentClassDetailView({
           </ul>
         )}
       </section>
-
-      <p className="text-sm text-text-muted">
-        Mã lớp dùng để mời bạn bè:{" "}
-        <span className="font-mono text-text-secondary">{classRow.code}</span>
-      </p>
     </div>
   );
 }

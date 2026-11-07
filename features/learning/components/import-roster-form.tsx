@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState } from "react";
+import { Upload } from "lucide-react";
+import { useActionState, useState } from "react";
 import { getButtonClassName } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/cn";
 import type { IImportActionState } from "../types";
 import { INITIAL_IMPORT_ACTION_STATE } from "../types";
 import { FormMessage } from "./form-message";
@@ -20,40 +21,45 @@ export function ImportRosterForm({ action, classId }: ImportRosterFormProps) {
     action,
     INITIAL_IMPORT_ACTION_STATE,
   );
+  const [fileName, setFileName] = useState("");
+  const buttonClassName = getButtonClassName("secondary", "sm");
 
   return (
-    <form action={formAction} className="flex flex-col gap-4 px-5 py-5">
+    <form
+      action={formAction}
+      className="flex flex-wrap items-center gap-2 self-center"
+    >
       <input type="hidden" name="classId" value={classId} />
-      <div className="flex flex-col gap-1.5">
-        <label
-          htmlFor={`class-${classId}-roster-file`}
-          className="text-sm font-medium text-text-primary"
-        >
-          File Excel danh sách sinh viên
-        </label>
-        <Input
-          id={`class-${classId}-roster-file`}
-          name="file"
-          type="file"
-          accept=".xlsx,.xls,.csv"
-          required
-        />
-        <p className="text-xs text-text-muted">
-          Cột bắt buộc: Email, MSSV. Cột không bắt buộc: Họ tên.
-        </p>
-      </div>
-      <div className="flex flex-wrap items-center gap-3">
-        <button
-          type="submit"
-          disabled={isPending}
-          className={getButtonClassName("primary")}
-        >
-          {isPending ? "Đang import..." : "Import danh sách"}
-        </button>
-        <FormMessage state={state} />
-      </div>
+      <input
+        id={`class-${classId}-roster-file`}
+        name="file"
+        type="file"
+        accept=".xlsx,.xls,.csv"
+        className="sr-only"
+        onChange={(event) => setFileName(event.target.files?.[0]?.name ?? "")}
+      />
+      <label
+        htmlFor={`class-${classId}-roster-file`}
+        className={cn("cursor-pointer", buttonClassName)}
+      >
+        <Upload aria-hidden="true" className="size-4" />
+        Chọn file
+      </label>
+      {fileName !== "" && (
+        <span className="min-w-0 max-w-32 truncate text-sm text-text-secondary sm:max-w-48">
+          {fileName}
+        </span>
+      )}
+      <button
+        type="submit"
+        disabled={isPending || fileName === ""}
+        className={getButtonClassName("primary", "sm")}
+      >
+        {isPending ? "Đang import..." : "Import"}
+      </button>
+      <FormMessage state={state} />
       {state.summary && (
-        <div className="flex flex-col gap-2 rounded-lg border border-border-default bg-bg-subtle p-3">
+        <div className="flex w-full basis-full flex-col gap-2 rounded-lg border border-border-default bg-bg-subtle p-3">
           <p className="text-sm text-text-primary">
             Tổng {state.summary.totalRows} dòng ·{" "}
             <span className="text-success-text">

@@ -1,5 +1,4 @@
 import {
-  BookOpen,
   FolderTree,
   LayoutDashboard,
   ListChecks,
@@ -51,7 +50,6 @@ export const ADMIN_NAV_GROUPS: readonly IAdminNavGroup[] = [
     items: [
       { label: "Danh mục", href: ADMIN_ROUTES.categories, icon: FolderTree },
       { label: "Thuật toán", href: ADMIN_ROUTES.algorithms, icon: Workflow },
-      { label: "Bài học", href: ADMIN_ROUTES.lessons, icon: BookOpen },
     ],
   },
   {

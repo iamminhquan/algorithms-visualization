@@ -60,12 +60,12 @@ export async function StudentExamView({
               {isClosed ? "Đã đóng" : "Đang mở"}
             </Badge>
             {exam.deadline && (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-bg-subtle px-2.5 py-1 text-xs text-text-secondary">
+              <span className="inline-flex items-center gap-1.5 text-xs text-text-secondary">
                 <Clock aria-hidden="true" className="size-3.5" />
                 Hạn nộp {formatDateTime(exam.deadline)}
               </span>
             )}
-            <span className="rounded-full bg-bg-subtle px-2.5 py-1 text-xs text-text-secondary">
+            <span className="text-xs text-text-secondary">
               {exam.questions.length} câu hỏi
             </span>
           </div>

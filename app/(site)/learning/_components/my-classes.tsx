@@ -79,10 +79,6 @@ export async function MyClassesSection() {
                   <span className="font-mono text-text-muted">
                     {classRow.code}
                   </span>
-                  <span className="inline-flex items-center gap-1 text-accent-text">
-                    Mở lớp
-                    <ArrowRight aria-hidden="true" className="size-3.5" />
-                  </span>
                 </div>
               </Link>
             </li>
