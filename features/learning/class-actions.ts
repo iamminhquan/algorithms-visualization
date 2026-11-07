@@ -28,19 +28,10 @@ import {
   getFormText,
   isUniqueViolation,
   normalizeClassCode,
+  normalizeHeader,
 } from "./validation";
 
 const MAX_IMPORT_FILE_SIZE = 5 * 1024 * 1024;
-
-function normalizeHeader(value: string): string {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/đ/g, "d")
-    .replace(/Đ/g, "D")
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, "");
-}
 
 function readRecordValue(
   record: Readonly<Record<string, unknown>>,

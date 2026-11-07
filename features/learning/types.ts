@@ -29,6 +29,25 @@ export interface IImportActionState extends ILearningActionState {
 
 export const INITIAL_IMPORT_ACTION_STATE: IImportActionState = {};
 
+export interface IQuestionImportError {
+  readonly row: number;
+  readonly code: string;
+  readonly message: string;
+}
+
+export interface IQuestionImportSummary {
+  readonly totalRows: number;
+  readonly successRows: number;
+  readonly failedRows: number;
+  readonly errors: readonly IQuestionImportError[];
+}
+
+export interface IQuestionImportActionState extends ILearningActionState {
+  readonly summary?: IQuestionImportSummary;
+}
+
+export const INITIAL_QUESTION_IMPORT_STATE: IQuestionImportActionState = {};
+
 export interface IQuestionOptionFormValue {
   readonly content: string;
   readonly isCorrect: boolean;

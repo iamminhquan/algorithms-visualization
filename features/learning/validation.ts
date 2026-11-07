@@ -44,6 +44,20 @@ export function normalizeClassCode(value: string): string {
   return value.trim().toLocaleUpperCase("en-US");
 }
 
+/**
+ * Bỏ dấu tiếng Việt và ký tự không phải chữ/số để so khớp tiêu đề cột trong file
+ * Excel/CSV, ví dụ "Đáp án đúng" và "dap an dung" cùng thành "dapandung".
+ */
+export function normalizeHeader(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+}
+
 export function generateClassCode(): string {
   let code = "";
   for (let index = 0; index < CLASS_CODE_LENGTH; index += 1) {
