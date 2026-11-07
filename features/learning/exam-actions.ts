@@ -12,6 +12,7 @@ import {
 } from "@/db/schema";
 import { actionError, getUnknownErrorMessage } from "./action-helpers";
 import { requireStaffUser } from "./auth";
+import { DEFAULT_EXAM_POINTS } from "./limits";
 import {
   getAdminClassHref,
   getAdminExamHref,
@@ -279,11 +280,11 @@ export async function addExamQuestionAction(
   const user = await requireStaffUser();
   const examId = getFormInt(formData, "examId");
   const questionId = getFormInt(formData, "questionId");
-  const points = getFormNumber(formData, "points");
+  const points = getFormNumber(formData, "points") ?? DEFAULT_EXAM_POINTS;
   if (examId === undefined || questionId === undefined) {
     return actionError("Câu hỏi hoặc bài kiểm tra không hợp lệ.");
   }
-  if (points === undefined || points <= 0) {
+  if (points <= 0) {
     return actionError("Điểm của câu hỏi phải lớn hơn 0.");
   }
 
