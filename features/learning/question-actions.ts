@@ -14,6 +14,7 @@ import {
 } from "@/db/schema";
 import { actionError, getUnknownErrorMessage } from "./action-helpers";
 import { canManageClass, type ILearningUser, requireStaffUser } from "./auth";
+import { DEFAULT_EXAM_POINTS } from "./limits";
 import {
   type IParsedAnswerKey,
   type IParsedOption,
@@ -94,9 +95,6 @@ function parseAnswerKeys(
     .filter((key): key is IParsedAnswerKey => key !== null);
 }
 
-/** Điểm mặc định của câu hỏi khi được tạo ngay trong một bài kiểm tra. */
-const DEFAULT_EXAM_POINTS = 1;
-
 interface IExamQuestionTarget {
   readonly examId: number;
   readonly classId: number;
@@ -172,10 +170,6 @@ export async function createQuestionAction(
     return actionError(validationError);
   }
 
-  /*
-   * Trang ngân hàng câu hỏi gửi form không kèm `examId`, còn nút "Tạo câu hỏi" trong trang
-   * bài kiểm tra gửi kèm `examId` + `points` để câu hỏi vừa tạo được gắn luôn vào đề.
-   */
   const examId = getFormInt(formData, "examId");
   const points = getFormNumber(formData, "points") ?? DEFAULT_EXAM_POINTS;
   if (examId !== undefined && points <= 0) {

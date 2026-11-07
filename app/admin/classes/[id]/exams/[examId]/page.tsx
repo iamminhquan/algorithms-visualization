@@ -1,4 +1,4 @@
-import { ArrowLeft, Pencil, Plus } from "lucide-react";
+import { ArrowLeft, Pencil } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -9,7 +9,6 @@ import { ActionButtonForm } from "@/features/learning/components/action-button-f
 import { AddExamQuestionForm } from "@/features/learning/components/add-exam-question-form";
 import { ExamFormDialog } from "@/features/learning/components/exam-form";
 import { ImportQuestionsDialog } from "@/features/learning/components/import-questions-dialog";
-import { QuestionFormDialog } from "@/features/learning/components/question-form";
 import {
   addExamQuestionAction,
   closeExamAction,
@@ -22,10 +21,7 @@ import {
   getQuestionBank,
   getStaffExamDetail,
 } from "@/features/learning/queries";
-import {
-  createQuestionAction,
-  importQuestionsAction,
-} from "@/features/learning/question-actions";
+import { importQuestionsAction } from "@/features/learning/question-actions";
 import { getAdminClassHref } from "@/features/learning/routes";
 import { cn } from "@/lib/cn";
 import { formatDateTime } from "@/lib/format";
@@ -187,27 +183,10 @@ async function AdminExamDetailContent({
         actions={
           <div className="flex flex-wrap items-center gap-2">
             {isDraft && (
-              <>
-                <ImportQuestionsDialog
-                  action={importQuestionsAction}
-                  examId={exam.id}
-                />
-                <QuestionFormDialog
-                  action={createQuestionAction}
-                  title="Tạo câu hỏi mới"
-                  description="Câu hỏi được lưu vào ngân hàng của bạn và thêm ngay vào đề này."
-                  trigger={
-                    <>
-                      <Plus aria-hidden="true" />
-                      Tạo câu hỏi
-                    </>
-                  }
-                  triggerClassName={getButtonClassName("secondary", "sm")}
-                  submitLabel="Tạo và thêm vào đề"
-                  idPrefix={`exam-${exam.id}-new-question`}
-                  examId={exam.id}
-                />
-              </>
+              <ImportQuestionsDialog
+                action={importQuestionsAction}
+                examId={exam.id}
+              />
             )}
             <Badge tone={status.tone}>{status.label}</Badge>
           </div>
