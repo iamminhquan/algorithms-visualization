@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 const SESSION_COOKIE = "better-auth.session_token";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   if (!pathname.startsWith("/admin")) return NextResponse.next();
 
