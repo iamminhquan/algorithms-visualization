@@ -82,6 +82,7 @@ Route của website:
 | `/learning`                             | Thư viện thuật toán và lớp học của tôi      |
 | `/login`, `/register`                   | Đăng nhập, đăng ký                          |
 | `/verify-email`                         | Xác thực email bằng mã OTP                  |
+| `/reset-password`                       | Đặt hoặc khôi phục mật khẩu bằng mã OTP     |
 | `/admin`                                | Trang quản trị (layout riêng)               |
 | `/api/assistant`                        | API chat với trợ lý AI (POST, stream)       |
 | `/api/auth/[...all]`                    | Route xác thực của Better Auth              |

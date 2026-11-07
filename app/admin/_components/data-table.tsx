@@ -21,6 +21,15 @@ type DataTableProps = {
   searchPlaceholder: string;
   filters?: ReactNode;
   emptyMessage: string;
+  /**
+   * Khi đặt trong một Panel có nội dung khác phía trên, bỏ khung bo góc riêng để
+   * bảng dính liền thành một khối với nội dung trên.
+   */
+  isEmbedded?: boolean;
+  /**
+   * Ẩn hàng đếm số lượng và nút trang (khi số liệu đã hiển thị ở nơi khác).
+   */
+  isFooterHidden?: boolean;
   children: ReactNode;
 };
 
@@ -31,10 +40,19 @@ export function DataTable({
   searchPlaceholder,
   filters,
   emptyMessage,
+  isEmbedded = false,
+  isFooterHidden = false,
   children,
 }: DataTableProps) {
   return (
-    <section className="overflow-hidden rounded-xl border border-border-default bg-bg-surface">
+    <section
+      className={cn(
+        "overflow-hidden",
+        isEmbedded
+          ? ""
+          : "rounded-xl border border-border-default bg-bg-surface",
+      )}
+    >
       <div className="flex flex-col gap-3 border-b border-border-default p-4 sm:flex-row sm:items-center">
         <div className="relative sm:max-w-xs sm:flex-1">
           <Search
@@ -93,21 +111,23 @@ export function DataTable({
           </tbody>
         </table>
       </div>
-      <div className="flex items-center justify-between gap-4 border-t border-border-default px-4 py-3 text-sm text-text-secondary">
-        <p>
-          {formatNumber(rowCount)} {itemLabel}
-        </p>
-        <div className="flex gap-2">
-          <Button variant="secondary" size="sm" disabled>
-            <ChevronLeft aria-hidden="true" />
-            Trước
-          </Button>
-          <Button variant="secondary" size="sm" disabled>
-            Sau
-            <ChevronRight aria-hidden="true" />
-          </Button>
+      {!isFooterHidden && (
+        <div className="flex items-center justify-between gap-4 border-t border-border-default px-4 py-3 text-sm text-text-secondary">
+          <p>
+            {formatNumber(rowCount)} {itemLabel}
+          </p>
+          <div className="flex gap-2">
+            <Button variant="secondary" size="sm" disabled>
+              <ChevronLeft aria-hidden="true" />
+              Trước
+            </Button>
+            <Button variant="secondary" size="sm" disabled>
+              Sau
+              <ChevronRight aria-hidden="true" />
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
     </section>
   );
 }

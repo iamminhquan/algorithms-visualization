@@ -32,6 +32,20 @@ function toDateTimeLocalValue(value: string | null): string {
   return `${getPart("year")}-${getPart("month")}-${getPart("day")}T${getPart("hour")}:${getPart("minute")}`;
 }
 
+/** Giờ mặc định của hạn nộp khi tạo bài kiểm tra: cuối ngày hôm nay, giáo viên chỉ cần chỉnh giờ. */
+const DEFAULT_DEADLINE_TIME = "23:59";
+
+function toTodayDateTimeLocalValue(): string {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Ho_Chi_Minh",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  const [year, month, day] = formatter.format(new Date()).split("-");
+  return `${year}-${month}-${day}T${DEFAULT_DEADLINE_TIME}`;
+}
+
 type ExamFormDialogProps = {
   action: (
     state: ILearningActionState,
@@ -95,12 +109,26 @@ export function ExamFormDialog({
               placeholder="Hướng dẫn hoặc ghi chú cho sinh viên."
             />
           </FormField>
-          <FormField label="Hạn nộp" htmlFor={`${idPrefix}-deadline`}>
+          <FormField
+            label="Hạn nộp"
+            htmlFor={`${idPrefix}-deadline`}
+            hint={
+              initialValues.id === undefined && initialValues.deadline === null
+                ? "Mặc định là 23:59 hôm nay, ngày đã điền sẵn nên bạn chỉ cần chỉnh giờ."
+                : undefined
+            }
+          >
             <Input
               id={`${idPrefix}-deadline`}
               name="deadline"
               type="datetime-local"
-              defaultValue={toDateTimeLocalValue(initialValues.deadline)}
+              defaultValue={
+                initialValues.deadline !== null
+                  ? toDateTimeLocalValue(initialValues.deadline)
+                  : initialValues.id === undefined
+                    ? toTodayDateTimeLocalValue()
+                    : ""
+              }
             />
           </FormField>
           <FormMessage state={state} />

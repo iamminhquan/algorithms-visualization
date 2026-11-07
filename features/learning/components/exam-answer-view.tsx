@@ -2,12 +2,6 @@ import { Badge } from "@/components/ui/badge";
 import { formatDateTime } from "@/lib/format";
 import type { IStudentExamData, IStudentExamQuestion } from "../types";
 
-const QUESTION_TYPE_LABELS = {
-  multiple_choice: "Trắc nghiệm",
-  fill_blank: "Điền khuyết",
-  final_answer: "Kết quả cuối cùng",
-} as const;
-
 function formatQuestionContent(content: string): string {
   return content.replace(/\{\{\s*(\d+)\s*\}\}/g, "[$1]");
 }
@@ -116,7 +110,6 @@ export function ExamAnswerView({ exam }: ExamAnswerViewProps) {
         >
           <div className="flex flex-wrap items-center gap-2">
             <h2 className="font-semibold text-text-primary">Câu {index + 1}</h2>
-            <Badge tone="neutral">{QUESTION_TYPE_LABELS[question.type]}</Badge>
             <span className="text-sm text-text-secondary">
               {question.points} điểm
             </span>

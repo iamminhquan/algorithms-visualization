@@ -50,6 +50,13 @@
       "when": 1793981793931,
       "tag": "0006_steady_wasp",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793993912764,
+      "tag": "0007_thick_wolfpack",
+      "breakpoints": true
     }
   ]
 }

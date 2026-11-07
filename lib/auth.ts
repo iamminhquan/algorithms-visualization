@@ -1,7 +1,8 @@
 import "server-only";
-import { betterAuth } from "better-auth";
+import { APIError, betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { emailOTP } from "better-auth/plugins";
+import { eq } from "drizzle-orm";
 import { after } from "next/server";
 import { db } from "@/db";
 import {
@@ -10,8 +11,10 @@ import {
   usersTable,
   verificationsTable,
 } from "@/db/schema";
+import { createPasswordResetOtpEmail } from "@/features/auth/emails/password-reset-otp";
 import { createVerificationOtpEmail } from "@/features/auth/emails/verification-otp";
 import { MIN_PASSWORD_LENGTH, OTP_LENGTH } from "@/features/auth/limits";
+import { getResetPasswordHref } from "@/features/auth/routes";
 import { sendMail } from "@/lib/mailer";
 
 const OTP_EXPIRES_IN_SECONDS = 600;
@@ -37,6 +40,21 @@ function sendVerificationOtpEmail(email: string, otp: string): void {
   );
 }
 
+function sendPasswordResetOtpEmail(email: string, otp: string): void {
+  const baseUrl =
+    process.env.BETTER_AUTH_URL?.replace(/\/$/, "") ?? "http://localhost:3000";
+  const content = createPasswordResetOtpEmail({
+    otp,
+    expiresInMinutes: OTP_EXPIRES_IN_SECONDS / 60,
+    resetUrl: `${baseUrl}${getResetPasswordHref(email)}`,
+  });
+  after(() =>
+    sendMail({ to: email, ...content }).catch((error: unknown) => {
+      console.error(`Không gửi được mã đặt mật khẩu tới ${email}`, error);
+    }),
+  );
+}
+
 export const auth = betterAuth({
   user: {
     additionalFields: {
@@ -45,6 +63,30 @@ export const auth = betterAuth({
         required: true,
         defaultValue: "student",
         input: false,
+      },
+      isLocked: {
+        type: "boolean",
+        required: false,
+        defaultValue: false,
+        input: false,
+      },
+    },
+  },
+  databaseHooks: {
+    session: {
+      create: {
+        before: async (session) => {
+          const user = await db.query.usersTable.findFirst({
+            where: eq(usersTable.id, session.userId),
+            columns: { isLocked: true },
+          });
+          if (user?.isLocked) {
+            throw APIError.from("FORBIDDEN", {
+              message: "Tài khoản đã bị khoá.",
+              code: "LOCKED_USER",
+            });
+          }
+        },
       },
     },
   },
@@ -76,6 +118,9 @@ export const auth = betterAuth({
       async sendVerificationOTP({ email, otp, type }) {
         if (type === "email-verification") {
           sendVerificationOtpEmail(email, otp);
+        }
+        if (type === "forget-password") {
+          sendPasswordResetOtpEmail(email, otp);
         }
       },
     }),

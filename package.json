@@ -18,6 +18,7 @@
     "db:seed": "bun --conditions=react-server db/seed.ts && bun --conditions=react-server db/seed-snippets.ts",
     "db:seed:snippets": "bun --conditions=react-server db/seed-snippets.ts",
     "db:seed:admin": "bun --conditions=react-server db/seed-admin.ts",
+    "db:seed:questions": "bun --conditions=react-server db/seed-questions.ts",
     "db:seed:preview": "DATABASE_URL=$PREVIEW_DATABASE_URL bun --conditions=react-server db/seed.ts && DATABASE_URL=$PREVIEW_DATABASE_URL bun --conditions=react-server db/seed-snippets.ts"
   },
   "dependencies": {

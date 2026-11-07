@@ -166,7 +166,10 @@ bun run db:seed:preview        # nạp seed cho DB preview (cần PREVIEW_DATABA
   `error-messages.ts` (`getAuthErrorMessage` đổi mã lỗi Better Auth sang tiếng Việt), `emails/verification-otp.ts` (nội
   dung mail); `lib/mailer.ts` gửi qua Gmail SMTP bằng nodemailer, transporter tạo lười nên build không cần biến SMTP.
 - Các form (`login-form.tsx`, `register-form.tsx`, `verify-email-form.tsx`) là client component trong
-  `app/(site)/(auth)/_components/`, gọi `authClient` trực tiếp; chưa có quên mật khẩu.
+  `app/(site)/(auth)/_components/`, gọi `authClient` trực tiếp. Luồng khôi phục mật khẩu dùng
+  `emailOtp.requestPasswordReset`/`resetPassword` ở `/reset-password?email=...`.
+- Tài khoản bị khoá có `users.is_locked = true`: Better Auth chặn tạo phiên mới trong `databaseHooks.session.create.before`,
+  `getLearningUser` trả `null`, và thao tác khoá xoá phiên hiện có.
 - `/profile` là trang hồ sơ: Server Component đọc session và danh sách account qua `auth.api.getSession` /
   `auth.api.listUserAccounts`, chưa đăng nhập thì `redirect` về `/login`; `PasswordSection` (client) hiện trạng thái
   email + mật khẩu và cho user đăng nhập bằng Google thêm mật khẩu qua Server Action `addPasswordAction`
@@ -226,11 +229,16 @@ bun run db:seed:preview        # nạp seed cho DB preview (cần PREVIEW_DATABA
   `/login` khi chưa đăng nhập.
 - Các trang công khai nằm trong route group `app/(site)/`, layout của group này gắn header và footer; root layout chỉ có
   `<html>`, `<body>` và theme.
-- `/admin` là trang quản trị với layout riêng (sidebar, thanh trên cùng, `noindex`), chưa có đăng nhập nên ai cũng vào
-  được.
+- `/admin` là trang quản trị với layout riêng (sidebar, thanh trên cùng, `noindex`), middleware chặn người chưa đăng
+  nhập và `AdminRoleGuard` chỉ cho `admin`/`teacher` vào.
 - Admin đọc danh mục, thuật toán, mã nguồn và người dùng thật từ DB; thanh trên cùng lấy người dùng từ session.
-  Bài học và lớp học vẫn là dữ liệu mẫu trong `app/admin/_components/sample-data.ts` (gắn nhãn "Dữ liệu mẫu").
-- Form và hộp xác nhận xoá trong admin chỉ là giao diện: `<form method="dialog">` đóng hộp thoại mà không gửi đi đâu.
+  Bài học vẫn là dữ liệu mẫu trong `app/admin/_components/sample-data.ts` (gắn nhãn "Dữ liệu mẫu").
+- `/admin/users` chỉ dành cho `admin`: `createUserAction` tạo user `email_verified = true` kèm mật khẩu do admin đặt
+  (hash bằng `better-auth/crypto`), nên người dùng đăng nhập ngay; `updateUserAction` đổi tên/vai trò/trạng thái và đặt
+  lại mật khẩu (nếu nhập mật khẩu mới thì cũng đặt `email_verified = true`), `deleteUserAction` xoá tài khoản không còn
+  ràng buộc. Thao tác ghi DB dùng Server Action, xoá cache bằng `updateTag("users")`.
+- Form thuật toán, danh mục và bài học trong admin vẫn là giao diện: `<form method="dialog">` đóng hộp thoại mà không
+  gửi đi đâu.
 - Thuật toán phải đúng danh mục của nó (`getAlgorithmBySlug(category, algorithm)`), sai danh mục thì `notFound()`.
 - Dựng link bằng `getCategoryHref()` / `getAlgorithmHref()` / `getCompareHref()` trong `features/catalog/routes.ts`.
 - Root layout có `title.template`, trang chỉ đặt tên riêng của nó; admin có template riêng.

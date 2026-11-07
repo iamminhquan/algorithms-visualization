@@ -30,6 +30,7 @@ const AUTH_ERROR_MESSAGES: ReadonlyMap<string, string> = new Map(
     OTP_EXPIRED: "Mã xác thực đã hết hạn. Hãy gửi lại mã mới.",
     TOO_MANY_ATTEMPTS: "Bạn đã nhập sai quá nhiều lần. Hãy gửi lại mã mới.",
     USER_NOT_FOUND: "Không tìm thấy tài khoản với email này.",
+    LOCKED_USER: "Tài khoản đã bị khoá. Vui lòng liên hệ quản trị viên.",
   }),
 );
 

@@ -1,16 +1,17 @@
 import type { BadgeTone } from "@/components/ui/badge";
 import type { UserRole } from "@/db/schema";
+import type { UserStatus } from "@/features/auth/user-types";
+
+export type { UserStatus } from "@/features/auth/user-types";
 
 interface IStatusOption {
   readonly label: string;
   readonly tone: BadgeTone;
 }
 
-export type UserStatus = "active" | "invited" | "locked";
-
 export const USER_ROLES: Readonly<Record<UserRole, IStatusOption>> = {
   admin: { label: "Quản trị", tone: "accent" },
-  teacher: { label: "Giáo viên", tone: "neutral" },
+  teacher: { label: "Giảng viên", tone: "neutral" },
   student: { label: "Học viên", tone: "neutral" },
 };
 

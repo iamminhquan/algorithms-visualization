@@ -1,7 +1,6 @@
 "use client";
 
 import { useActionState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { getButtonClassName } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type {
@@ -11,12 +10,6 @@ import type {
 } from "../types";
 import { INITIAL_LEARNING_ACTION_STATE } from "../types";
 import { FormMessage } from "./form-message";
-
-const QUESTION_TYPE_LABELS = {
-  multiple_choice: "Trắc nghiệm",
-  fill_blank: "Điền khuyết",
-  final_answer: "Kết quả cuối cùng",
-} as const;
 
 function QuestionFields({
   question,
@@ -29,7 +22,6 @@ function QuestionFields({
     <fieldset className="flex flex-col gap-4 rounded-xl border border-border-default bg-bg-surface p-5">
       <legend className="flex flex-wrap items-center gap-2 px-1">
         <span className="font-semibold text-text-primary">Câu {index + 1}</span>
-        <Badge tone="neutral">{QUESTION_TYPE_LABELS[question.type]}</Badge>
         <span className="text-sm text-text-secondary">
           {question.points} điểm
         </span>

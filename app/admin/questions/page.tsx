@@ -1,15 +1,16 @@
 import { Pencil, Plus } from "lucide-react";
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Badge } from "@/components/ui/badge";
 import { getButtonClassName } from "@/components/ui/button";
 import { requireStaffUser } from "@/features/learning/auth";
 import { ActionButtonForm } from "@/features/learning/components/action-button-form";
+import { ImportQuestionsDialog } from "@/features/learning/components/import-questions-dialog";
 import { QuestionFormDialog } from "@/features/learning/components/question-form";
 import { getQuestionBank } from "@/features/learning/queries";
 import {
   createQuestionAction,
   deleteQuestionAction,
+  importQuestionsAction,
   updateQuestionAction,
 } from "@/features/learning/question-actions";
 import type { IQuestionFormValues } from "@/features/learning/types";
@@ -28,15 +29,8 @@ export const metadata: Metadata = {
   title: "Ngân hàng câu hỏi",
 };
 
-const QUESTION_TYPE_LABELS = {
-  multiple_choice: "Trắc nghiệm",
-  fill_blank: "Điền khuyết",
-  final_answer: "Kết quả cuối cùng",
-};
-
 const COLUMNS: readonly ITableColumn[] = [
   { label: "Câu hỏi" },
-  { label: "Loại" },
   { label: "Đáp án" },
   { label: "Dùng trong", align: "right" },
   { label: "Cập nhật" },
@@ -82,19 +76,22 @@ async function AdminQuestionsContent() {
         description="Câu hỏi dùng chung cho nhiều lớp và nhiều bài kiểm tra. Điểm và thứ tự được đặt riêng trong từng đề."
         breadcrumb={[{ label: "Ngân hàng câu hỏi" }]}
         actions={
-          <QuestionFormDialog
-            action={createQuestionAction}
-            title="Thêm câu hỏi"
-            trigger={
-              <>
-                <Plus aria-hidden="true" />
-                Thêm câu hỏi
-              </>
-            }
-            triggerClassName={getButtonClassName("primary")}
-            submitLabel="Thêm câu hỏi"
-            idPrefix="question-new"
-          />
+          <div className="flex flex-wrap items-center gap-2">
+            <ImportQuestionsDialog action={importQuestionsAction} />
+            <QuestionFormDialog
+              action={createQuestionAction}
+              title="Thêm câu hỏi"
+              trigger={
+                <>
+                  <Plus aria-hidden="true" />
+                  Thêm câu hỏi
+                </>
+              }
+              triggerClassName={getButtonClassName("primary")}
+              submitLabel="Thêm câu hỏi"
+              idPrefix="question-new"
+            />
+          </div>
         }
       />
       <DataTable
@@ -110,11 +107,6 @@ async function AdminQuestionsContent() {
               <p className="line-clamp-2 max-w-120 text-text-primary">
                 {question.content}
               </p>
-            </td>
-            <td className={TABLE_CELL_CLASS_NAME}>
-              <Badge tone="neutral">
-                {QUESTION_TYPE_LABELS[question.type]}
-              </Badge>
             </td>
             <td className={cn(TABLE_CELL_CLASS_NAME, "text-text-secondary")}>
               {question.type === "multiple_choice"

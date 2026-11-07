@@ -1,4 +1,4 @@
-import { ArrowRight, Pencil, Plus, Upload } from "lucide-react";
+import { Pencil, Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -96,7 +96,6 @@ async function AdminClassDetailContent({
     <>
       <PageHeader
         title={classRow.name}
-        description={`Mã lớp ${classRow.code} · ${classRow.members.length}/${classRow.maxSize} sinh viên · Giảng viên ${classRow.owner.name}`}
         breadcrumb={[
           { label: "Lớp học", href: "/admin/classes" },
           { label: classRow.name },
@@ -158,22 +157,16 @@ async function AdminClassDetailContent({
       </div>
 
       <Panel
-        title="Sinh viên trong lớp"
-        description="Import danh sách từ Excel hoặc để sinh viên tự tham gia bằng mã lớp."
+        title="Danh sách sinh viên"
         actions={
-          <span className="inline-flex items-center gap-1.5 text-sm text-text-secondary">
-            <Upload aria-hidden="true" className="size-4" />
-            Import Excel
-          </span>
-        }
-      >
-        <div className="border-b border-border-default">
           <ImportRosterForm
             action={importClassRosterAction}
             classId={classRow.id}
           />
-        </div>
+        }
+      >
         <DataTable
+          isEmbedded
           columns={MEMBER_COLUMNS}
           rowCount={classRow.members.length}
           itemLabel="sinh viên"
@@ -215,7 +208,6 @@ async function AdminClassDetailContent({
 
       <Panel
         title="Bài kiểm tra"
-        description="Bài kiểm tra thuộc lớp này và được giao cho toàn bộ sinh viên."
         actions={
           <ExamFormDialog
             action={createExamAction}
@@ -286,13 +278,6 @@ async function AdminClassDetailContent({
                 </td>
                 <td className={TABLE_CELL_CLASS_NAME}>
                   <div className="flex flex-wrap items-start justify-end gap-1">
-                    <Link
-                      href={getAdminExamHref(classRow.id, exam.id)}
-                      aria-label={`Mở bài kiểm tra ${exam.title}`}
-                      className={getButtonClassName("ghost", "icon")}
-                    >
-                      <ArrowRight aria-hidden="true" />
-                    </Link>
                     {exam.status === "draft" && (
                       <ActionButtonForm
                         action={publishExamAction}
@@ -318,10 +303,7 @@ async function AdminClassDetailContent({
         </DataTable>
       </Panel>
 
-      <Panel
-        title="Lịch sử import"
-        description="Các lần upload danh sách sinh viên gần đây."
-      >
+      <Panel title="Lịch sử import">
         {classRow.importJobs.length === 0 ? (
           <p className="px-5 py-6 text-sm text-text-secondary">
             Chưa có lần import nào.
