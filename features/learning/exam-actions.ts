@@ -208,12 +208,6 @@ export async function publishExamAction(
   if (exam.examQuestions.length === 0) {
     return actionError("Bài kiểm tra cần có ít nhất một câu hỏi.");
   }
-  if (exam.class.members.length < exam.class.minSize) {
-    return actionError(
-      `Lớp chưa đủ sĩ số tối thiểu (${exam.class.members.length}/${exam.class.minSize}).`,
-    );
-  }
-
   await db
     .update(examsTable)
     .set({ status: "published", publishedAt: new Date() })
