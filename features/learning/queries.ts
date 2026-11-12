@@ -188,6 +188,19 @@ export async function getStudentClasses(user: ILearningUser) {
   });
 }
 
+export async function getStudentJoinPreview(code: string, user: ILearningUser) {
+  return db.query.classesTable.findFirst({
+    where: eq(classesTable.code, code),
+    columns: { id: true, name: true, status: true },
+    with: {
+      members: {
+        where: eq(classMembersTable.userId, user.id),
+        columns: { id: true },
+      },
+    },
+  });
+}
+
 export async function getStudentClassDetail(
   classId: number,
   user: ILearningUser,

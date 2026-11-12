@@ -1,8 +1,13 @@
 export const LEARNING_PATH = "/learning";
 export const STUDENT_CLASSES_PATH = `${LEARNING_PATH}/classes`;
+export const STUDENT_JOIN_PATH = `${LEARNING_PATH}/join`;
 
 export function getStudentClassHref(classId: number): string {
   return `${STUDENT_CLASSES_PATH}/${classId}`;
+}
+
+export function getStudentJoinHref(code: string): string {
+  return `${STUDENT_JOIN_PATH}/${code}`;
 }
 
 export function getStudentExamHref(examId: number): string {
