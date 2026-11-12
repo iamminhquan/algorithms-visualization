@@ -103,10 +103,7 @@ async function AdminClassDetailContent({
     <>
       <PageHeader
         title={classRow.name}
-        breadcrumb={[
-          { label: "Lớp học", href: "/admin/classes" },
-          { label: classRow.name },
-        ]}
+        breadcrumb={[{ label: "Lớp học", href: "/admin/classes" }]}
         actions={
           <>
             <ClassFormDialog
