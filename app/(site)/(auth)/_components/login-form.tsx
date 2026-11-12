@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
 import { getAuthErrorMessage } from "@/features/auth/error-messages";
-import { AFTER_SIGN_IN_PATH, getVerifyEmailHref } from "@/features/auth/routes";
+import { getSafeCallbackUrl, getVerifyEmailHref } from "@/features/auth/routes";
 import { authClient } from "@/lib/auth-client";
 import { AuthField } from "./auth-field";
 import { AuthFormMessage } from "./auth-form-message";
@@ -11,10 +11,15 @@ import { AuthLink } from "./auth-link";
 import { AuthSubmitButton } from "./auth-submit-button";
 import { getFormText } from "./form-data";
 
-export function LoginForm() {
+type LoginFormProps = {
+  callbackUrl?: string;
+};
+
+export function LoginForm({ callbackUrl }: LoginFormProps) {
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
+  const afterSignInPath = getSafeCallbackUrl(callbackUrl);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -26,7 +31,7 @@ export function LoginForm() {
     setError(undefined);
     const result = await authClient.signIn.email({ email, password });
     if (!result.error) {
-      router.push(AFTER_SIGN_IN_PATH);
+      router.push(afterSignInPath);
       return;
     }
 

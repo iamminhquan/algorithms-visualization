@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { REGISTER_PATH } from "@/features/auth/routes";
 import { AuthCard } from "../_components/auth-card";
 import { AuthLink } from "../_components/auth-link";
@@ -8,7 +9,7 @@ export const metadata: Metadata = {
   title: "Đăng nhập",
 };
 
-export default function LoginPage() {
+export default function LoginPage({ searchParams }: PageProps<"/login">) {
   return (
     <AuthCard
       title="Đăng nhập"
@@ -20,7 +21,20 @@ export default function LoginPage() {
         </>
       }
     >
-      <LoginForm />
+      <Suspense fallback={<LoginForm />}>
+        <LoginFormView searchParams={searchParams} />
+      </Suspense>
     </AuthCard>
   );
+}
+
+type LoginFormViewProps = Pick<PageProps<"/login">, "searchParams">;
+
+async function LoginFormView({ searchParams }: LoginFormViewProps) {
+  const callbackUrl = (await searchParams).callbackUrl;
+  const callbackValue = Array.isArray(callbackUrl)
+    ? callbackUrl.at(0)
+    : callbackUrl;
+
+  return <LoginForm callbackUrl={callbackValue} />;
 }
