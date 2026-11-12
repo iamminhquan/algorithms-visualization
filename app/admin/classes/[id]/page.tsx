@@ -12,6 +12,7 @@ import {
   updateClassAction,
 } from "@/features/learning/class-actions";
 import { ActionButtonForm } from "@/features/learning/components/action-button-form";
+import { ClassCodeCard } from "@/features/learning/components/class-code-card";
 import { ClassFormDialog } from "@/features/learning/components/class-form";
 import { ExamFormDialog } from "@/features/learning/components/exam-form";
 import { ImportRosterForm } from "@/features/learning/components/import-roster-form";
@@ -21,9 +22,13 @@ import {
   publishExamAction,
 } from "@/features/learning/exam-actions";
 import { getStaffClassDetail } from "@/features/learning/queries";
-import { getAdminExamHref } from "@/features/learning/routes";
+import {
+  getAdminExamHref,
+  getStudentJoinHref,
+} from "@/features/learning/routes";
 import { cn } from "@/lib/cn";
 import { formatDate, formatDateTime, formatNumber } from "@/lib/format";
+import { getSiteUrl } from "@/lib/url";
 import { AdminPageSkeleton } from "../../_components/admin-page-skeleton";
 import {
   DataTable,
@@ -80,10 +85,12 @@ async function AdminClassDetailContent({
   const { id } = await params;
   const classId = Number(id);
   const user = await requireStaffUser();
-  const [classRow, users] = await Promise.all([
+  const [classRow, users, siteUrl] = await Promise.all([
     getStaffClassDetail(classId, user),
     getUserCatalog(),
+    getSiteUrl(),
   ]);
+  const joinUrl = `${siteUrl}${getStudentJoinHref(classRow.code)}`;
   const teachers = users.flatMap((candidate) =>
     candidate.role === "teacher" || candidate.role === "admin"
       ? [{ id: candidate.id, name: candidate.name }]
@@ -141,7 +148,7 @@ async function AdminClassDetailContent({
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <InfoCard label="Mã lớp" value={classRow.code} isMono />
+        <ClassCodeCard code={classRow.code} joinUrl={joinUrl} />
         <InfoCard
           label="Sĩ số"
           value={`${formatNumber(classRow.members.length)} / ${formatNumber(classRow.maxSize)}`}
