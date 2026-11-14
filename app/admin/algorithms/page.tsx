@@ -9,6 +9,7 @@ import {
   getCategoryCatalog,
 } from "@/features/catalog/queries";
 import { getAlgorithmHref } from "@/features/catalog/routes";
+import { requireAdminUser } from "@/features/learning/auth";
 import { cn } from "@/lib/cn";
 import { formatDate } from "@/lib/format";
 import {
@@ -39,6 +40,7 @@ const COLUMNS: readonly ITableColumn[] = [
 ];
 
 export default async function AdminAlgorithmsPage() {
+  await requireAdminUser();
   const [algorithms, categories] = await Promise.all([
     getAlgorithmCatalog(),
     getCategoryCatalog(),

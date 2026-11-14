@@ -5,6 +5,7 @@ import { getButtonClassName } from "@/components/ui/button";
 import { CategoryIcon } from "@/features/catalog/components/category-icon";
 import { getCategoryCatalog } from "@/features/catalog/queries";
 import { getCategoryHref } from "@/features/catalog/routes";
+import { requireAdminUser } from "@/features/learning/auth";
 import { cn } from "@/lib/cn";
 import { formatDate, formatNumber } from "@/lib/format";
 import { ConfirmDeleteDialog } from "../_components/confirm-delete-dialog";
@@ -32,6 +33,7 @@ const COLUMNS: readonly ITableColumn[] = [
 ];
 
 export default async function AdminCategoriesPage() {
+  await requireAdminUser();
   const categories = await getCategoryCatalog();
 
   return (

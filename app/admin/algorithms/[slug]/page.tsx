@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { requireAdminUser } from "@/features/learning/auth";
 import {
   EditAlgorithmView,
   EditAlgorithmViewSkeleton,
@@ -12,9 +13,10 @@ export async function generateMetadata({
   return { title: `Sửa ${slug}` };
 }
 
-export default function EditAlgorithmPage({
+export default async function EditAlgorithmPage({
   params,
 }: PageProps<"/admin/algorithms/[slug]">) {
+  await requireAdminUser();
   return (
     <Suspense fallback={<EditAlgorithmViewSkeleton />}>
       <EditAlgorithmView params={params} />

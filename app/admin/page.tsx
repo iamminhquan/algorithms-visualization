@@ -11,6 +11,7 @@ import {
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import type { UserRole } from "@/db/schema";
 import { getUserCatalog } from "@/features/auth/queries";
 import { CategoryIcon } from "@/features/catalog/components/category-icon";
 import {
@@ -41,6 +42,7 @@ interface IQuickAction {
   readonly description: string;
   readonly href: string;
   readonly icon: LucideIcon;
+  readonly roles?: readonly UserRole[];
 }
 
 const QUICK_ACTIONS: readonly IQuickAction[] = [
@@ -49,12 +51,14 @@ const QUICK_ACTIONS: readonly IQuickAction[] = [
     description: "Khai báo thông tin và mã nguồn",
     href: ADMIN_ROUTES.newAlgorithm,
     icon: Plus,
+    roles: ["admin"],
   },
   {
     label: "Quản lý danh mục",
     description: "Sửa tên, mô tả, đường dẫn",
     href: ADMIN_ROUTES.categories,
     icon: FolderPlus,
+    roles: ["admin"],
   },
   {
     label: "Mở lớp học",
@@ -83,6 +87,7 @@ export default function AdminOverviewPage() {
 
 async function AdminOverviewContent() {
   const user = await requireStaffUser();
+  const isAdmin = user.role === "admin";
   const [algorithms, categories, users, classes] = await Promise.all([
     getAlgorithmCatalog(),
     getCategoryCatalog(),
@@ -184,7 +189,10 @@ async function AdminOverviewContent() {
 
         <Panel title="Lối tắt">
           <ul className="flex flex-col p-2">
-            {QUICK_ACTIONS.map((action) => {
+            {QUICK_ACTIONS.filter(
+              (action) =>
+                action.roles === undefined || action.roles.includes(user.role),
+            ).map((action) => {
               const Icon = action.icon;
               return (
                 <li key={action.label}>
@@ -218,56 +226,59 @@ async function AdminOverviewContent() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <Panel
-          title="Thuật toán cập nhật gần đây"
-          className="lg:col-span-2"
-          actions={
-            <Link
-              href={ADMIN_ROUTES.algorithms}
-              className={cn(
-                "rounded-sm text-sm font-medium text-accent-text hover:text-accent-hover",
-                LINK_FOCUS_CLASS_NAME,
-              )}
-            >
-              Xem tất cả
-            </Link>
-          }
-        >
-          {recentAlgorithms.length === 0 ? (
-            <p className="px-5 py-10 text-center text-sm text-text-secondary">
-              Chưa có thuật toán nào.
-            </p>
-          ) : (
-            <ul className="divide-y divide-border-default">
-              {recentAlgorithms.map((algorithm) => (
-                <li key={algorithm.id}>
-                  <Link
-                    href={getAdminAlgorithmHref(algorithm.slug)}
-                    className={cn(
-                      "flex items-center justify-between gap-4 px-5 py-3 transition-colors hover:bg-bg-subtle/50",
-                      LINK_FOCUS_CLASS_NAME,
-                    )}
-                  >
-                    <span className="flex min-w-0 flex-col">
-                      <span className="truncate text-sm font-medium text-text-primary">
-                        {algorithm.name}
+        {isAdmin && (
+          <Panel
+            title="Thuật toán cập nhật gần đây"
+            className="lg:col-span-2"
+            actions={
+              <Link
+                href={ADMIN_ROUTES.algorithms}
+                className={cn(
+                  "rounded-sm text-sm font-medium text-accent-text hover:text-accent-hover",
+                  LINK_FOCUS_CLASS_NAME,
+                )}
+              >
+                Xem tất cả
+              </Link>
+            }
+          >
+            {recentAlgorithms.length === 0 ? (
+              <p className="px-5 py-10 text-center text-sm text-text-secondary">
+                Chưa có thuật toán nào.
+              </p>
+            ) : (
+              <ul className="divide-y divide-border-default">
+                {recentAlgorithms.map((algorithm) => (
+                  <li key={algorithm.id}>
+                    <Link
+                      href={getAdminAlgorithmHref(algorithm.slug)}
+                      className={cn(
+                        "flex items-center justify-between gap-4 px-5 py-3 transition-colors hover:bg-bg-subtle/50",
+                        LINK_FOCUS_CLASS_NAME,
+                      )}
+                    >
+                      <span className="flex min-w-0 flex-col">
+                        <span className="truncate text-sm font-medium text-text-primary">
+                          {algorithm.name}
+                        </span>
+                        <span className="truncate text-xs text-text-secondary">
+                          {algorithm.category.name}
+                        </span>
                       </span>
-                      <span className="truncate text-xs text-text-secondary">
-                        {algorithm.category.name}
+                      <span className="shrink-0 text-xs text-text-muted tabular-nums">
+                        {formatDate(algorithm.updatedAt)}
                       </span>
-                    </span>
-                    <span className="shrink-0 text-xs text-text-muted tabular-nums">
-                      {formatDate(algorithm.updatedAt)}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Panel>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Panel>
+        )}
 
         <Panel
           title="Lớp đang hoạt động"
+          className={isAdmin ? undefined : "lg:col-span-3"}
           actions={
             <Link
               href={ADMIN_ROUTES.classes}
