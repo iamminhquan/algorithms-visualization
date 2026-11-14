@@ -2,18 +2,21 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { UserRole } from "@/db/schema";
 import { cn } from "@/lib/cn";
-import { ADMIN_NAV_GROUPS, isActiveAdminItem } from "./admin-routes";
+import { getVisibleAdminNavGroups, isActiveAdminItem } from "./admin-routes";
 
 type AdminNavProps = {
   pathname: string | null;
+  userRole: UserRole | null;
   onNavigate?: () => void;
 };
 
-export function AdminNav({ pathname, onNavigate }: AdminNavProps) {
+export function AdminNav({ pathname, userRole, onNavigate }: AdminNavProps) {
+  const groups = getVisibleAdminNavGroups(userRole);
   return (
     <nav aria-label="Điều hướng quản trị" className="flex flex-col gap-6">
-      {ADMIN_NAV_GROUPS.map((group) => (
+      {groups.map((group) => (
         <div key={group.label} className="flex flex-col gap-1">
           <p className="px-3 pb-1 text-xs font-medium text-text-muted">
             {group.label}
@@ -48,6 +51,6 @@ export function AdminNav({ pathname, onNavigate }: AdminNavProps) {
   );
 }
 
-export function CurrentAdminNav() {
-  return <AdminNav pathname={usePathname()} />;
+export function CurrentAdminNav({ userRole }: { userRole: UserRole | null }) {
+  return <AdminNav pathname={usePathname()} userRole={userRole} />;
 }

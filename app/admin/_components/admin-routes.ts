@@ -7,6 +7,7 @@ import {
   Users,
   Workflow,
 } from "lucide-react";
+import type { UserRole } from "@/db/schema";
 
 export const ADMIN_ROUTES = {
   overview: "/admin",
@@ -27,6 +28,7 @@ export interface IAdminNavItem {
   readonly label: string;
   readonly href: string;
   readonly icon: LucideIcon;
+  readonly roles?: readonly UserRole[];
 }
 
 export interface IAdminNavGroup {
@@ -48,8 +50,18 @@ export const ADMIN_NAV_GROUPS: readonly IAdminNavGroup[] = [
   {
     label: "Nội dung",
     items: [
-      { label: "Danh mục", href: ADMIN_ROUTES.categories, icon: FolderTree },
-      { label: "Thuật toán", href: ADMIN_ROUTES.algorithms, icon: Workflow },
+      {
+        label: "Danh mục",
+        href: ADMIN_ROUTES.categories,
+        icon: FolderTree,
+        roles: ["admin"],
+      },
+      {
+        label: "Thuật toán",
+        href: ADMIN_ROUTES.algorithms,
+        icon: Workflow,
+        roles: ["admin"],
+      },
     ],
   },
   {
@@ -65,6 +77,23 @@ export const ADMIN_NAV_GROUPS: readonly IAdminNavGroup[] = [
     ],
   },
 ];
+
+export function getVisibleAdminNavGroups(
+  role: UserRole | null,
+): readonly IAdminNavGroup[] {
+  return ADMIN_NAV_GROUPS.map((group) => {
+    const items = group.items.filter((item) => {
+      if (!item.roles) {
+        return true;
+      }
+      if (role === null) {
+        return false;
+      }
+      return item.roles.includes(role);
+    });
+    return { ...group, items };
+  }).filter((group) => group.items.length > 0);
+}
 
 export function isActiveAdminItem(
   href: string,

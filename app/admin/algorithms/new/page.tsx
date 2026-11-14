@@ -1,6 +1,7 @@
 import { Info } from "lucide-react";
 import type { Metadata } from "next";
 import { getCategoryCatalog } from "@/features/catalog/queries";
+import { requireAdminUser } from "@/features/learning/auth";
 import { ADMIN_ROUTES } from "../../_components/admin-routes";
 import { PageHeader } from "../../_components/page-header";
 import { AlgorithmForm } from "../_components/algorithm-form";
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default async function NewAlgorithmPage() {
+  await requireAdminUser();
   const categories = await getCategoryCatalog();
 
   return (
