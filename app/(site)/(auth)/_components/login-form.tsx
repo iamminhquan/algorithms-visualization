@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useLayoutEffect, useRef, useState } from "react";
 import { getAuthErrorMessage } from "@/features/auth/error-messages";
 import { getSafeCallbackUrl, getVerifyEmailHref } from "@/features/auth/routes";
 import { authClient } from "@/lib/auth-client";
@@ -20,6 +20,15 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const afterSignInPath = getSafeCallbackUrl(callbackUrl);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useLayoutEffect(() => {
+    return () => {
+      setIsPending(false);
+      setError(undefined);
+      formRef.current?.reset();
+    };
+  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -52,7 +61,7 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-4">
       <AuthField
         id="login-email"
         name="email"
