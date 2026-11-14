@@ -18,6 +18,7 @@ import { canManageClass, requireStaffUser, requireStudentUser } from "./auth";
 import {
   getAdminClassHref,
   getStudentClassHref,
+  LEARNING_PATH,
   STUDENT_CLASSES_PATH,
 } from "./routes";
 import type { IImportActionState, ILearningActionState } from "./types";
@@ -324,6 +325,7 @@ export async function joinClassAction(
       return lockedClass;
     });
 
+    revalidatePath(LEARNING_PATH);
     revalidatePath(STUDENT_CLASSES_PATH);
     redirect(getStudentClassHref(classRow.id));
   } catch (error) {

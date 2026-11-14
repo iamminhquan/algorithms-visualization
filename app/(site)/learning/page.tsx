@@ -68,14 +68,14 @@ export default async function LearnPage() {
           </p>
         </header>
 
+        <Suspense fallback={<MyClassesSectionSkeleton />}>
+          <MyClassesSection />
+        </Suspense>
+
         <AlgorithmLibrary
           categories={libraryCategories}
           algorithms={libraryAlgorithms}
         />
-
-        <Suspense fallback={<MyClassesSectionSkeleton />}>
-          <MyClassesSection />
-        </Suspense>
       </div>
     </main>
   );
