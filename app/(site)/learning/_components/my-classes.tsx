@@ -4,6 +4,8 @@ import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import { getButtonClassName } from "@/components/ui/button";
 import { getLearningUser } from "@/features/learning/auth";
+import { joinClassAction } from "@/features/learning/class-actions";
+import { JoinClassForm } from "@/features/learning/components/join-class-form";
 import { getStudentClasses } from "@/features/learning/queries";
 import {
   getStudentClassHref,
@@ -44,47 +46,44 @@ export async function MyClassesSection() {
 
   const memberships = await getStudentClasses(user);
 
-  if (memberships.length === 0) {
-    return (
-      <ClassesSection>
-        <EmptyClasses />
-      </ClassesSection>
-    );
-  }
-
   return (
     <ClassesSection>
-      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {memberships.slice(0, MAX_VISIBLE_CLASSES).map((membership) => {
-          const classRow = membership.class;
-          const isArchived = classRow.status === "archived";
-          return (
-            <li key={membership.id}>
-              <Link
-                href={getStudentClassHref(classRow.id)}
-                className="flex h-full flex-col gap-3 rounded-xl border border-border-default bg-bg-surface p-4 transition-colors hover:border-border-strong hover:bg-bg-subtle/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <h3 className="min-w-0 truncate text-sm font-semibold text-text-primary">
-                    {classRow.name}
-                  </h3>
-                  <Badge tone={isArchived ? "neutral" : "success"}>
-                    {isArchived ? "Đã lưu trữ" : "Đang học"}
-                  </Badge>
-                </div>
-                <p className="text-xs text-text-secondary">
-                  Giảng viên {classRow.owner.name}
-                </p>
-                <div className="mt-auto flex items-center justify-between gap-3 text-xs">
-                  <span className="font-mono text-text-muted">
-                    {classRow.code}
-                  </span>
-                </div>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+      <JoinClassForm action={joinClassAction} />
+      {memberships.length === 0 ? (
+        <NoMemberships />
+      ) : (
+        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {memberships.slice(0, MAX_VISIBLE_CLASSES).map((membership) => {
+            const classRow = membership.class;
+            const isArchived = classRow.status === "archived";
+            return (
+              <li key={membership.id}>
+                <Link
+                  href={getStudentClassHref(classRow.id)}
+                  className="flex h-full flex-col gap-3 rounded-xl border border-border-default bg-bg-surface p-4 transition-colors hover:border-border-strong hover:bg-bg-subtle/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <h3 className="min-w-0 truncate text-sm font-semibold text-text-primary">
+                      {classRow.name}
+                    </h3>
+                    <Badge tone={isArchived ? "neutral" : "success"}>
+                      {isArchived ? "Đã lưu trữ" : "Đang học"}
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-text-secondary">
+                    Giảng viên {classRow.owner.name}
+                  </p>
+                  <div className="mt-auto flex items-center justify-between gap-3 text-xs">
+                    <span className="font-mono text-text-muted">
+                      {classRow.code}
+                    </span>
+                  </div>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </ClassesSection>
   );
 }
@@ -123,6 +122,16 @@ function EmptyClasses() {
         <Plus aria-hidden="true" />
         Tham gia lớp học
       </Link>
+    </div>
+  );
+}
+
+function NoMemberships() {
+  return (
+    <div className="rounded-xl border border-dashed border-border-strong bg-bg-surface px-5 py-5">
+      <p className="text-sm text-text-secondary">
+        Bạn chưa tham gia lớp học nào. Nhập mã lớp ở trên để bắt đầu.
+      </p>
     </div>
   );
 }
