@@ -13,13 +13,20 @@ export async function generateMetadata({
   return { title: `Sửa ${slug}` };
 }
 
-export default async function EditAlgorithmPage({
-  params,
-}: PageProps<"/admin/algorithms/[slug]">) {
-  await requireAdminUser();
+type EditAlgorithmPageProps = Pick<
+  PageProps<"/admin/algorithms/[slug]">,
+  "params"
+>;
+
+export default function EditAlgorithmPage({ params }: EditAlgorithmPageProps) {
   return (
     <Suspense fallback={<EditAlgorithmViewSkeleton />}>
-      <EditAlgorithmView params={params} />
+      <AuthorizedEditAlgorithmView params={params} />
     </Suspense>
   );
+}
+
+async function AuthorizedEditAlgorithmView({ params }: EditAlgorithmPageProps) {
+  await requireAdminUser();
+  return <EditAlgorithmView params={params} />;
 }
