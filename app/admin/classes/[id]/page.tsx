@@ -84,7 +84,7 @@ async function AdminClassDetailContent({
     getStaffClassDetail(classId, user),
     getUserCatalog(),
   ]);
-  const teachers = users.flatMap((candidate) =>
+  const owners = users.flatMap((candidate) =>
     candidate.role === "teacher" || candidate.role === "admin"
       ? [{ id: candidate.id, name: candidate.name }]
       : [],
@@ -115,8 +115,9 @@ async function AdminClassDetailContent({
               triggerClassName={getButtonClassName("secondary")}
               submitLabel="Lưu thay đổi"
               idPrefix={`class-detail-${classRow.id}`}
-              teachers={teachers}
+              teachers={owners}
               isAdmin={isAdmin}
+              currentUserName={user.name}
               classId={classRow.id}
               initialValues={{
                 name: classRow.name,

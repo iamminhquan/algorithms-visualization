@@ -93,11 +93,19 @@ export async function createClassAction(
   const name = getFormText(formData, "name");
   const minSize = getFormInt(formData, "minSize");
   const maxSize = getFormInt(formData, "maxSize");
-  const ownerId = await resolveOwnerId(
-    getFormText(formData, "ownerId"),
-    user.id,
-    user.role === "admin",
-  );
+  const requestedOwnerId = getFormText(formData, "ownerId");
+  const ownerId =
+    user.role === "admin"
+      ? requestedOwnerId
+        ? await db.query.usersTable.findFirst({
+            where: eq(usersTable.id, requestedOwnerId),
+            columns: { id: true, role: true },
+          })
+        : null
+      : await db.query.usersTable.findFirst({
+          where: eq(usersTable.id, user.id),
+          columns: { id: true, role: true },
+        });
 
   if (name === "") {
     return actionError("Tên lớp không được để trống.");
@@ -106,7 +114,7 @@ export async function createClassAction(
   if (sizeError) {
     return actionError(sizeError);
   }
-  if (!ownerId) {
+  if (!ownerId || ownerId.role !== "teacher") {
     return actionError("Giảng viên phụ trách không hợp lệ.");
   }
 
@@ -130,7 +138,7 @@ export async function createClassAction(
         code,
         minSize: minSize ?? 0,
         maxSize: maxSize ?? 1,
-        ownerId,
+        ownerId: ownerId.id,
         status: "active",
       })
       .returning({ id: classesTable.id });
