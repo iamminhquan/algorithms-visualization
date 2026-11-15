@@ -121,6 +121,7 @@ async function AdminClassDetailContent({
               idPrefix={`class-detail-${classRow.id}`}
               teachers={teachers}
               isAdmin={isAdmin}
+              currentUserName={user.name}
               classId={classRow.id}
               initialValues={{
                 name: classRow.name,
