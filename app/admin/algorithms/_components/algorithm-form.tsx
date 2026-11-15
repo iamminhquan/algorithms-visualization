@@ -1,9 +1,15 @@
+"use client";
+
 import Link from "next/link";
+import { useActionState } from "react";
 import { Button, getButtonClassName } from "@/components/ui/button";
 import { FormField, getFieldHintId } from "@/components/ui/form-field";
 import { Input, Textarea } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import type { SourceCode } from "@/engine/visualization";
+import { createAlgorithmAction } from "@/features/catalog/algorithm-actions";
+import { FormMessage } from "@/features/learning/components/form-message";
+import type { ILearningActionState } from "@/features/learning/types";
 import { ADMIN_ROUTES } from "../../_components/admin-routes";
 import { Panel } from "../../_components/panel";
 import { PreviewNote } from "../../_components/preview-note";
@@ -12,6 +18,7 @@ import { SourceCodeEditor } from "./source-code-editor";
 const SLUG_PATTERN = "[a-z0-9]+(-[a-z0-9]+)*";
 
 interface IAlgorithmFormValues {
+  readonly id: number;
   readonly key: string;
   readonly name: string;
   readonly slug: string;
@@ -30,17 +37,27 @@ type AlgorithmFormProps = {
   categories: readonly ICategoryOption[];
   algorithm?: IAlgorithmFormValues;
   sourceCode?: SourceCode;
+  pseudocode?: readonly string[];
 };
 
 export function AlgorithmForm({
   categories,
   algorithm,
   sourceCode,
+  pseudocode,
 }: AlgorithmFormProps) {
   const isEditing = algorithm !== undefined;
+  const [state, formAction, isPending] = useActionState<
+    ILearningActionState,
+    FormData
+  >(createAlgorithmAction, {});
+  const formId = "algorithm-form";
 
   return (
-    <div className="flex flex-col gap-6">
+    <form id={formId} action={formAction} className="flex flex-col gap-6">
+      {algorithm && (
+        <input type="hidden" name="algorithmId" value={algorithm.id} />
+      )}
       <Panel
         title="Thông tin chung"
         description="Tên, đường dẫn và danh mục hiển thị trên trang web."
@@ -151,7 +168,26 @@ export function AlgorithmForm({
         </div>
       </Panel>
 
-      <SourceCodeEditor sourceCode={sourceCode} />
+      <Panel
+        title="Mã giả"
+        description="Các bước thuật toán hiển thị cạnh phần mô phỏng."
+      >
+        <div className="px-5 py-5">
+          <Textarea
+            id="algorithm-pseudocode"
+            name="pseudocode"
+            form={formId}
+            defaultValue={pseudocode?.join("\n")}
+            placeholder="Nhập mỗi bước trên một dòng"
+            rows={6}
+            spellCheck={false}
+            wrap="off"
+            className="font-mono text-sm"
+          />
+        </div>
+      </Panel>
+
+      <SourceCodeEditor sourceCode={sourceCode} formId={formId} />
 
       <div className="sticky bottom-0 -mx-4 flex flex-col gap-3 border-t border-border-default bg-bg-page/90 px-4 py-4 backdrop-blur-md sm:-mx-6 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:-mx-8 lg:px-8">
         <PreviewNote />
@@ -162,9 +198,18 @@ export function AlgorithmForm({
           >
             Huỷ
           </Link>
-          <Button>{isEditing ? "Lưu thay đổi" : "Thêm thuật toán"}</Button>
+          <div className="flex flex-col items-end gap-2">
+            <FormMessage state={state} />
+            <Button type="submit" disabled={isPending}>
+              {isPending
+                ? "Đang lưu..."
+                : isEditing
+                  ? "Lưu thay đổi"
+                  : "Thêm thuật toán"}
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </form>
   );
 }

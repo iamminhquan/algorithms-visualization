@@ -18,9 +18,13 @@ const MAX_EDITOR_ROWS = 20;
 
 type SourceCodeEditorProps = {
   sourceCode?: SourceCode;
+  formId?: string;
 };
 
-export function SourceCodeEditor({ sourceCode }: SourceCodeEditorProps) {
+export function SourceCodeEditor({
+  sourceCode,
+  formId,
+}: SourceCodeEditorProps) {
   const entries = CODE_LANGUAGES.flatMap((language) => {
     const lines = sourceCode?.[language];
     return lines ? [{ language, lines }] : [];
@@ -99,6 +103,7 @@ export function SourceCodeEditor({ sourceCode }: SourceCodeEditorProps) {
                 <Textarea
                   id={editorId}
                   name={`sourceCode.${language}`}
+                  form={formId}
                   defaultValue={lines.join("\n")}
                   rows={Math.min(lines.length, MAX_EDITOR_ROWS)}
                   spellCheck={false}

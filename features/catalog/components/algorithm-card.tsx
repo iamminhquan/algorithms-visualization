@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { findAlgorithm } from "../catalog";
 import type { AlgorithmCatalogItem } from "../queries";
 import { getAlgorithmHref } from "../routes";
 import { AlgorithmIcon } from "./algorithm-icon";
@@ -12,6 +13,8 @@ type AlgorithmCardProps = {
 };
 
 export function AlgorithmCard({ categorySlug, algorithm }: AlgorithmCardProps) {
+  const isAvailable = findAlgorithm(algorithm.key) !== undefined;
+
   return (
     <Link
       href={getAlgorithmHref(categorySlug, algorithm.slug)}
@@ -25,6 +28,11 @@ export function AlgorithmCard({ categorySlug, algorithm }: AlgorithmCardProps) {
         {algorithm.description && (
           <p className="line-clamp-3 text-sm leading-5 text-text-secondary">
             {algorithm.description}
+          </p>
+        )}
+        {!isAvailable && (
+          <p className="text-xs font-medium text-text-muted">
+            Chưa được sử dụng
           </p>
         )}
       </div>
