@@ -70,7 +70,12 @@ function matchesAcceptedValue(
     );
   }
 
-  return normalizeText(value) === normalizeText(acceptedValue);
+  // Text answers should accept capitalization variants (e.g. "Insertion sort"
+  // and "insertion sort"). Numeric answers still use the numeric match mode.
+  return (
+    normalizeCaseInsensitive(value) ===
+    normalizeCaseInsensitive(acceptedValue)
+  );
 }
 
 function gradeMultipleChoice(
