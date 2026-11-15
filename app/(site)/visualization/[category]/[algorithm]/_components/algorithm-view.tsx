@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { VisualizerSkeleton } from "@/components/visualization/visualizer-frame";
 import { getAlgorithmSourceCode } from "@/features/catalog/code-queries";
+import { AlgorithmExercise } from "@/features/catalog/components/algorithm-exercise";
 import { AlgorithmVisualizer } from "@/features/catalog/components/algorithm-visualizer";
 import {
   getAlgorithmBySlug,
@@ -62,6 +63,7 @@ export async function AlgorithmView({ params }: AlgorithmViewProps) {
         pseudocode={code.pseudocode}
         sourceCode={code.sourceCode}
       />
+      <AlgorithmExercise algorithmKey={algorithm.key} />
     </article>
   );
 }
