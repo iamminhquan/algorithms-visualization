@@ -1,7 +1,9 @@
 import { Info } from "lucide-react";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { getCategoryCatalog } from "@/features/catalog/queries";
 import { requireAdminUser } from "@/features/learning/auth";
+import { AdminPageSkeleton } from "../../_components/admin-page-skeleton";
 import { ADMIN_ROUTES } from "../../_components/admin-routes";
 import { PageHeader } from "../../_components/page-header";
 import { AlgorithmForm } from "../_components/algorithm-form";
@@ -10,7 +12,15 @@ export const metadata: Metadata = {
   title: "Thêm thuật toán",
 };
 
-export default async function NewAlgorithmPage() {
+export default function NewAlgorithmPage() {
+  return (
+    <Suspense fallback={<AdminPageSkeleton />}>
+      <NewAlgorithmContent />
+    </Suspense>
+  );
+}
+
+async function NewAlgorithmContent() {
   await requireAdminUser();
   const categories = await getCategoryCatalog();
 
