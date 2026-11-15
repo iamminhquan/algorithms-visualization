@@ -54,6 +54,7 @@ export async function EditAlgorithmView({ params }: EditAlgorithmViewProps) {
         categories={categories.map(({ id, name }) => ({ id, name }))}
         algorithm={algorithm}
         sourceCode={code.sourceCode}
+        pseudocode={code.pseudocode}
       />
     </>
   );

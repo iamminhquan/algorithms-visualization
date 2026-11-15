@@ -1,7 +1,6 @@
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/db";
 import "server-only";
-import { findAlgorithm } from "./catalog";
 
 const CATALOG_CACHE_TAG = "catalog";
 
@@ -13,7 +12,7 @@ export async function getAlgorithmCatalog() {
     with: { category: true },
     orderBy: (algorithms, { asc }) => asc(algorithms.id),
   });
-  return rows.filter((row) => findAlgorithm(row.key) !== undefined);
+  return rows;
 }
 
 export async function getCategoryCatalog() {
@@ -32,12 +31,7 @@ export async function getCategoryCatalog() {
       asc(categories.id),
     ],
   });
-  return rows.map((category) => ({
-    ...category,
-    algorithms: category.algorithms.filter(
-      (algorithm) => findAlgorithm(algorithm.key) !== undefined,
-    ),
-  }));
+  return rows;
 }
 
 export type AlgorithmCatalogItem = Awaited<

@@ -18,7 +18,7 @@ export function AlgorithmVisualizer({
   if (!Visualizer) {
     return (
       <p className="rounded-xl border border-dashed border-border-strong bg-bg-subtle p-6 text-center text-text-secondary">
-        Thuật toán này chưa có phần mô phỏng.
+        Thuật toán này chưa được sử dụng vì chưa có phần mô phỏng.
       </p>
     );
   }
