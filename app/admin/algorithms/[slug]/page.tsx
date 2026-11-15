@@ -6,12 +6,9 @@ import {
   EditAlgorithmViewSkeleton,
 } from "./_components/edit-algorithm-view";
 
-export async function generateMetadata({
-  params,
-}: PageProps<"/admin/algorithms/[slug]">): Promise<Metadata> {
-  const { slug } = await params;
-  return { title: `Sửa ${slug}` };
-}
+export const metadata: Metadata = {
+  title: "Sửa thuật toán",
+};
 
 type EditAlgorithmPageProps = Pick<
   PageProps<"/admin/algorithms/[slug]">,
