@@ -10,6 +10,8 @@ export const metadata: Metadata = {
   title: "Sửa thuật toán",
 };
 
+export const instant = false;
+
 type EditAlgorithmPageProps = Pick<
   PageProps<"/admin/algorithms/[slug]">,
   "params"
