@@ -36,6 +36,7 @@ type ClassFormDialogProps = {
   idPrefix: string;
   teachers: readonly TeacherOption[];
   isAdmin: boolean;
+  currentUserName: string;
   initialValues?: ClassFormValues;
   classId?: number;
 };
@@ -51,6 +52,7 @@ export function ClassFormDialog({
   idPrefix,
   teachers,
   isAdmin,
+  currentUserName,
   initialValues,
   classId,
 }: ClassFormDialogProps) {
@@ -121,6 +123,14 @@ export function ClassFormDialog({
                 ))}
               </Select>
             </FormField>
+          )}
+          {!isAdmin && classId === undefined && (
+            <div className="flex flex-col gap-1 text-sm">
+              <span className="font-medium text-text-primary">
+                Giảng viên phụ trách
+              </span>
+              <span className="text-text-secondary">{currentUserName}</span>
+            </div>
           )}
           {classId === undefined && (
             <p className="text-xs text-text-muted">

@@ -23,34 +23,34 @@ export function JoinClassForm({ action }: JoinClassFormProps) {
   return (
     <form
       action={formAction}
-      className="flex flex-col gap-3 rounded-xl border border-border-default bg-bg-surface p-5"
+      className="flex flex-wrap items-center gap-3 rounded-xl border border-border-default bg-bg-surface px-4 py-3"
     >
-      <div className="flex flex-col gap-1">
-        <h2 className="text-base font-semibold text-text-primary">
-          Tham gia lớp học
-        </h2>
-        <p className="text-sm text-text-secondary">
-          Nhập mã lớp do giảng viên cung cấp để tham gia.
-        </p>
-      </div>
-      <div className="flex flex-col gap-2 sm:flex-row">
-        <Input
-          name="code"
-          aria-label="Mã lớp"
-          placeholder="Ví dụ: AB12CD"
-          autoComplete="off"
-          className="font-mono uppercase sm:max-w-56"
-          required
-        />
-        <button
-          type="submit"
-          disabled={isPending}
-          className={getButtonClassName("primary")}
-        >
-          {isPending ? "Đang tham gia..." : "Tham gia"}
-        </button>
-      </div>
-      <FormMessage state={state} />
+      <label
+        htmlFor="join-class-code"
+        className="text-sm font-medium whitespace-nowrap text-text-primary"
+      >
+        Tham gia lớp học
+      </label>
+      <Input
+        id="join-class-code"
+        name="code"
+        placeholder="Ví dụ: AB12CD"
+        autoComplete="off"
+        className="w-44 font-mono uppercase"
+        required
+      />
+      <button
+        type="submit"
+        disabled={isPending}
+        className={getButtonClassName("primary", "sm")}
+      >
+        {isPending ? "Đang tham gia..." : "Tham gia"}
+      </button>
+      {state.error || state.success ? (
+        <div className="w-full">
+          <FormMessage state={state} />
+        </div>
+      ) : null}
     </form>
   );
 }

@@ -2,6 +2,7 @@ import { Search } from "lucide-react";
 import { headers } from "next/headers";
 import { connection } from "next/server";
 import { Suspense } from "react";
+import type { UserRole } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { ThemeToggle } from "../../_components/header/theme-toggle";
 import { AdminMobileNav, CurrentAdminMobileNav } from "./admin-mobile-nav";
@@ -10,8 +11,8 @@ import { UserAvatar } from "./user-avatar";
 export function AdminTopbar() {
   return (
     <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 border-b border-border-default bg-bg-surface/80 px-4 backdrop-blur-md sm:px-6 lg:px-8">
-      <Suspense fallback={<AdminMobileNav pathname={null} />}>
-        <CurrentAdminMobileNav />
+      <Suspense fallback={<AdminMobileNav pathname={null} userRole={null} />}>
+        <CurrentAdminMobileNavWrapper />
       </Suspense>
       <div className="relative hidden w-full max-w-sm sm:block">
         <Search
@@ -49,6 +50,13 @@ async function CurrentAdminSummary() {
       </span>
     </div>
   );
+}
+
+async function CurrentAdminMobileNavWrapper() {
+  await connection();
+  const session = await auth.api.getSession({ headers: await headers() });
+  const role = (session?.user?.role ?? null) as UserRole | null;
+  return <CurrentAdminMobileNav userRole={role} />;
 }
 
 function CurrentAdminSkeleton() {

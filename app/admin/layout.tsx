@@ -13,6 +13,8 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+export const instant = false;
+
 export default function AdminLayout({ children }: LayoutProps<"/admin">) {
   return (
     <div className="flex flex-1">

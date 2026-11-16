@@ -1,12 +1,15 @@
 import { ExternalLink, Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { getButtonClassName } from "@/components/ui/button";
 import { CategoryIcon } from "@/features/catalog/components/category-icon";
 import { getCategoryCatalog } from "@/features/catalog/queries";
 import { getCategoryHref } from "@/features/catalog/routes";
+import { requireAdminUser } from "@/features/learning/auth";
 import { cn } from "@/lib/cn";
 import { formatDate, formatNumber } from "@/lib/format";
+import { AdminPageSkeleton } from "../_components/admin-page-skeleton";
 import { ConfirmDeleteDialog } from "../_components/confirm-delete-dialog";
 import {
   DataTable,
@@ -31,7 +34,16 @@ const COLUMNS: readonly ITableColumn[] = [
   { label: "Thao tác", align: "right", isLabelHidden: true },
 ];
 
-export default async function AdminCategoriesPage() {
+export default function AdminCategoriesPage() {
+  return (
+    <Suspense fallback={<AdminPageSkeleton />}>
+      <AdminCategoriesContent />
+    </Suspense>
+  );
+}
+
+async function AdminCategoriesContent() {
+  await requireAdminUser();
   const categories = await getCategoryCatalog();
 
   return (

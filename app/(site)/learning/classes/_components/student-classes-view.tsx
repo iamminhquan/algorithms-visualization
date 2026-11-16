@@ -2,10 +2,8 @@ import { ArrowRight, BookOpen } from "lucide-react";
 import Link from "next/link";
 import { getButtonClassName } from "@/components/ui/button";
 import { requireLearningUser } from "@/features/learning/auth";
-import { joinClassAction } from "@/features/learning/class-actions";
-import { JoinClassForm } from "@/features/learning/components/join-class-form";
 import { getStudentClasses } from "@/features/learning/queries";
-import { getStudentClassHref } from "@/features/learning/routes";
+import { getStudentClassHref, LEARNING_PATH } from "@/features/learning/routes";
 import { cn } from "@/lib/cn";
 import { formatDate } from "@/lib/format";
 
@@ -43,8 +41,6 @@ export async function StudentClassesView() {
         </h1>
       </header>
 
-      <JoinClassForm action={joinClassAction} />
-
       {memberships.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border-strong bg-bg-surface px-6 py-14 text-center">
           <BookOpen aria-hidden="true" className="size-7 text-text-muted" />
@@ -52,8 +48,15 @@ export async function StudentClassesView() {
             Bạn chưa tham gia lớp học nào.
           </p>
           <p className="max-w-md text-sm text-text-secondary">
-            Nhập mã lớp ở phía trên để bắt đầu.
+            Tham gia lớp bằng mã lớp do giảng viên cung cấp tại trang Học tập.
           </p>
+          <Link
+            href={LEARNING_PATH}
+            className={getButtonClassName("primary", "sm", "self-start")}
+          >
+            Đến trang Học tập
+            <ArrowRight aria-hidden="true" />
+          </Link>
         </div>
       ) : (
         <ul className="grid gap-4 sm:grid-cols-2">

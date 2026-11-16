@@ -4,6 +4,7 @@ import { Menu, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { getButtonClassName } from "@/components/ui/button";
+import type { UserRole } from "@/db/schema";
 import { AdminBrand, BackToSiteLink } from "./admin-brand";
 import { AdminNav } from "./admin-nav";
 
@@ -11,9 +12,10 @@ const DESKTOP_QUERY = "(min-width: 64rem)";
 
 type AdminMobileNavProps = {
   pathname: string | null;
+  userRole: UserRole | null;
 };
 
-export function AdminMobileNav({ pathname }: AdminMobileNavProps) {
+export function AdminMobileNav({ pathname, userRole }: AdminMobileNavProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const close = () => dialogRef.current?.close();
@@ -72,7 +74,11 @@ export function AdminMobileNav({ pathname }: AdminMobileNavProps) {
             </button>
           </div>
           <div className="flex-1 overflow-y-auto overscroll-contain px-3 py-5">
-            <AdminNav pathname={pathname} onNavigate={close} />
+            <AdminNav
+              pathname={pathname}
+              userRole={userRole}
+              onNavigate={close}
+            />
           </div>
           <div className="shrink-0 border-t border-border-default p-3">
             <BackToSiteLink onNavigate={close} />
@@ -83,6 +89,10 @@ export function AdminMobileNav({ pathname }: AdminMobileNavProps) {
   );
 }
 
-export function CurrentAdminMobileNav() {
-  return <AdminMobileNav pathname={usePathname()} />;
+export function CurrentAdminMobileNav({
+  userRole,
+}: {
+  userRole: UserRole | null;
+}) {
+  return <AdminMobileNav pathname={usePathname()} userRole={userRole} />;
 }

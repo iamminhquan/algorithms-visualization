@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { LOGIN_PATH } from "@/features/auth/routes";
 import { auth } from "@/lib/auth";
+import { LearningStatusSection } from "./learning-status-section";
 import { PasswordSection } from "./password-section";
 
 export async function ProfileView() {
@@ -55,6 +56,8 @@ export async function ProfileView() {
           </div>
         </dl>
       </section>
+
+      <LearningStatusSection />
 
       <section className="flex flex-col gap-5 rounded-2xl border border-border-default bg-bg-surface p-5 sm:p-6">
         <div className="flex flex-col gap-1">

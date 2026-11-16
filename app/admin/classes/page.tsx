@@ -56,6 +56,11 @@ async function AdminClassesContent() {
     getUserCatalog(),
   ]);
   const teachers = users.flatMap((candidate) =>
+    candidate.role === "teacher"
+      ? [{ id: candidate.id, name: candidate.name }]
+      : [],
+  );
+  const owners = users.flatMap((candidate) =>
     candidate.role === "teacher" || candidate.role === "admin"
       ? [{ id: candidate.id, name: candidate.name }]
       : [],
@@ -84,6 +89,7 @@ async function AdminClassesContent() {
             idPrefix="class-new"
             teachers={teachers}
             isAdmin={isAdmin}
+            currentUserName={user.name}
           />
         }
       />
@@ -161,8 +167,9 @@ async function AdminClassesContent() {
                     triggerClassName={getButtonClassName("ghost", "icon")}
                     submitLabel="Lưu thay đổi"
                     idPrefix={`class-${classRow.id}`}
-                    teachers={teachers}
+                    teachers={owners}
                     isAdmin={isAdmin}
+                    currentUserName={user.name}
                     classId={classRow.id}
                     initialValues={{
                       name: classRow.name,

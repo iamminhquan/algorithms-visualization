@@ -5,6 +5,21 @@ export const RESET_PASSWORD_PATH = "/reset-password";
 export const PROFILE_PATH = "/profile";
 export const AFTER_SIGN_IN_PATH = "/";
 
+export function getSafeCallbackUrl(value: string | undefined): string {
+  if (
+    value?.startsWith("/") &&
+    !value.startsWith("//") &&
+    !value.startsWith("/\\")
+  ) {
+    return value;
+  }
+  return AFTER_SIGN_IN_PATH;
+}
+
+export function getLoginHref(callbackUrl: string): string {
+  return `${LOGIN_PATH}?${new URLSearchParams({ callbackUrl })}`;
+}
+
 export function getVerifyEmailHref(email: string): string {
   return `${VERIFY_EMAIL_PATH}?${new URLSearchParams({ email })}`;
 }

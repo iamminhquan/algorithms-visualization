@@ -1,6 +1,7 @@
 import { ExternalLink, Pencil, Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { getButtonClassName } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { AlgorithmIcon } from "@/features/catalog/components/algorithm-icon";
@@ -9,8 +10,10 @@ import {
   getCategoryCatalog,
 } from "@/features/catalog/queries";
 import { getAlgorithmHref } from "@/features/catalog/routes";
+import { requireAdminUser } from "@/features/learning/auth";
 import { cn } from "@/lib/cn";
 import { formatDate } from "@/lib/format";
+import { AdminPageSkeleton } from "../_components/admin-page-skeleton";
 import {
   ADMIN_ROUTES,
   getAdminAlgorithmHref,
@@ -38,7 +41,16 @@ const COLUMNS: readonly ITableColumn[] = [
   { label: "Thao tác", align: "right", isLabelHidden: true },
 ];
 
-export default async function AdminAlgorithmsPage() {
+export default function AdminAlgorithmsPage() {
+  return (
+    <Suspense fallback={<AdminPageSkeleton />}>
+      <AdminAlgorithmsContent />
+    </Suspense>
+  );
+}
+
+async function AdminAlgorithmsContent() {
+  await requireAdminUser();
   const [algorithms, categories] = await Promise.all([
     getAlgorithmCatalog(),
     getCategoryCatalog(),
