@@ -28,6 +28,17 @@ function getSocialProviders() {
   return { google: { clientId, clientSecret } };
 }
 
+function getTrustedOrigins(): string[] | undefined {
+  const baseUrl = process.env.BETTER_AUTH_URL;
+  const isLocalBaseUrl =
+    baseUrl?.startsWith("http://localhost") ||
+    baseUrl?.startsWith("http://127.0.0.1");
+  if (process.env.NODE_ENV === "production" && !isLocalBaseUrl) {
+    return undefined;
+  }
+  return ["http://localhost:*", "http://127.0.0.1:*", "http://[::1]:*"];
+}
+
 function sendVerificationOtpEmail(email: string, otp: string): void {
   const content = createVerificationOtpEmail({
     otp,
@@ -108,6 +119,7 @@ export const auth = betterAuth({
     autoSignInAfterVerification: true,
   },
   socialProviders: getSocialProviders(),
+  trustedOrigins: getTrustedOrigins(),
   plugins: [
     emailOTP({
       otpLength: OTP_LENGTH,

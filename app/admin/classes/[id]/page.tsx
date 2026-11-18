@@ -145,20 +145,29 @@ async function AdminClassDetailContent({
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <ClassCodeCard code={classRow.code} joinUrl={joinUrl} />
-        <InfoCard
-          label="Sĩ số"
-          value={`${formatNumber(classRow.members.length)} / ${formatNumber(classRow.maxSize)}`}
+      <div className="grid gap-4 lg:grid-cols-5">
+        <ClassCodeCard
+          code={classRow.code}
+          joinUrl={joinUrl}
+          className="lg:col-span-3"
         />
-        <InfoCard
-          label="Sĩ số tối thiểu"
-          value={formatNumber(classRow.minSize)}
-        />
-        <InfoCard
-          label="Trạng thái"
-          value={isArchived ? "Đã lưu trữ" : "Đang hoạt động"}
-        />
+        <div className="flex flex-col gap-4 sm:flex-row lg:col-span-2 lg:flex-col">
+          <InfoCard
+            label="Sĩ số"
+            value={`${formatNumber(classRow.members.length)} / ${formatNumber(classRow.maxSize)}`}
+            className="flex-1"
+          />
+          <InfoCard
+            label="Sĩ số tối thiểu"
+            value={formatNumber(classRow.minSize)}
+            className="flex-1"
+          />
+          <InfoCard
+            label="Trạng thái"
+            value={isArchived ? "Đã lưu trữ" : "Đang hoạt động"}
+            className="flex-1"
+          />
+        </div>
       </div>
 
       <Panel
@@ -353,17 +362,24 @@ function InfoCard({
   label,
   value,
   isMono = false,
+  className,
 }: {
   label: string;
   value: string;
   isMono?: boolean;
+  className?: string;
 }) {
   return (
-    <div className="flex flex-col gap-1 rounded-xl border border-border-default bg-bg-surface p-4">
+    <div
+      className={cn(
+        "flex items-center justify-between gap-3 rounded-xl border border-border-default bg-bg-surface px-4 py-3",
+        className,
+      )}
+    >
       <span className="text-xs font-medium text-text-secondary">{label}</span>
       <span
         className={cn(
-          "text-lg font-semibold text-text-primary",
+          "text-base font-semibold text-text-primary",
           isMono && "font-mono",
         )}
       >

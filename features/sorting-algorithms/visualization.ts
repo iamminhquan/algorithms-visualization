@@ -22,6 +22,7 @@ export interface ISortingFrame {
   readonly markers: readonly (readonly IBarMarker[])[];
   readonly bracket?: IBarBracket;
   readonly range?: IBarRange;
+  readonly captions?: readonly (string | undefined)[];
 }
 
 export function getBaseFrame(event: SortingEvent): ISortingFrame {
@@ -55,6 +56,7 @@ export function getBarTones(event: SortingEvent): readonly VisualTone[] {
     case "write":
       tones[payload.to] = "swap";
       break;
+    case "recurse":
     case "mark-sorted":
     case "complete":
       break;

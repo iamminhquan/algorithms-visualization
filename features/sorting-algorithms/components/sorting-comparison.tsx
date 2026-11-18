@@ -158,7 +158,7 @@ export function SortingComparison({
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4" data-visualizer-region="">
       <ArrayInputForm
         initialValues={state.values}
         maxLength={MAX_ARRAY_LENGTH}

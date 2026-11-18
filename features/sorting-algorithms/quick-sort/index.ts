@@ -10,6 +10,7 @@ export type {
 export {
   getQuickSortActiveLine,
   getQuickSortFrame,
+  getQuickSortSourceActiveLine,
   getQuickSortVariables,
   QUICK_SORT_LEGEND,
 } from "./visualization";

@@ -5,10 +5,14 @@ export type QuickSortInput = readonly number[];
 export type QuickSortStep =
   | {
       readonly type: "compare";
-      readonly indices: readonly [number, number];
+      readonly indices: readonly number[];
       readonly lo: number;
       readonly hi: number;
       readonly i: number;
+      readonly j: number;
+      readonly pivot: number;
+      readonly mid: number;
+      readonly side: "i" | "j" | "ij" | "left-j" | "i-right";
     }
   | {
       readonly type: "swap";
@@ -16,6 +20,19 @@ export type QuickSortStep =
       readonly lo: number;
       readonly hi: number;
       readonly i: number;
+      readonly j: number;
+      readonly pivot: number;
+      readonly mid: number;
+    }
+  | {
+      readonly type: "recurse";
+      readonly side: "left" | "right";
+      readonly lo: number;
+      readonly hi: number;
+      readonly i: number;
+      readonly j: number;
+      readonly pivot: number;
+      readonly mid: number;
     }
   | { readonly type: "mark-sorted"; readonly indices: readonly number[] }
   | { readonly type: "complete" };

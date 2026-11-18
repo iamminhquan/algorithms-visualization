@@ -19,6 +19,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { CODE_LANGUAGES } from "@/engine/visualization";
 import { cn } from "@/lib/cn";
 import { AiChatPanel, type IAiChatOptions } from "./ai-chat-panel";
 import { CodePanel, type CodeView, type ICodePanelContent } from "./code-panel";
@@ -154,7 +155,9 @@ export function VisualizerFrame({
   const [isDesktop, setIsDesktop] = useState(false);
   const [isPanelAnimationReady, setIsPanelAnimationReady] = useState(false);
   const [activeTab, setActiveTab] = useState<PanelTab>("tracking");
-  const [codeView, setCodeView] = useState<CodeView>("pseudocode");
+  const [codeView, setCodeView] = useState<CodeView>(
+    CODE_LANGUAGES[0] ?? "pseudocode",
+  );
   const [isCodeExpanded, setIsCodeExpanded] = useState(false);
 
   useEffect(() => {
@@ -451,6 +454,7 @@ export function VisualizerFrame({
     <section
       ref={sectionRef}
       aria-label="Mô phỏng"
+      data-visualizer-region=""
       className={cn(
         "flex flex-col gap-4",
         isFullscreen &&
@@ -470,8 +474,9 @@ export function VisualizerFrame({
       >
         <div className="flex min-h-0 min-w-0 flex-col gap-4 lg:col-start-1 lg:row-start-1">
           <div
+            data-visualizer-stage=""
             className={cn(
-              "relative flex min-h-0 flex-col gap-4 rounded-xl border border-border-default bg-bg-surface p-4 sm:p-6",
+              "relative flex min-h-0 scroll-mt-20 flex-col gap-4 rounded-xl border border-border-default bg-bg-surface p-4 sm:p-6",
               isFullscreen && "lg:flex-1",
             )}
           >
@@ -533,7 +538,6 @@ export function VisualizerFrame({
             <div className="shrink-0">{variables}</div>
           )}
           <div className="flex min-w-0 flex-col gap-4">{controls}</div>
-          {legend.length > 0 && <LegendList items={legend} />}
         </div>
         <hr
           aria-label="Điều chỉnh độ rộng bảng mã"
@@ -560,6 +564,12 @@ export function VisualizerFrame({
               : "before:bg-border-default hover:before:bg-border-strong focus-visible:before:bg-accent-default",
           )}
         />
+        {legend.length > 0 && (
+          <LegendList
+            items={legend}
+            className="lg:col-span-3 lg:col-start-1 lg:row-start-2"
+          />
+        )}
         <div
           ref={panelRef}
           id={panelId}
@@ -626,6 +636,7 @@ export function VisualizerFrame({
                   pseudocode={code.pseudocode}
                   sourceCode={code.sourceCode}
                   activeLine={code.activeLine}
+                  sourceActiveLine={code.sourceActiveLine}
                   view={codeView}
                   onViewChange={setCodeView}
                   isExpanded={isCodeExpanded}

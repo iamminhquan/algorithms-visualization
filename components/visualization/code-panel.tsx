@@ -25,6 +25,7 @@ export interface ICodePanelContent {
   readonly pseudocode: readonly string[];
   readonly sourceCode: SourceCode;
   readonly activeLine?: number;
+  readonly sourceActiveLine?: number;
 }
 
 type CodePanelProps = ICodePanelContent & {
@@ -40,6 +41,7 @@ export function CodePanel({
   pseudocode,
   sourceCode,
   activeLine,
+  sourceActiveLine,
   view,
   onViewChange,
   isExpanded = false,
@@ -50,7 +52,9 @@ export function CodePanel({
   const headingId = useId();
   const selectId = useId();
   const dialogSelectId = useId();
-  const [internalView, setInternalView] = useState<CodeView>("pseudocode");
+  const [internalView, setInternalView] = useState<CodeView>(
+    CODE_LANGUAGES[0] ?? "pseudocode",
+  );
   const [isWrapped, setIsWrapped] = useState(false);
   const panelScrollPositions = useRef<Map<CodeView, number>>(new Map());
   const dialogScrollPositions = useRef<Map<CodeView, number>>(new Map());
@@ -164,6 +168,7 @@ export function CodePanel({
                   pseudocode={pseudocode}
                   sourceCode={sourceCode}
                   activeLine={activeLine}
+                  sourceActiveLine={sourceActiveLine}
                   wrap={isWrapped}
                 />
               </CodeScroller>
@@ -181,6 +186,7 @@ export function CodePanel({
           pseudocode={pseudocode}
           sourceCode={sourceCode}
           activeLine={activeLine}
+          sourceActiveLine={sourceActiveLine}
           wrap={isWrapped}
         />
       </CodeScroller>
@@ -276,6 +282,7 @@ type CodeContentProps = {
   pseudocode: readonly string[];
   sourceCode: SourceCode;
   activeLine?: number;
+  sourceActiveLine?: number;
   wrap: boolean;
 };
 
@@ -284,12 +291,19 @@ function CodeContent({
   pseudocode,
   sourceCode,
   activeLine,
+  sourceActiveLine,
   wrap,
 }: CodeContentProps) {
   if (view === "pseudocode") {
     return <PseudocodeLines lines={pseudocode} activeLine={activeLine} />;
   }
-  return <SourceCodeBlock lines={sourceCode[view]} wrap={wrap} />;
+  return (
+    <SourceCodeBlock
+      lines={sourceCode[view]}
+      wrap={wrap}
+      activeLine={sourceActiveLine}
+    />
+  );
 }
 
 type PseudocodeLinesProps = {
@@ -343,19 +357,49 @@ function PseudocodeLines({ lines, activeLine }: PseudocodeLinesProps) {
 type SourceCodeBlockProps = {
   lines: readonly string[];
   wrap: boolean;
+  activeLine?: number;
 };
 
-function SourceCodeBlock({ lines, wrap }: SourceCodeBlockProps) {
+function SourceCodeBlock({ lines, wrap, activeLine }: SourceCodeBlockProps) {
   return (
-    <pre
+    <ol
       className={cn(
-        "rounded-lg bg-bg-subtle p-4 font-mono text-sm leading-6 text-text-primary",
+        "flex flex-col gap-0.5 py-2 font-mono text-sm leading-6 text-text-primary",
         wrap
           ? "whitespace-pre-wrap [overflow-wrap:anywhere]"
           : "overflow-x-auto",
       )}
     >
-      <code>{lines.join("\n")}</code>
-    </pre>
+      {lines.map((line, index) => {
+        const active =
+          activeLine !== undefined &&
+          activeLine >= 0 &&
+          activeLine < lines.length &&
+          index === activeLine;
+        return (
+          <li
+            key={`${index}-${line}`}
+            data-active-line={active ? "true" : undefined}
+            aria-current={active ? "step" : undefined}
+            className={cn(
+              "flex gap-2 rounded-r border-l-2 py-0.5 pr-2 transition-colors duration-150 motion-reduce:transition-none",
+              active
+                ? "border-state-pointer bg-bg-subtle text-text-primary"
+                : "border-transparent text-text-secondary",
+            )}
+          >
+            <span
+              aria-hidden="true"
+              className="w-5 shrink-0 pl-2 text-right text-xs text-text-muted tabular-nums"
+            >
+              {index + 1}
+            </span>
+            <span className="min-w-0 flex-1 break-words whitespace-pre">
+              {line}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
   );
 }
