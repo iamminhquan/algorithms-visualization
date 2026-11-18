@@ -454,6 +454,7 @@ export function VisualizerFrame({
     <section
       ref={sectionRef}
       aria-label="Mô phỏng"
+      data-visualizer-region=""
       className={cn(
         "flex flex-col gap-4",
         isFullscreen &&
@@ -473,8 +474,9 @@ export function VisualizerFrame({
       >
         <div className="flex min-h-0 min-w-0 flex-col gap-4 lg:col-start-1 lg:row-start-1">
           <div
+            data-visualizer-stage=""
             className={cn(
-              "relative flex min-h-0 flex-col gap-4 rounded-xl border border-border-default bg-bg-surface p-4 sm:p-6",
+              "relative flex min-h-0 scroll-mt-20 flex-col gap-4 rounded-xl border border-border-default bg-bg-surface p-4 sm:p-6",
               isFullscreen && "lg:flex-1",
             )}
           >
