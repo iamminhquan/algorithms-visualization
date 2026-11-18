@@ -24,6 +24,7 @@ const MENU_ITEM_CLASS_NAME =
 export function UserMenu({ className, onNavigate }: UserMenuProps) {
   const { data: session, isPending } = authClient.useSession();
   const [isOpen, setIsOpen] = useState(false);
+  const [signOutError, setSignOutError] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -69,6 +70,30 @@ export function UserMenu({ className, onNavigate }: UserMenuProps) {
     onNavigate?.();
   };
 
+  const toggleMenu = () => {
+    if (!isOpen) {
+      setSignOutError(false);
+    }
+    setIsOpen((open) => !open);
+  };
+
+  const handleSignOut = async () => {
+    setSignOutError(false);
+    try {
+      const result = await authClient.signOut();
+      if (result.error) {
+        console.error("Không đăng xuất được", result.error);
+        setSignOutError(true);
+        return;
+      }
+      closeMenu();
+      window.location.assign("/");
+    } catch (error) {
+      console.error("Không đăng xuất được", error);
+      setSignOutError(true);
+    }
+  };
+
   return (
     <div ref={menuRef} className={cn("relative flex items-center", className)}>
       <button
@@ -76,7 +101,7 @@ export function UserMenu({ className, onNavigate }: UserMenuProps) {
         aria-haspopup="menu"
         aria-expanded={isOpen}
         aria-label={`Mở menu tài khoản của ${user.name}`}
-        onClick={() => setIsOpen((open) => !open)}
+        onClick={toggleMenu}
         className="flex min-w-0 flex-1 items-center gap-2 rounded-lg py-1 transition-colors hover:bg-bg-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default"
       >
         {user.image ? (
@@ -136,11 +161,7 @@ export function UserMenu({ className, onNavigate }: UserMenuProps) {
           <button
             type="button"
             role="menuitem"
-            onClick={async () => {
-              closeMenu();
-              await authClient.signOut();
-              window.location.assign("/");
-            }}
+            onClick={handleSignOut}
             className={cn(
               MENU_ITEM_CLASS_NAME,
               "text-danger-text hover:bg-danger-subtle hover:text-danger-text",
@@ -149,6 +170,11 @@ export function UserMenu({ className, onNavigate }: UserMenuProps) {
             <LogOut aria-hidden="true" className="size-4" />
             Đăng xuất
           </button>
+          {signOutError ? (
+            <p role="alert" className="px-3 py-2 text-xs text-danger-text">
+              Không đăng xuất được. Vui lòng thử lại.
+            </p>
+          ) : null}
         </div>
       )}
     </div>
