@@ -22,10 +22,13 @@ export function LegendList({ items, className }: LegendListProps) {
       )}
     >
       {items.map((item) => (
-        <li key={item.tone} className="flex items-center gap-2">
+        <li key={item.tone} className="flex min-w-0 flex-1 items-center gap-2">
           <span
             aria-hidden="true"
-            className={cn("size-3 rounded-sm", TONE_BACKGROUND[item.tone])}
+            className={cn(
+              "size-3 shrink-0 rounded-sm",
+              TONE_BACKGROUND[item.tone],
+            )}
           />
           {item.label}
         </li>
