@@ -1,8 +1,12 @@
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { VisualizerSkeleton } from "@/components/visualization/visualizer-frame";
 import { getAlgorithmSourceCode } from "@/features/catalog/code-queries";
-import { AlgorithmExercise } from "@/features/catalog/components/algorithm-exercise";
+import {
+  AlgorithmQuiz,
+  AlgorithmQuizSkeleton,
+} from "@/features/catalog/components/algorithm-quiz";
 import { AlgorithmVisualizer } from "@/features/catalog/components/algorithm-visualizer";
 import {
   getAlgorithmBySlug,
@@ -63,7 +67,9 @@ export async function AlgorithmView({ params }: AlgorithmViewProps) {
         pseudocode={code.pseudocode}
         sourceCode={code.sourceCode}
       />
-      <AlgorithmExercise algorithmKey={algorithm.key} />
+      <Suspense fallback={<AlgorithmQuizSkeleton />}>
+        <AlgorithmQuiz algorithmKey={algorithm.key} />
+      </Suspense>
     </article>
   );
 }
