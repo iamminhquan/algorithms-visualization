@@ -536,7 +536,6 @@ export function VisualizerFrame({
             <div className="shrink-0">{variables}</div>
           )}
           <div className="flex min-w-0 flex-col gap-4">{controls}</div>
-          {legend.length > 0 && <LegendList items={legend} />}
         </div>
         <hr
           aria-label="Điều chỉnh độ rộng bảng mã"
@@ -563,6 +562,12 @@ export function VisualizerFrame({
               : "before:bg-border-default hover:before:bg-border-strong focus-visible:before:bg-accent-default",
           )}
         />
+        {legend.length > 0 && (
+          <LegendList
+            items={legend}
+            className="lg:col-span-3 lg:col-start-1 lg:row-start-2"
+          />
+        )}
         <div
           ref={panelRef}
           id={panelId}
