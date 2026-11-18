@@ -6,10 +6,11 @@ import {
   Play,
   RotateCcw,
 } from "lucide-react";
-import { type ComponentProps, useId } from "react";
+import { type ComponentProps, useId, useRef } from "react";
 import { Select } from "@/components/ui/select";
 import { isAtEnd, PLAYBACK_SPEEDS } from "@/engine/visualization";
 import { cn } from "@/lib/cn";
+import { scrollToVisualizerStage } from "./scroll-to-stage";
 import type { IPlaybackControls } from "./use-playback";
 import {
   PLAYBACK_SHORTCUTS,
@@ -27,8 +28,13 @@ export function PlaybackControls({
 }: PlaybackControlsProps) {
   const sliderId = useId();
   const speedId = useId();
+  const containerRef = useRef<HTMLDivElement>(null);
   const { state } = controls;
-  usePlaybackShortcuts(controls);
+  const handlePlay = () => {
+    scrollToVisualizerStage(containerRef.current);
+    controls.play();
+  };
+  usePlaybackShortcuts({ ...controls, play: handlePlay });
   const eventCount = Math.max(state.totalEvents - 1, 0);
   const atStart = state.index === 0;
   const atEnd = isAtEnd(state);
@@ -37,6 +43,7 @@ export function PlaybackControls({
 
   return (
     <div
+      ref={containerRef}
       className={cn(
         "flex flex-wrap items-center gap-x-4 gap-y-3 rounded-xl border border-border-default bg-bg-surface p-3",
         className,
@@ -65,7 +72,7 @@ export function PlaybackControls({
             aria-keyshortcuts={PLAYBACK_SHORTCUTS.toggle}
             variant="primary"
             disabled={state.totalEvents <= 1}
-            onClick={controls.play}
+            onClick={handlePlay}
           />
         )}
         <ControlButton

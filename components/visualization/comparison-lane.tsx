@@ -29,8 +29,9 @@ export function ComparisonLane({
   return (
     <section
       aria-label={label}
+      data-visualizer-stage=""
       className={cn(
-        "flex min-w-0 flex-col gap-4 rounded-xl border border-border-default bg-bg-surface p-4 sm:p-6",
+        "flex min-w-0 scroll-mt-20 flex-col gap-4 rounded-xl border border-border-default bg-bg-surface p-4 sm:p-6",
         className,
       )}
     >
