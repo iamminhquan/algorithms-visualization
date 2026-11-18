@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import {
   getQuickSortActiveLine,
   getQuickSortFrame,
+  getQuickSortSourceActiveLine,
   getQuickSortVariables,
   quickSort,
 } from "@/features/sorting-algorithms/quick-sort";
@@ -31,33 +32,175 @@ describe("quickSort", () => {
     }
   });
 
-  test("mỗi pivot được chốt đúng vị trí cuối cùng của nó", () => {
+  test("sắp xếp đúng mọi mẫu đầu vào", () => {
     for (const input of SAMPLE_INPUTS) {
-      const { output, events } = quickSort.execute(input);
-      for (const { payload, state } of events) {
-        if (payload.type === "mark-sorted") {
-          const [p] = payload.indices;
-          expect(state.array[p]).toBe(output[p]);
-        }
-      }
+      const { output } = quickSort.execute(input);
+      expect(output).toEqual(sortAscending(input));
     }
   });
 
-  test("vết của [3, 1, 2] theo phân hoạch Lomuto với pivot là phần tử cuối", () => {
+  test("vết của [3, 1, 2] theo phân hoạch Hoare", () => {
     const { events } = quickSort.execute([3, 1, 2]);
     expect(events.map((event) => event.payload)).toEqual([
-      { type: "compare", indices: [0, 2], lo: 0, hi: 2, i: -1 },
-      { type: "compare", indices: [1, 2], lo: 0, hi: 2, i: -1 },
-      { type: "swap", indices: [0, 1], lo: 0, hi: 2, i: 0 },
-      { type: "swap", indices: [1, 2], lo: 0, hi: 2, i: 0 },
-      { type: "mark-sorted", indices: [1] },
-      { type: "mark-sorted", indices: [0] },
-      { type: "mark-sorted", indices: [2] },
+      {
+        type: "compare",
+        indices: [0],
+        lo: 0,
+        hi: 2,
+        i: 0,
+        j: 2,
+        pivot: 1,
+        mid: 1,
+        side: "i",
+      },
+      {
+        type: "compare",
+        indices: [2],
+        lo: 0,
+        hi: 2,
+        i: 0,
+        j: 2,
+        pivot: 1,
+        mid: 1,
+        side: "j",
+      },
+      {
+        type: "compare",
+        indices: [1],
+        lo: 0,
+        hi: 2,
+        i: 0,
+        j: 1,
+        pivot: 1,
+        mid: 1,
+        side: "j",
+      },
+      {
+        type: "compare",
+        indices: [0, 1],
+        lo: 0,
+        hi: 2,
+        i: 0,
+        j: 1,
+        pivot: 1,
+        mid: 1,
+        side: "ij",
+      },
+      {
+        type: "swap",
+        indices: [0, 1],
+        lo: 0,
+        hi: 2,
+        i: 0,
+        j: 1,
+        pivot: 1,
+        mid: 1,
+      },
+      {
+        type: "compare",
+        indices: [0, 0],
+        lo: 0,
+        hi: 2,
+        i: 1,
+        j: 0,
+        pivot: 1,
+        mid: 1,
+        side: "left-j",
+      },
+      {
+        type: "compare",
+        indices: [1, 2],
+        lo: 0,
+        hi: 2,
+        i: 1,
+        j: 0,
+        pivot: 1,
+        mid: 1,
+        side: "i-right",
+      },
+      {
+        type: "recurse",
+        side: "right",
+        lo: 0,
+        hi: 2,
+        i: 1,
+        j: 0,
+        pivot: 1,
+        mid: 1,
+      },
+      {
+        type: "compare",
+        indices: [1],
+        lo: 1,
+        hi: 2,
+        i: 1,
+        j: 2,
+        pivot: 3,
+        mid: 1,
+        side: "i",
+      },
+      {
+        type: "compare",
+        indices: [2],
+        lo: 1,
+        hi: 2,
+        i: 1,
+        j: 2,
+        pivot: 3,
+        mid: 1,
+        side: "j",
+      },
+      {
+        type: "compare",
+        indices: [1, 2],
+        lo: 1,
+        hi: 2,
+        i: 1,
+        j: 2,
+        pivot: 3,
+        mid: 1,
+        side: "ij",
+      },
+      {
+        type: "swap",
+        indices: [1, 2],
+        lo: 1,
+        hi: 2,
+        i: 1,
+        j: 2,
+        pivot: 3,
+        mid: 1,
+      },
+      {
+        type: "compare",
+        indices: [1, 1],
+        lo: 1,
+        hi: 2,
+        i: 2,
+        j: 1,
+        pivot: 3,
+        mid: 1,
+        side: "left-j",
+      },
+      {
+        type: "compare",
+        indices: [2, 2],
+        lo: 1,
+        hi: 2,
+        i: 2,
+        j: 1,
+        pivot: 3,
+        mid: 1,
+        side: "i-right",
+      },
       { type: "complete" },
     ]);
     expect(
       events.map((event) => getQuickSortActiveLine(event.payload)),
-    ).toEqual([4, 4, 5, 6, 7, 7, 7, 11]);
+    ).toEqual([9, 11, 11, 13, 14, 18, 19, 19, 9, 11, 13, 14, 18, 19, 21]);
+    expect(
+      events.map((event) => getQuickSortSourceActiveLine(event.payload)),
+    ).toEqual([8, 9, 9, 11, 12, 18, 22, 23, 8, 9, 11, 12, 18, 22, 25]);
   });
 
   test("khung, huy hiệu và biến khi so sánh với pivot", () => {
@@ -65,21 +208,22 @@ describe("quickSort", () => {
     const frame = getQuickSortFrame(events[0]);
 
     expect(frame.range).toEqual({ from: 0, to: 2 });
-    expect(frame.tones).toEqual(["compare", "default", "pivot"]);
+    expect(frame.tones).toEqual(["compare", "pivot", "default"]);
     expect(frame.markers).toEqual([
-      [{ label: "j", tone: "compare" }],
-      [],
+      [{ label: "i", tone: "pointer" }],
       [{ label: "pivot", tone: "pivot" }],
+      [{ label: "j", tone: "pointer" }],
     ]);
-    expect(frame.bracket?.label).toBe("3 > 2");
+    expect(frame.captions).toEqual([undefined, "pivot", undefined]);
+    expect(frame.bracket?.label).toBe("3 > 1");
     expect(getQuickSortVariables(events[0])).toEqual([
       { name: "n", value: 3 },
-      { name: "lo", value: 0 },
-      { name: "hi", value: 2 },
-      { name: "pivot", value: 2 },
-      { name: "i", value: -1 },
-      { name: "j", value: 0 },
-      { name: "p", value: undefined },
+      { name: "left", value: 0 },
+      { name: "right", value: 2 },
+      { name: "pivot", value: 1 },
+      { name: "i", value: 0 },
+      { name: "j", value: 2 },
+      { name: "mid", value: 1 },
     ]);
   });
 });

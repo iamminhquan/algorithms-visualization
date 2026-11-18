@@ -42,72 +42,188 @@ function executeQuickSort(input: QuickSortInput): QuickSortResult {
     );
   };
 
-  const swap = (
-    lo: number,
-    hi: number,
-    i: number,
-    left: number,
-    right: number,
-  ) => {
-    const leftValue = array[left];
-    const rightValue = array[right];
-    array[left] = rightValue;
-    array[right] = leftValue;
-    swaps++;
-    record(
-      { type: "swap", indices: [left, right], lo, hi, i },
-      right === hi
-        ? `Đã hoán đổi ${leftValue} và ${rightValue} để đưa pivot ${rightValue} về đúng vị trí`
-        : `Đã hoán đổi ${leftValue} và ${rightValue} để đưa ${rightValue} vào vùng nhỏ hơn hoặc bằng pivot`,
-    );
-  };
-
   const sortRange = (lo: number, hi: number) => {
     if (lo > hi) {
       return;
     }
 
-    const pivot = array[hi];
-    let i = lo - 1;
-
-    for (let j = lo; j < hi; j++) {
-      const current = array[j];
-      const relation = current < pivot ? "<" : current > pivot ? ">" : "=";
-      comparisons++;
+    if (lo === hi) {
+      isSorted[lo] = true;
       record(
-        { type: "compare", indices: [j, hi], lo, hi, i },
-        `Đang so sánh a[${j}] = ${current} với pivot = ${pivot}: vì ${current} ${relation} ${pivot} nên ${
-          current <= pivot
-            ? `giữ ${current} trong vùng nhỏ hơn hoặc bằng pivot`
-            : `giữ ${current} ở vùng lớn hơn pivot`
-        }`,
+        { type: "mark-sorted", indices: [lo] },
+        `Phần tử ${array[lo]} đã ở đúng vị trí ${lo}`,
       );
+      return;
+    }
 
-      if (current <= pivot) {
-        i++;
-        if (i !== j) {
-          swap(lo, hi, i, i, j);
+    const mid = lo + Math.floor((hi - lo) / 2);
+    const pivot = array[mid];
+    let i = lo;
+    let j = hi;
+
+    do {
+      while (i <= hi) {
+        comparisons++;
+        record(
+          {
+            type: "compare",
+            indices: [i],
+            lo,
+            hi,
+            i,
+            j,
+            pivot,
+            mid,
+            side: "i",
+          },
+          `Đang so sánh a[${i}] = ${array[i]} với pivot = ${pivot}: ${
+            array[i] < pivot ? "tăng i" : "dừng i"
+          }`,
+        );
+        if (array[i] < pivot) {
+          i++;
+        } else {
+          break;
         }
       }
-    }
 
-    const pivotIndex = i + 1;
-    if (pivotIndex !== hi) {
-      swap(lo, hi, i, pivotIndex, hi);
-    }
+      while (j >= lo) {
+        comparisons++;
+        record(
+          {
+            type: "compare",
+            indices: [j],
+            lo,
+            hi,
+            i,
+            j,
+            pivot,
+            mid,
+            side: "j",
+          },
+          `Đang so sánh a[${j}] = ${array[j]} với pivot = ${pivot}: ${
+            array[j] > pivot ? "giảm j" : "dừng j"
+          }`,
+        );
+        if (array[j] > pivot) {
+          j--;
+        } else {
+          break;
+        }
+      }
 
-    isSorted[pivotIndex] = true;
+      comparisons++;
+      record(
+        {
+          type: "compare",
+          indices: [i, j],
+          lo,
+          hi,
+          i,
+          j,
+          pivot,
+          mid,
+          side: "ij",
+        },
+        `Đang kiểm tra i <= j: ${i} ${i <= j ? "<=" : ">"} ${j}`,
+      );
+
+      if (i <= j) {
+        if (array[i] !== array[j]) {
+          const leftValue = array[i];
+          const rightValue = array[j];
+          array[i] = rightValue;
+          array[j] = leftValue;
+          swaps++;
+          record(
+            {
+              type: "swap",
+              indices: [i, j],
+              lo,
+              hi,
+              i,
+              j,
+              pivot,
+              mid,
+            },
+            `Đã hoán đổi ${leftValue} và ${rightValue}`,
+          );
+        }
+        i++;
+        j--;
+      }
+    } while (i <= j);
+
+    comparisons++;
     record(
-      { type: "mark-sorted", indices: [pivotIndex] },
-      `Pivot ${pivot} đã vào đúng vị trí ${pivotIndex} vì mọi phần tử bên trái đều nhỏ hơn hoặc bằng ${pivot}`,
+      {
+        type: "compare",
+        indices: [lo, j],
+        lo,
+        hi,
+        i,
+        j,
+        pivot,
+        mid,
+        side: "left-j",
+      },
+      `Đang kiểm tra left < j: ${lo} ${lo < j ? "<" : ">="} ${j}`,
     );
+    if (lo < j) {
+      record(
+        {
+          type: "recurse",
+          side: "left",
+          lo,
+          hi,
+          i,
+          j,
+          pivot,
+          mid,
+        },
+        `Gọi đệ quy quick_sort(${lo}, ${j})`,
+      );
+      sortRange(lo, j);
+    }
 
-    sortRange(lo, pivotIndex - 1);
-    sortRange(pivotIndex + 1, hi);
+    comparisons++;
+    record(
+      {
+        type: "compare",
+        indices: [i, hi],
+        lo,
+        hi,
+        i,
+        j,
+        pivot,
+        mid,
+        side: "i-right",
+      },
+      `Đang kiểm tra i < right: ${i} ${i < hi ? "<" : ">="} ${hi}`,
+    );
+    if (i < hi) {
+      record(
+        {
+          type: "recurse",
+          side: "right",
+          lo,
+          hi,
+          i,
+          j,
+          pivot,
+          mid,
+        },
+        `Gọi đệ quy quick_sort(${i}, ${hi})`,
+      );
+      sortRange(i, hi);
+    }
   };
 
   sortRange(0, array.length - 1);
 
+  for (let index = 0; index < array.length; index++) {
+    isSorted[index] = true;
+  }
   record(
     { type: "complete" },
     `Hoàn tất: ${comparisons} lần so sánh, ${swaps} lần hoán đổi`,

@@ -19,6 +19,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { CODE_LANGUAGES } from "@/engine/visualization";
 import { cn } from "@/lib/cn";
 import { AiChatPanel, type IAiChatOptions } from "./ai-chat-panel";
 import { CodePanel, type CodeView, type ICodePanelContent } from "./code-panel";
@@ -154,7 +155,9 @@ export function VisualizerFrame({
   const [isDesktop, setIsDesktop] = useState(false);
   const [isPanelAnimationReady, setIsPanelAnimationReady] = useState(false);
   const [activeTab, setActiveTab] = useState<PanelTab>("tracking");
-  const [codeView, setCodeView] = useState<CodeView>("pseudocode");
+  const [codeView, setCodeView] = useState<CodeView>(
+    CODE_LANGUAGES[0] ?? "pseudocode",
+  );
   const [isCodeExpanded, setIsCodeExpanded] = useState(false);
 
   useEffect(() => {
@@ -626,6 +629,7 @@ export function VisualizerFrame({
                   pseudocode={code.pseudocode}
                   sourceCode={code.sourceCode}
                   activeLine={code.activeLine}
+                  sourceActiveLine={code.sourceActiveLine}
                   view={codeView}
                   onViewChange={setCodeView}
                   isExpanded={isCodeExpanded}

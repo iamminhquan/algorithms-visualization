@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import { db } from ".";
 import { algorithmSourceCodesTable, algorithmsTable } from "./schema";
 import {
@@ -39,7 +40,14 @@ if (snippets.length > 0) {
   await db
     .insert(algorithmSourceCodesTable)
     .values(snippets)
-    .onConflictDoNothing();
+    .onConflictDoUpdate({
+      target: [
+        algorithmSourceCodesTable.algorithmId,
+        algorithmSourceCodesTable.kind,
+        algorithmSourceCodesTable.language,
+      ],
+      set: { lines: sql`excluded.lines` },
+    });
 }
 
 await db.$client.end();

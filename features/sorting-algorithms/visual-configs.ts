@@ -28,6 +28,7 @@ import {
 import {
   getQuickSortActiveLine,
   getQuickSortFrame,
+  getQuickSortSourceActiveLine,
   getQuickSortVariables,
   QUICK_SORT_KEY,
   QUICK_SORT_LEGEND,
@@ -47,6 +48,7 @@ import type { ISortingFrame, SortingEvent } from "./visualization";
 export interface ISortingVisualConfig {
   readonly algorithm: SortingAlgorithm;
   getActiveLine(step: SortingEvent["payload"]): number | undefined;
+  getSourceActiveLine?(step: SortingEvent["payload"]): number | undefined;
   getFrame(event: SortingEvent): ISortingFrame;
   getVariables(event: SortingEvent): readonly IVariable[];
   readonly legend: readonly ILegendItem[];
@@ -85,6 +87,7 @@ export const SORTING_VISUAL_CONFIGS = {
   [QUICK_SORT_KEY]: {
     algorithm: quickSort,
     getActiveLine: getQuickSortActiveLine,
+    getSourceActiveLine: getQuickSortSourceActiveLine,
     getFrame: getQuickSortFrame,
     getVariables: getQuickSortVariables,
     legend: QUICK_SORT_LEGEND,
