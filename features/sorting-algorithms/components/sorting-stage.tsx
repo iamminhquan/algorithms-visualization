@@ -37,6 +37,7 @@ export function SortingStage({
         value,
         tone: frame.tones[position],
         markers: frame.markers[position],
+        caption: frame.captions?.[position],
       }))}
     />
   );

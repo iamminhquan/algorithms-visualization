@@ -40,6 +40,7 @@ export function SortingVisualizer({
   sourceCode,
   getFrame,
   getVariables,
+  getSourceActiveLine,
   legend,
   counters,
 }: SortingVisualizerProps) {
@@ -77,6 +78,10 @@ export function SortingVisualizer({
           event === undefined
             ? undefined
             : pseudocode.getActiveLine(event.payload),
+        sourceActiveLine:
+          event === undefined || getSourceActiveLine === undefined
+            ? undefined
+            : getSourceActiveLine(event.payload),
       }}
       variables={<VariablesPanel variables={variables} compact />}
       controls={<PlaybackControls controls={controls} />}
