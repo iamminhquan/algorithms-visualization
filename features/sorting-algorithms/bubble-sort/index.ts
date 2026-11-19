@@ -11,5 +11,6 @@ export {
   BUBBLE_SORT_LEGEND,
   getBubbleSortActiveLine,
   getBubbleSortFrame,
+  getBubbleSortSourceActiveLine,
   getBubbleSortVariables,
 } from "./visualization";

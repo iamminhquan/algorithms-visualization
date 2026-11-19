@@ -6,12 +6,14 @@ import {
   bubbleSort,
   getBubbleSortActiveLine,
   getBubbleSortFrame,
+  getBubbleSortSourceActiveLine,
   getBubbleSortVariables,
 } from "./bubble-sort";
 import type { SortingAlgorithm } from "./index";
 import {
   getInsertionSortActiveLine,
   getInsertionSortFrame,
+  getInsertionSortSourceActiveLine,
   getInsertionSortVariables,
   INSERTION_SORT_KEY,
   INSERTION_SORT_LEGEND,
@@ -20,6 +22,7 @@ import {
 import {
   getMergeSortActiveLine,
   getMergeSortFrame,
+  getMergeSortSourceActiveLine,
   getMergeSortVariables,
   MERGE_SORT_KEY,
   MERGE_SORT_LEGEND,
@@ -38,6 +41,7 @@ import type { SortingCounter } from "./run";
 import {
   getSelectionSortActiveLine,
   getSelectionSortFrame,
+  getSelectionSortSourceActiveLine,
   getSelectionSortVariables,
   SELECTION_SORT_KEY,
   SELECTION_SORT_LEGEND,
@@ -63,6 +67,7 @@ export const SORTING_VISUAL_CONFIGS = {
   [BUBBLE_SORT_KEY]: {
     algorithm: bubbleSort,
     getActiveLine: getBubbleSortActiveLine,
+    getSourceActiveLine: getBubbleSortSourceActiveLine,
     getFrame: getBubbleSortFrame,
     getVariables: getBubbleSortVariables,
     legend: BUBBLE_SORT_LEGEND,
@@ -71,6 +76,7 @@ export const SORTING_VISUAL_CONFIGS = {
   [SELECTION_SORT_KEY]: {
     algorithm: selectionSort,
     getActiveLine: getSelectionSortActiveLine,
+    getSourceActiveLine: getSelectionSortSourceActiveLine,
     getFrame: getSelectionSortFrame,
     getVariables: getSelectionSortVariables,
     legend: SELECTION_SORT_LEGEND,
@@ -79,6 +85,7 @@ export const SORTING_VISUAL_CONFIGS = {
   [INSERTION_SORT_KEY]: {
     algorithm: insertionSort,
     getActiveLine: getInsertionSortActiveLine,
+    getSourceActiveLine: getInsertionSortSourceActiveLine,
     getFrame: getInsertionSortFrame,
     getVariables: getInsertionSortVariables,
     legend: INSERTION_SORT_LEGEND,
@@ -96,6 +103,7 @@ export const SORTING_VISUAL_CONFIGS = {
   [MERGE_SORT_KEY]: {
     algorithm: mergeSort,
     getActiveLine: getMergeSortActiveLine,
+    getSourceActiveLine: getMergeSortSourceActiveLine,
     getFrame: getMergeSortFrame,
     getVariables: getMergeSortVariables,
     legend: MERGE_SORT_LEGEND,

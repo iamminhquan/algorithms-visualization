@@ -14,6 +14,7 @@ export type {
 export {
   getSelectionSortActiveLine,
   getSelectionSortFrame,
+  getSelectionSortSourceActiveLine,
   getSelectionSortVariables,
   SELECTION_SORT_LEGEND,
 } from "./visualization";
