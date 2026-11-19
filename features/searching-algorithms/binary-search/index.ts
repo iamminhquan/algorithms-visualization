@@ -9,5 +9,6 @@ export {
   BINARY_SEARCH_LEGEND,
   getBinarySearchActiveLine,
   getBinarySearchFrame,
+  getBinarySearchSourceActiveLine,
   getBinarySearchVariables,
 } from "./visualization";

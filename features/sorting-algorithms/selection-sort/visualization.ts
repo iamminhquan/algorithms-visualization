@@ -130,3 +130,22 @@ export function getSelectionSortActiveLine(
     }
   }
 }
+
+export function getSelectionSortSourceActiveLine(
+  step: SelectionSortStep,
+): number | undefined {
+  switch (step.type) {
+    case "compare":
+      return 4;
+    case "swap":
+      return 9;
+    case "mark-sorted":
+      return 11;
+    case "complete":
+      return 12;
+    default: {
+      const unreachable: never = step;
+      throw new Error(`Bước không hợp lệ: ${JSON.stringify(unreachable)}`);
+    }
+  }
+}

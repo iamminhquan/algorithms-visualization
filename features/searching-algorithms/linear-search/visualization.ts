@@ -88,3 +88,20 @@ export function getLinearSearchActiveLine(
     }
   }
 }
+
+export function getLinearSearchSourceActiveLine(
+  step: LinearSearchStep,
+): number | undefined {
+  switch (step.type) {
+    case "compare":
+      return 2;
+    case "found":
+      return 3;
+    case "not-found":
+      return 6;
+    default: {
+      const unreachable: never = step;
+      throw new Error(`Bước không hợp lệ: ${JSON.stringify(unreachable)}`);
+    }
+  }
+}

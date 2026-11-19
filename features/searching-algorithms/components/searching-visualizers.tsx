@@ -4,11 +4,13 @@ import {
   binarySearch,
   getBinarySearchActiveLine,
   getBinarySearchFrame,
+  getBinarySearchSourceActiveLine,
   getBinarySearchVariables,
 } from "../binary-search";
 import {
   getLinearSearchActiveLine,
   getLinearSearchFrame,
+  getLinearSearchSourceActiveLine,
   getLinearSearchVariables,
   LINEAR_SEARCH_LEGEND,
   linearSearch,
@@ -29,6 +31,7 @@ export function LinearSearchVisualizer({
       }}
       sourceCode={sourceCode}
       getFrame={getLinearSearchFrame}
+      getSourceActiveLine={getLinearSearchSourceActiveLine}
       getVariables={getLinearSearchVariables}
       legend={LINEAR_SEARCH_LEGEND}
     />
@@ -48,6 +51,7 @@ export function BinarySearchVisualizer({
       }}
       sourceCode={sourceCode}
       getFrame={getBinarySearchFrame}
+      getSourceActiveLine={getBinarySearchSourceActiveLine}
       getVariables={getBinarySearchVariables}
       legend={BINARY_SEARCH_LEGEND}
       normalize={sortAscending}

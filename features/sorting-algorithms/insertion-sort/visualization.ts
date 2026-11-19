@@ -118,3 +118,22 @@ export function getInsertionSortActiveLine(
     }
   }
 }
+
+export function getInsertionSortSourceActiveLine(
+  step: InsertionSortStep,
+): number | undefined {
+  switch (step.type) {
+    case "compare":
+      return 3;
+    case "swap":
+      return 6;
+    case "mark-sorted":
+      return 7;
+    case "complete":
+      return 9;
+    default: {
+      const unreachable: never = step;
+      throw new Error(`Bước không hợp lệ: ${JSON.stringify(unreachable)}`);
+    }
+  }
+}

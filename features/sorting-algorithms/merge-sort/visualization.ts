@@ -145,3 +145,22 @@ export function getMergeSortActiveLine(
     }
   }
 }
+
+export function getMergeSortSourceActiveLine(
+  step: MergeSortStep,
+): number | undefined {
+  switch (step.type) {
+    case "compare":
+      return 16;
+    case "write":
+      return step.side === "left" ? 17 : 19;
+    case "mark-sorted":
+      return 31;
+    case "complete":
+      return 32;
+    default: {
+      const unreachable: never = step;
+      throw new Error(`Bước không hợp lệ: ${JSON.stringify(unreachable)}`);
+    }
+  }
+}
