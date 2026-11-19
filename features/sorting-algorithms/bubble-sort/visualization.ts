@@ -103,3 +103,22 @@ export function getBubbleSortActiveLine(
     }
   }
 }
+
+export function getBubbleSortSourceActiveLine(
+  step: BubbleSortStep,
+): number | undefined {
+  switch (step.type) {
+    case "compare":
+      return 4;
+    case "swap":
+      return 5;
+    case "mark-sorted":
+      return step.indices.length > 1 ? 9 : 8;
+    case "complete":
+      return 13;
+    default: {
+      const unreachable: never = step;
+      throw new Error(`Bước không hợp lệ: ${JSON.stringify(unreachable)}`);
+    }
+  }
+}

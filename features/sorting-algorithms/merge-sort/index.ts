@@ -11,6 +11,7 @@ export type {
 export {
   getMergeSortActiveLine,
   getMergeSortFrame,
+  getMergeSortSourceActiveLine,
   getMergeSortVariables,
   MERGE_SORT_LEGEND,
 } from "./visualization";

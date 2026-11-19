@@ -14,6 +14,7 @@ export type {
 export {
   getInsertionSortActiveLine,
   getInsertionSortFrame,
+  getInsertionSortSourceActiveLine,
   getInsertionSortVariables,
   INSERTION_SORT_LEGEND,
 } from "./visualization";

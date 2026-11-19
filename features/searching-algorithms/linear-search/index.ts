@@ -8,6 +8,7 @@ export type {
 export {
   getLinearSearchActiveLine,
   getLinearSearchFrame,
+  getLinearSearchSourceActiveLine,
   getLinearSearchVariables,
   LINEAR_SEARCH_LEGEND,
 } from "./visualization";

@@ -148,3 +148,26 @@ export function getBinarySearchActiveLine(
     }
   }
 }
+
+export function getBinarySearchSourceActiveLine(
+  step: BinarySearchStep,
+): number | undefined {
+  switch (step.type) {
+    case "init":
+      return 1;
+    case "pick-mid":
+      return 4;
+    case "compare":
+      return 5;
+    case "found":
+      return 6;
+    case "narrow":
+      return step.keep === "right" ? 9 : 11;
+    case "not-found":
+      return 14;
+    default: {
+      const unreachable: never = step;
+      throw new Error(`Bước không hợp lệ: ${JSON.stringify(unreachable)}`);
+    }
+  }
+}

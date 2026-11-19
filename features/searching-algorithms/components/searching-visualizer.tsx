@@ -77,6 +77,7 @@ type SearchingVisualizerProps<TEvent extends SearchingEvent> = {
   pseudocode: IPseudocode<TEvent["payload"]>;
   sourceCode: SourceCode;
   getFrame: (event: TEvent) => ISearchingFrame;
+  getSourceActiveLine?: (step: TEvent["payload"]) => number | undefined;
   getVariables: (event: TEvent) => readonly IVariable[];
   legend: readonly ILegendItem[];
   normalize?: (values: readonly number[]) => readonly number[];
@@ -88,6 +89,7 @@ export function SearchingVisualizer<TEvent extends SearchingEvent>({
   pseudocode,
   sourceCode,
   getFrame,
+  getSourceActiveLine,
   getVariables,
   legend,
   normalize = (values) => values,
@@ -158,6 +160,10 @@ export function SearchingVisualizer<TEvent extends SearchingEvent>({
           event === undefined
             ? undefined
             : pseudocode.getActiveLine(event.payload),
+        sourceActiveLine:
+          event === undefined || getSourceActiveLine === undefined
+            ? undefined
+            : getSourceActiveLine(event.payload),
       }}
       variables={<VariablesPanel variables={variables} compact />}
       controls={<PlaybackControls controls={controls} />}
