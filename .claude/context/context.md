@@ -166,8 +166,10 @@ bun run db:seed:preview        # nạp seed cho DB preview (cần PREVIEW_DATABA
   `error-messages.ts` (`getAuthErrorMessage` đổi mã lỗi Better Auth sang tiếng Việt), `emails/verification-otp.ts` (nội
   dung mail); `lib/mailer.ts` gửi qua Gmail SMTP bằng nodemailer, transporter tạo lười nên build không cần biến SMTP.
 - Các form (`login-form.tsx`, `register-form.tsx`, `verify-email-form.tsx`) là client component trong
-  `app/(site)/(auth)/_components/`, gọi `authClient` trực tiếp. Luồng khôi phục mật khẩu dùng
-  `emailOtp.requestPasswordReset`/`resetPassword` ở `/reset-password?email=...`.
+  `app/(site)/(auth)/_components/`, gọi `authClient` trực tiếp. Luồng khôi phục mật khẩu: `/forgot-password`
+  nhận email rồi gọi `emailOtp.requestPasswordReset`, sau đó chuyển sang `/reset-password?email=...` để nhập
+  mã; mã đúng (`emailOtp.checkVerificationOTP`) mới hiện form mật khẩu mới (`emailOtp.resetPassword`); vào
+  `/reset-password` thiếu email thì quay về `/forgot-password`.
 - Tài khoản bị khoá có `users.is_locked = true`: Better Auth chặn tạo phiên mới trong `databaseHooks.session.create.before`,
   `getLearningUser` trả `null`, và thao tác khoá xoá phiên hiện có.
 - `/profile` là trang hồ sơ: Server Component đọc session và danh sách account qua `auth.api.getSession` /
@@ -223,10 +225,10 @@ bun run db:seed:preview        # nạp seed cho DB preview (cần PREVIEW_DATABA
 - URL luôn phản chiếu các làn đang hiển thị: `SortingComparison` có effect so `useSearchParams()` với danh sách làn hiện
   tại và gọi `history.replaceState` (giữ tham số khác và hash) khi chúng lệch, còn URL sạch đang hiện danh sách mặc định
   thì giữ nguyên.
-- `/learning` là thư viện thuật toán kèm khu lớp học của sinh viên; `/login`, `/register` và `/verify-email` nằm trong
-  route group `app/(site)/(auth)/`; `/verify-email?email=...` đọc `searchParams` trong `<Suspense>`, thiếu email thì
-  `redirect` về `/register`. `/profile` nằm ngoài route group auth, đọc session trong `<Suspense>` và chuyển về
-  `/login` khi chưa đăng nhập.
+- `/learning` là thư viện thuật toán kèm khu lớp học của sinh viên; `/login`, `/register`,
+  `/forgot-password` và `/verify-email` nằm trong route group `app/(site)/(auth)/`; `/verify-email?email=...`
+  đọc `searchParams` trong `<Suspense>`, thiếu email thì `redirect` về `/register`. `/profile` nằm ngoài
+  route group auth, đọc session trong `<Suspense>` và chuyển về `/login` khi chưa đăng nhập.
 - Các trang công khai nằm trong route group `app/(site)/`, layout của group này gắn header và footer; root layout chỉ có
   `<html>`, `<body>` và theme.
 - `/admin` là trang quản trị với layout riêng (sidebar, thanh trên cùng, `noindex`), middleware chặn người chưa đăng

@@ -3,7 +3,11 @@
 import { useRouter } from "next/navigation";
 import { type FormEvent, useLayoutEffect, useRef, useState } from "react";
 import { getAuthErrorMessage } from "@/features/auth/error-messages";
-import { getSafeCallbackUrl, getVerifyEmailHref } from "@/features/auth/routes";
+import {
+  FORGOT_PASSWORD_PATH,
+  getSafeCallbackUrl,
+  getVerifyEmailHref,
+} from "@/features/auth/routes";
 import { authClient } from "@/lib/auth-client";
 import { AuthField } from "./auth-field";
 import { AuthFormMessage } from "./auth-form-message";
@@ -80,7 +84,7 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
         autoComplete="current-password"
         required
         labelAside={
-          <AuthLink href="#" className="text-xs">
+          <AuthLink href={FORGOT_PASSWORD_PATH} className="text-xs">
             Quên mật khẩu?
           </AuthLink>
         }
