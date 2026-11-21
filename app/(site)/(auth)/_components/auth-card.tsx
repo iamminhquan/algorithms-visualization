@@ -3,7 +3,7 @@ import { GoogleSignInButton } from "./google-sign-in-button";
 
 type AuthCardProps = {
   title: string;
-  description: string;
+  description?: string;
   children: ReactNode;
   footer: ReactNode;
   showSocialSignIn?: boolean;
@@ -23,9 +23,11 @@ export function AuthCard({
           <h1 className="text-2xl font-semibold tracking-tight text-text-primary">
             {title}
           </h1>
-          <p className="text-sm leading-5.5 text-text-secondary">
-            {description}
-          </p>
+          {description ? (
+            <p className="text-sm leading-5.5 text-text-secondary">
+              {description}
+            </p>
+          ) : null}
         </div>
         {showSocialSignIn ? (
           <>

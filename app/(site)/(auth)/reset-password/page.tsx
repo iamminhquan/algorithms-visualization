@@ -20,7 +20,7 @@ export default function ResetPasswordPage({
   return (
     <AuthCard
       title="Đặt mật khẩu"
-      description={`Nhập mã gồm ${OTP_LENGTH} chữ số trong email khôi phục và chọn mật khẩu mới cho tài khoản của bạn.`}
+      description={`Nhập mã gồm ${OTP_LENGTH} chữ số trong email khôi phục, xác thực xong bạn sẽ chọn mật khẩu mới cho tài khoản của mình.`}
       showSocialSignIn={false}
       footer={
         <>

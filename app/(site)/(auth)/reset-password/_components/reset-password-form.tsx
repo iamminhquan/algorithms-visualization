@@ -21,11 +21,14 @@ type ResetPasswordFormProps = {
 };
 
 const ONE_SECOND_MS = 1000;
+const LINK_BUTTON_CLASS =
+  "self-center rounded-sm text-sm font-medium text-accent-text transition-colors hover:text-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default disabled:pointer-events-none disabled:text-text-muted";
 
 export function ResetPasswordForm({ email }: ResetPasswordFormProps) {
   const [isPending, setIsPending] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
+  const [verifiedOtp, setVerifiedOtp] = useState<string | undefined>(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
   const [notice, setNotice] = useState<string | undefined>(undefined);
   const [cooldown, setCooldown] = useState(RESEND_OTP_COOLDOWN_SECONDS);
@@ -38,10 +41,32 @@ export function ResetPasswordForm({ email }: ResetPasswordFormProps) {
     return () => clearTimeout(timer);
   }, [cooldown]);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleVerifyOtp(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const otp = getFormText(new FormData(event.currentTarget), "otp").trim();
+
+    setIsPending(true);
+    setError(undefined);
+    setNotice(undefined);
+    const result = await authClient.emailOtp.checkVerificationOtp({
+      email,
+      type: "forget-password",
+      otp,
+    });
+    setIsPending(false);
+    if (result.error) {
+      setError(getAuthErrorMessage(result.error));
+      return;
+    }
+    setVerifiedOtp(otp);
+  }
+
+  async function handleResetPassword(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (verifiedOtp === undefined) {
+      return;
+    }
     const formData = new FormData(event.currentTarget);
-    const otp = getFormText(formData, "otp").trim();
     const password = getFormText(formData, "password");
     const passwordConfirm = getFormText(formData, "passwordConfirm");
 
@@ -55,7 +80,7 @@ export function ResetPasswordForm({ email }: ResetPasswordFormProps) {
     setError(undefined);
     const result = await authClient.emailOtp.resetPassword({
       email,
-      otp,
+      otp: verifiedOtp,
       password,
     });
     setIsPending(false);
@@ -80,6 +105,12 @@ export function ResetPasswordForm({ email }: ResetPasswordFormProps) {
     setCooldown(RESEND_OTP_COOLDOWN_SECONDS);
   }
 
+  function handleUseAnotherOtp() {
+    setVerifiedOtp(undefined);
+    setError(undefined);
+    setNotice(undefined);
+  }
+
   if (isComplete) {
     return (
       <div className="flex flex-col gap-4 text-center">
@@ -100,10 +131,53 @@ export function ResetPasswordForm({ email }: ResetPasswordFormProps) {
     );
   }
 
+  if (verifiedOtp !== undefined) {
+    return (
+      <form onSubmit={handleResetPassword} className="flex flex-col gap-4">
+        <AuthField
+          id="reset-password-password"
+          name="password"
+          type="password"
+          label="Mật khẩu mới"
+          placeholder={`Ít nhất ${MIN_PASSWORD_LENGTH} ký tự`}
+          autoComplete="new-password"
+          minLength={MIN_PASSWORD_LENGTH}
+          required
+        />
+        <AuthField
+          id="reset-password-confirm"
+          name="passwordConfirm"
+          type="password"
+          label="Nhập lại mật khẩu"
+          placeholder="Nhập lại mật khẩu"
+          autoComplete="new-password"
+          required
+        />
+        <AuthFormMessage message={error} />
+        <AuthSubmitButton
+          label="Đặt mật khẩu"
+          pendingLabel="Đang lưu..."
+          isPending={isPending}
+        />
+        <button
+          type="button"
+          onClick={handleUseAnotherOtp}
+          className={LINK_BUTTON_CLASS}
+        >
+          Dùng mã khác
+        </button>
+      </form>
+    );
+  }
+
   const canResend = cooldown <= 0 && !isResending;
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form onSubmit={handleVerifyOtp} className="flex flex-col gap-4">
+      <p className="text-center text-sm text-text-secondary">
+        Nhập mã xác thực đã gửi tới{" "}
+        <span className="font-medium break-all text-text-primary">{email}</span>
+      </p>
       <AuthField
         id="reset-password-otp"
         name="otp"
@@ -117,37 +191,18 @@ export function ResetPasswordForm({ email }: ResetPasswordFormProps) {
         className="text-center tracking-[0.5em]"
         required
       />
-      <AuthField
-        id="reset-password-password"
-        name="password"
-        type="password"
-        label="Mật khẩu mới"
-        placeholder={`Ít nhất ${MIN_PASSWORD_LENGTH} ký tự`}
-        autoComplete="new-password"
-        minLength={MIN_PASSWORD_LENGTH}
-        required
-      />
-      <AuthField
-        id="reset-password-confirm"
-        name="passwordConfirm"
-        type="password"
-        label="Nhập lại mật khẩu"
-        placeholder="Nhập lại mật khẩu"
-        autoComplete="new-password"
-        required
-      />
       <AuthFormMessage message={error} />
       <AuthFormMessage message={notice} tone="success" />
       <AuthSubmitButton
-        label="Đặt mật khẩu"
-        pendingLabel="Đang lưu..."
+        label="Tiếp tục"
+        pendingLabel="Đang kiểm tra..."
         isPending={isPending}
       />
       <button
         type="button"
         onClick={handleResend}
         disabled={!canResend}
-        className="self-center rounded-sm text-sm font-medium text-accent-text transition-colors hover:text-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-default disabled:pointer-events-none disabled:text-text-muted"
+        className={LINK_BUTTON_CLASS}
       >
         {isResending
           ? "Đang gửi lại mã..."
