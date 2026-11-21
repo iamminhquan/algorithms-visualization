@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { LOGIN_PATH } from "@/features/auth/routes";
+import { FORGOT_PASSWORD_PATH } from "@/features/auth/routes";
 import { ResetPasswordForm } from "./reset-password-form";
 
 type ResetPasswordViewProps = Pick<
@@ -16,19 +16,10 @@ export async function ResetPasswordView({
 }: ResetPasswordViewProps) {
   const email = firstValue((await searchParams).email)?.trim();
   if (!email?.includes("@")) {
-    redirect(LOGIN_PATH);
+    redirect(FORGOT_PASSWORD_PATH);
   }
 
-  return (
-    <div className="flex flex-col gap-4">
-      <p className="text-center text-sm text-text-secondary">
-        Nhập mã đã gửi tới{" "}
-        <span className="font-medium break-all text-text-primary">{email}</span>{" "}
-        và đặt mật khẩu mới.
-      </p>
-      <ResetPasswordForm key={email} email={email} />
-    </div>
-  );
+  return <ResetPasswordForm key={email} email={email} />;
 }
 
 export function ResetPasswordViewSkeleton() {
@@ -36,7 +27,6 @@ export function ResetPasswordViewSkeleton() {
     <div aria-hidden="true" className="flex animate-pulse flex-col gap-4">
       <span className="mx-auto h-5 w-64 rounded-md bg-bg-subtle" />
       <span className="h-5 w-24 rounded-md bg-bg-subtle" />
-      <span className="h-11 rounded-lg bg-bg-subtle" />
       <span className="h-11 rounded-lg bg-bg-subtle" />
       <span className="mt-2 h-11 rounded-lg bg-bg-subtle" />
       <span className="mx-auto h-5 w-40 rounded-md bg-bg-subtle" />
